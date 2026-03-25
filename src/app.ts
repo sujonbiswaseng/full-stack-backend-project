@@ -14,6 +14,7 @@ app.use(cookieParser());
 // auth
 app.use("/api", IndexRouter);
 
+
 app.use('/api/auth',toNodeHandler(auth))
 app.use(notFound)
 

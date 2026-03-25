@@ -2,8 +2,13 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { Role, UserStatus } from "../../generated/prisma/enums";
+import { bearer } from "better-auth/plugins";
+import { envVars } from "../config/env";
 export const auth = betterAuth({
+     baseURL: envVars.BETTER_AUTH_URL,
+    secret: envVars.BETTER_AUTH_SECRET,
     database: prismaAdapter(prisma, {
+        
         provider: "postgresql"
     }),
       user: {
@@ -44,4 +49,7 @@ export const auth = betterAuth({
     emailAndPassword: { 
     enabled: true, 
   }, 
+  plugins:[
+    bearer()
+  ]
 });

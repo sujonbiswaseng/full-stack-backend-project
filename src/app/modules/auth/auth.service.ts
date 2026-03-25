@@ -4,7 +4,7 @@ import { IRequestUser } from "../../interface/requestUser.interface";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { tokenUtils } from "../../utils/token";
-import { ICreateUser, ILoginUser } from "./auth.interface";
+import { IChangePasswordPayload, ICreateUser, ILoginUser } from "./auth.interface";
 import status from "http-status";
 const UserRegister = async (payload: ICreateUser) => {
   const { name, email, password, role, status } = payload;
@@ -113,8 +113,63 @@ const getMe = async (user: IRequestUser) => {
   return isUserExists;
 };
 
+
+const changePassword = async (payload : IChangePasswordPayload, sessionToken : string) =>{
+    const session = await auth.api.getSession({
+        headers : new Headers({
+            Authorization : `Bearer ${sessionToken}`
+        })
+    })
+
+    if(!session){
+        throw new AppError(status.UNAUTHORIZED, "Invalid session token");
+    }
+
+    const {currentPassword, newPassword} = payload;
+
+    const result = await auth.api.changePassword({
+        body :{
+            currentPassword,
+            newPassword,
+            revokeOtherSessions: true,
+        },
+        headers : new Headers({
+            Authorization : `Bearer ${sessionToken}`
+        })
+    })
+
+      const accessToken = tokenUtils.getAccessToken({
+        userId: session.user.id,
+        role: session.user.role,
+        name: session.user.name,
+        email: session.user.email,
+        status: session.user.status,
+        isDeleted: session.user.isDeleted,
+        emailVerified: session.user.emailVerified,
+    });
+
+    const refreshToken = tokenUtils.getRefreshToken({
+        userId: session.user.id,
+        role: session.user.role,
+        name: session.user.name,
+        email: session.user.email,
+        status: session.user.status,
+        isDeleted: session.user.isDeleted,
+        emailVerified: session.user.emailVerified,
+    });
+
+
+
+    return {
+        ...result,
+        accessToken,
+        refreshToken,
+    }
+  }
+
 export const AuthService = {
   UserRegister,
   loginUser,
   getMe,
+  changePassword
 };
