@@ -87,7 +87,7 @@ CREATE TABLE "Event" (
     "date" TIMESTAMP(3) NOT NULL,
     "time" TEXT NOT NULL,
     "venue" TEXT NOT NULL,
-    "type" "EventType" NOT NULL,
+    "visibility" "EventType" NOT NULL DEFAULT 'PUBLIC',
     "fee" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "organizerId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

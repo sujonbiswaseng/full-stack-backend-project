@@ -5,9 +5,8 @@ model Event {
   date         DateTime
   time         String
   venue        String
-  type         EventType
+  visibility         EventType @default(PUBLIC)
   fee          Float    @default(0)
-
   organizerId  String
   organizer    User     @relation("UserEvents", fields: [organizerId], references: [id])
 
