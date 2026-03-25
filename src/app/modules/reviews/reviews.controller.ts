@@ -50,8 +50,20 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
             })
 }
 )
+
+const getAllreviews=catchAsync(async (req: Request, res: Response) => {
+    const result = await ReviewsServices.getAllreviews()
+    sendResponse(res,{
+        httpStatusCode:status.OK,
+        success:true,
+        message:"retrieve all reviews successfully",
+        data:result
+    })
+}
+)
 export const ReviewsControllers={
     CreateReviews,
     updateReview,
-    deleteReview
+    deleteReview,
+    getAllreviews
 }

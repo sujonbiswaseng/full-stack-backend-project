@@ -234,6 +234,8 @@ export type ReviewWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Review"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  parent?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
+  replies?: Prisma.ReviewListRelationFilter
 }
 
 export type ReviewOrderByWithRelationInput = {
@@ -246,6 +248,8 @@ export type ReviewOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   event?: Prisma.EventOrderByWithRelationInput
+  parent?: Prisma.ReviewOrderByWithRelationInput
+  replies?: Prisma.ReviewOrderByRelationAggregateInput
 }
 
 export type ReviewWhereUniqueInput = Prisma.AtLeast<{
@@ -261,6 +265,8 @@ export type ReviewWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Review"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  parent?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
+  replies?: Prisma.ReviewListRelationFilter
 }, "id">
 
 export type ReviewOrderByWithAggregationInput = {
@@ -295,10 +301,11 @@ export type ReviewCreateInput = {
   id?: string
   rating: number
   comment: string
-  parentId?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutReviewsInput
   event: Prisma.EventCreateNestedOneWithoutReviewsInput
+  parent?: Prisma.ReviewCreateNestedOneWithoutRepliesInput
+  replies?: Prisma.ReviewCreateNestedManyWithoutParentInput
 }
 
 export type ReviewUncheckedCreateInput = {
@@ -309,16 +316,18 @@ export type ReviewUncheckedCreateInput = {
   comment: string
   parentId?: string | null
   createdAt?: Date | string
+  replies?: Prisma.ReviewUncheckedCreateNestedManyWithoutParentInput
 }
 
 export type ReviewUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutReviewsNestedInput
   event?: Prisma.EventUpdateOneRequiredWithoutReviewsNestedInput
+  parent?: Prisma.ReviewUpdateOneWithoutRepliesNestedInput
+  replies?: Prisma.ReviewUpdateManyWithoutParentNestedInput
 }
 
 export type ReviewUncheckedUpdateInput = {
@@ -329,6 +338,7 @@ export type ReviewUncheckedUpdateInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  replies?: Prisma.ReviewUncheckedUpdateManyWithoutParentNestedInput
 }
 
 export type ReviewCreateManyInput = {
@@ -345,7 +355,6 @@ export type ReviewUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -367,6 +376,11 @@ export type ReviewListRelationFilter = {
 
 export type ReviewOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ReviewNullableScalarRelationFilter = {
+  is?: Prisma.ReviewWhereInput | null
+  isNot?: Prisma.ReviewWhereInput | null
 }
 
 export type ReviewCountOrderByAggregateInput = {
@@ -491,6 +505,26 @@ export type ReviewUncheckedUpdateManyWithoutEventNestedInput = {
   deleteMany?: Prisma.ReviewScalarWhereInput | Prisma.ReviewScalarWhereInput[]
 }
 
+export type ReviewCreateNestedOneWithoutRepliesInput = {
+  create?: Prisma.XOR<Prisma.ReviewCreateWithoutRepliesInput, Prisma.ReviewUncheckedCreateWithoutRepliesInput>
+  connectOrCreate?: Prisma.ReviewCreateOrConnectWithoutRepliesInput
+  connect?: Prisma.ReviewWhereUniqueInput
+}
+
+export type ReviewCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ReviewCreateWithoutParentInput, Prisma.ReviewUncheckedCreateWithoutParentInput> | Prisma.ReviewCreateWithoutParentInput[] | Prisma.ReviewUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReviewCreateOrConnectWithoutParentInput | Prisma.ReviewCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ReviewCreateManyParentInputEnvelope
+  connect?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+}
+
+export type ReviewUncheckedCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ReviewCreateWithoutParentInput, Prisma.ReviewUncheckedCreateWithoutParentInput> | Prisma.ReviewCreateWithoutParentInput[] | Prisma.ReviewUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReviewCreateOrConnectWithoutParentInput | Prisma.ReviewCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ReviewCreateManyParentInputEnvelope
+  connect?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+}
+
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
@@ -499,13 +533,52 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type ReviewUpdateOneWithoutRepliesNestedInput = {
+  create?: Prisma.XOR<Prisma.ReviewCreateWithoutRepliesInput, Prisma.ReviewUncheckedCreateWithoutRepliesInput>
+  connectOrCreate?: Prisma.ReviewCreateOrConnectWithoutRepliesInput
+  upsert?: Prisma.ReviewUpsertWithoutRepliesInput
+  disconnect?: Prisma.ReviewWhereInput | boolean
+  delete?: Prisma.ReviewWhereInput | boolean
+  connect?: Prisma.ReviewWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ReviewUpdateToOneWithWhereWithoutRepliesInput, Prisma.ReviewUpdateWithoutRepliesInput>, Prisma.ReviewUncheckedUpdateWithoutRepliesInput>
+}
+
+export type ReviewUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ReviewCreateWithoutParentInput, Prisma.ReviewUncheckedCreateWithoutParentInput> | Prisma.ReviewCreateWithoutParentInput[] | Prisma.ReviewUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReviewCreateOrConnectWithoutParentInput | Prisma.ReviewCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ReviewUpsertWithWhereUniqueWithoutParentInput | Prisma.ReviewUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ReviewCreateManyParentInputEnvelope
+  set?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  disconnect?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  delete?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  connect?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  update?: Prisma.ReviewUpdateWithWhereUniqueWithoutParentInput | Prisma.ReviewUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ReviewUpdateManyWithWhereWithoutParentInput | Prisma.ReviewUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ReviewScalarWhereInput | Prisma.ReviewScalarWhereInput[]
+}
+
+export type ReviewUncheckedUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ReviewCreateWithoutParentInput, Prisma.ReviewUncheckedCreateWithoutParentInput> | Prisma.ReviewCreateWithoutParentInput[] | Prisma.ReviewUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReviewCreateOrConnectWithoutParentInput | Prisma.ReviewCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ReviewUpsertWithWhereUniqueWithoutParentInput | Prisma.ReviewUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ReviewCreateManyParentInputEnvelope
+  set?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  disconnect?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  delete?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  connect?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
+  update?: Prisma.ReviewUpdateWithWhereUniqueWithoutParentInput | Prisma.ReviewUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ReviewUpdateManyWithWhereWithoutParentInput | Prisma.ReviewUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ReviewScalarWhereInput | Prisma.ReviewScalarWhereInput[]
+}
+
 export type ReviewCreateWithoutUserInput = {
   id?: string
   rating: number
   comment: string
-  parentId?: string | null
   createdAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutReviewsInput
+  parent?: Prisma.ReviewCreateNestedOneWithoutRepliesInput
+  replies?: Prisma.ReviewCreateNestedManyWithoutParentInput
 }
 
 export type ReviewUncheckedCreateWithoutUserInput = {
@@ -515,6 +588,7 @@ export type ReviewUncheckedCreateWithoutUserInput = {
   comment: string
   parentId?: string | null
   createdAt?: Date | string
+  replies?: Prisma.ReviewUncheckedCreateNestedManyWithoutParentInput
 }
 
 export type ReviewCreateOrConnectWithoutUserInput = {
@@ -560,9 +634,10 @@ export type ReviewCreateWithoutEventInput = {
   id?: string
   rating: number
   comment: string
-  parentId?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutReviewsInput
+  parent?: Prisma.ReviewCreateNestedOneWithoutRepliesInput
+  replies?: Prisma.ReviewCreateNestedManyWithoutParentInput
 }
 
 export type ReviewUncheckedCreateWithoutEventInput = {
@@ -572,6 +647,7 @@ export type ReviewUncheckedCreateWithoutEventInput = {
   comment: string
   parentId?: string | null
   createdAt?: Date | string
+  replies?: Prisma.ReviewUncheckedCreateNestedManyWithoutParentInput
 }
 
 export type ReviewCreateOrConnectWithoutEventInput = {
@@ -600,6 +676,108 @@ export type ReviewUpdateManyWithWhereWithoutEventInput = {
   data: Prisma.XOR<Prisma.ReviewUpdateManyMutationInput, Prisma.ReviewUncheckedUpdateManyWithoutEventInput>
 }
 
+export type ReviewCreateWithoutRepliesInput = {
+  id?: string
+  rating: number
+  comment: string
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutReviewsInput
+  event: Prisma.EventCreateNestedOneWithoutReviewsInput
+  parent?: Prisma.ReviewCreateNestedOneWithoutRepliesInput
+}
+
+export type ReviewUncheckedCreateWithoutRepliesInput = {
+  id?: string
+  userId: string
+  eventId: string
+  rating: number
+  comment: string
+  parentId?: string | null
+  createdAt?: Date | string
+}
+
+export type ReviewCreateOrConnectWithoutRepliesInput = {
+  where: Prisma.ReviewWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReviewCreateWithoutRepliesInput, Prisma.ReviewUncheckedCreateWithoutRepliesInput>
+}
+
+export type ReviewCreateWithoutParentInput = {
+  id?: string
+  rating: number
+  comment: string
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutReviewsInput
+  event: Prisma.EventCreateNestedOneWithoutReviewsInput
+  replies?: Prisma.ReviewCreateNestedManyWithoutParentInput
+}
+
+export type ReviewUncheckedCreateWithoutParentInput = {
+  id?: string
+  userId: string
+  eventId: string
+  rating: number
+  comment: string
+  createdAt?: Date | string
+  replies?: Prisma.ReviewUncheckedCreateNestedManyWithoutParentInput
+}
+
+export type ReviewCreateOrConnectWithoutParentInput = {
+  where: Prisma.ReviewWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReviewCreateWithoutParentInput, Prisma.ReviewUncheckedCreateWithoutParentInput>
+}
+
+export type ReviewCreateManyParentInputEnvelope = {
+  data: Prisma.ReviewCreateManyParentInput | Prisma.ReviewCreateManyParentInput[]
+  skipDuplicates?: boolean
+}
+
+export type ReviewUpsertWithoutRepliesInput = {
+  update: Prisma.XOR<Prisma.ReviewUpdateWithoutRepliesInput, Prisma.ReviewUncheckedUpdateWithoutRepliesInput>
+  create: Prisma.XOR<Prisma.ReviewCreateWithoutRepliesInput, Prisma.ReviewUncheckedCreateWithoutRepliesInput>
+  where?: Prisma.ReviewWhereInput
+}
+
+export type ReviewUpdateToOneWithWhereWithoutRepliesInput = {
+  where?: Prisma.ReviewWhereInput
+  data: Prisma.XOR<Prisma.ReviewUpdateWithoutRepliesInput, Prisma.ReviewUncheckedUpdateWithoutRepliesInput>
+}
+
+export type ReviewUpdateWithoutRepliesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutReviewsNestedInput
+  event?: Prisma.EventUpdateOneRequiredWithoutReviewsNestedInput
+  parent?: Prisma.ReviewUpdateOneWithoutRepliesNestedInput
+}
+
+export type ReviewUncheckedUpdateWithoutRepliesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ReviewUpsertWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ReviewWhereUniqueInput
+  update: Prisma.XOR<Prisma.ReviewUpdateWithoutParentInput, Prisma.ReviewUncheckedUpdateWithoutParentInput>
+  create: Prisma.XOR<Prisma.ReviewCreateWithoutParentInput, Prisma.ReviewUncheckedCreateWithoutParentInput>
+}
+
+export type ReviewUpdateWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ReviewWhereUniqueInput
+  data: Prisma.XOR<Prisma.ReviewUpdateWithoutParentInput, Prisma.ReviewUncheckedUpdateWithoutParentInput>
+}
+
+export type ReviewUpdateManyWithWhereWithoutParentInput = {
+  where: Prisma.ReviewScalarWhereInput
+  data: Prisma.XOR<Prisma.ReviewUpdateManyMutationInput, Prisma.ReviewUncheckedUpdateManyWithoutParentInput>
+}
+
 export type ReviewCreateManyUserInput = {
   id?: string
   eventId: string
@@ -613,9 +791,10 @@ export type ReviewUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutReviewsNestedInput
+  parent?: Prisma.ReviewUpdateOneWithoutRepliesNestedInput
+  replies?: Prisma.ReviewUpdateManyWithoutParentNestedInput
 }
 
 export type ReviewUncheckedUpdateWithoutUserInput = {
@@ -625,6 +804,7 @@ export type ReviewUncheckedUpdateWithoutUserInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  replies?: Prisma.ReviewUncheckedUpdateManyWithoutParentNestedInput
 }
 
 export type ReviewUncheckedUpdateManyWithoutUserInput = {
@@ -649,9 +829,10 @@ export type ReviewUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutReviewsNestedInput
+  parent?: Prisma.ReviewUpdateOneWithoutRepliesNestedInput
+  replies?: Prisma.ReviewUpdateManyWithoutParentNestedInput
 }
 
 export type ReviewUncheckedUpdateWithoutEventInput = {
@@ -661,6 +842,7 @@ export type ReviewUncheckedUpdateWithoutEventInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  replies?: Prisma.ReviewUncheckedUpdateManyWithoutParentNestedInput
 }
 
 export type ReviewUncheckedUpdateManyWithoutEventInput = {
@@ -672,6 +854,73 @@ export type ReviewUncheckedUpdateManyWithoutEventInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type ReviewCreateManyParentInput = {
+  id?: string
+  userId: string
+  eventId: string
+  rating: number
+  comment: string
+  createdAt?: Date | string
+}
+
+export type ReviewUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutReviewsNestedInput
+  event?: Prisma.EventUpdateOneRequiredWithoutReviewsNestedInput
+  replies?: Prisma.ReviewUpdateManyWithoutParentNestedInput
+}
+
+export type ReviewUncheckedUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  replies?: Prisma.ReviewUncheckedUpdateManyWithoutParentNestedInput
+}
+
+export type ReviewUncheckedUpdateManyWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type ReviewCountOutputType
+ */
+
+export type ReviewCountOutputType = {
+  replies: number
+}
+
+export type ReviewCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  replies?: boolean | ReviewCountOutputTypeCountRepliesArgs
+}
+
+/**
+ * ReviewCountOutputType without action
+ */
+export type ReviewCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReviewCountOutputType
+   */
+  select?: Prisma.ReviewCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ReviewCountOutputType without action
+ */
+export type ReviewCountOutputTypeCountRepliesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReviewWhereInput
+}
 
 
 export type ReviewSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -684,6 +933,9 @@ export type ReviewSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  parent?: boolean | Prisma.Review$parentArgs<ExtArgs>
+  replies?: boolean | Prisma.Review$repliesArgs<ExtArgs>
+  _count?: boolean | Prisma.ReviewCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["review"]>
 
 export type ReviewSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -696,6 +948,7 @@ export type ReviewSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  parent?: boolean | Prisma.Review$parentArgs<ExtArgs>
 }, ExtArgs["result"]["review"]>
 
 export type ReviewSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -708,6 +961,7 @@ export type ReviewSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  parent?: boolean | Prisma.Review$parentArgs<ExtArgs>
 }, ExtArgs["result"]["review"]>
 
 export type ReviewSelectScalar = {
@@ -724,14 +978,19 @@ export type ReviewOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type ReviewInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  parent?: boolean | Prisma.Review$parentArgs<ExtArgs>
+  replies?: boolean | Prisma.Review$repliesArgs<ExtArgs>
+  _count?: boolean | Prisma.ReviewCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReviewIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  parent?: boolean | Prisma.Review$parentArgs<ExtArgs>
 }
 export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  parent?: boolean | Prisma.Review$parentArgs<ExtArgs>
 }
 
 export type $ReviewPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -739,6 +998,8 @@ export type $ReviewPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     event: Prisma.$EventPayload<ExtArgs>
+    parent: Prisma.$ReviewPayload<ExtArgs> | null
+    replies: Prisma.$ReviewPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1144,6 +1405,8 @@ export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   event<T extends Prisma.EventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventDefaultArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  parent<T extends Prisma.Review$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Review$parentArgs<ExtArgs>>): Prisma.Prisma__ReviewClient<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  replies<T extends Prisma.Review$repliesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Review$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1578,6 +1841,49 @@ export type ReviewDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Reviews to delete.
    */
   limit?: number
+}
+
+/**
+ * Review.parent
+ */
+export type Review$parentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Review
+   */
+  select?: Prisma.ReviewSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Review
+   */
+  omit?: Prisma.ReviewOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewInclude<ExtArgs> | null
+  where?: Prisma.ReviewWhereInput
+}
+
+/**
+ * Review.replies
+ */
+export type Review$repliesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Review
+   */
+  select?: Prisma.ReviewSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Review
+   */
+  omit?: Prisma.ReviewOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewInclude<ExtArgs> | null
+  where?: Prisma.ReviewWhereInput
+  orderBy?: Prisma.ReviewOrderByWithRelationInput | Prisma.ReviewOrderByWithRelationInput[]
+  cursor?: Prisma.ReviewWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReviewScalarFieldEnum | Prisma.ReviewScalarFieldEnum[]
 }
 
 /**

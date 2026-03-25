@@ -83,8 +83,23 @@ const deleteReview = async (reviewid: string) => {
     return result
 }
 
+
+const getAllreviews = async () => {
+    const result = await prisma.review.findMany({
+        include: {
+            user: true,
+            event: true,
+            replies:true
+        }
+    })
+
+    return result
+}
+
+
 export const ReviewsServices={
     CreateReviews,
     updateReview,
-    deleteReview
+    deleteReview,
+    getAllreviews
 }
