@@ -1,3 +1,4 @@
+import { ReviewStatus } from "../../../generated/prisma/enums";
 import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreatereviewData, IUpdatereviewData } from "./reviews.interface";
@@ -97,9 +98,45 @@ const getAllreviews = async () => {
 }
 
 
+
+const moderateReview = async (id: string, data: { status: ReviewStatus }) => {
+    const {status}=data
+
+    const reviewData = await prisma.review.findUnique({
+        where: {
+            id
+        },
+        select: {
+            id: true,
+            status: true
+        }
+    });
+    if (!reviewData) {
+        throw new AppError(404,'review data not found by id')
+    }
+
+    if (reviewData.status === data.status) {
+        throw new AppError(409, `Your provided status (${data.status}) is already up to date.`)
+    }
+
+    const result = await prisma.review.update({
+        where: {
+            id
+        },
+        data:{
+            status
+        }
+    })
+
+    return result
+}
+
+
+
 export const ReviewsServices={
     CreateReviews,
     updateReview,
     deleteReview,
-    getAllreviews
+    getAllreviews,
+    moderateReview
 }

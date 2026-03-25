@@ -3,15 +3,15 @@ model Review {
 
   userId    String
   eventId   String
+  rating    Int      // 1-5
+  comment   String
+  parentId  String?
+  status ReviewStatus @default(APPROVED)
 
   user      User     @relation(fields: [userId], references: [id])
   event     Event    @relation(fields: [eventId], references: [id])
   parent     Review?      @relation("reviewsReply", fields: [parentId], references: [id], onDelete: Cascade)
   replies    Review[]     @relation("reviewsReply")
-
-  rating    Int      // 1-5
-  comment   String
-  parentId  String?
 
   createdAt DateTime @default(now())
 }

@@ -87,3 +87,8 @@ enum InvitationStatus {
   ACCEPTED
   DECLINED
 }
+
+enum ReviewStatus {
+  APPROVED
+  REJECTED
+}

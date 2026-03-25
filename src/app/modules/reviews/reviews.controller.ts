@@ -61,9 +61,22 @@ const getAllreviews=catchAsync(async (req: Request, res: Response) => {
     })
 }
 )
+
+const moderateReview = catchAsync(async (req: Request, res: Response) => {
+        const { reviewid } = req.params;
+        const result = await ReviewsServices.moderateReview(reviewid as string, req.body)
+            sendResponse(res,{
+                httpStatusCode:status.OK,
+                success:true,
+                message:"review moderate successfully",
+                data:result
+                })
+})
+
 export const ReviewsControllers={
     CreateReviews,
     updateReview,
     deleteReview,
-    getAllreviews
+    getAllreviews,
+    moderateReview
 }
