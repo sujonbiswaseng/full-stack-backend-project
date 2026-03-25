@@ -1,15 +1,19 @@
 model Payment {
-  id            String   @id @default(uuid())
+  id String @id @default(uuid())
 
   userId        String
   eventId       String
+  stripeEventId String? @unique
+  transactionId String? @unique @db.Uuid()
+  paymentGatewayData Json?
 
-  user          User     @relation(fields: [userId], references: [id])
-  event         Event    @relation(fields: [eventId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
 
   amount        Float
-  status        PaymentStatus
-  transactionId String?
+  status        PaymentStatus @default(UNPAID)
+  participantId String        @unique
+  participant   Participant   @relation(fields: [participantId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime @default(now())
+  createdAt DateTime @default(now())
 }

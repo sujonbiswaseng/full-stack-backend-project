@@ -10,7 +10,5 @@ model Invitation {
   invitee       User     @relation("Invitee", fields: [inviteeId], references: [id])
 
   status        InvitationStatus @default(PENDING)
-  paymentStatus PaymentStatus    @default(PENDING)
-
   createdAt     DateTime @default(now())
 }

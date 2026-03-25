@@ -92,9 +92,8 @@ export type ParticipantStatus = (typeof ParticipantStatus)[keyof typeof Particip
 
 
 export const PaymentStatus = {
-  PENDING: 'PENDING',
-  SUCCESS: 'SUCCESS',
-  FAILED: 'FAILED',
+  PAID: 'PAID',
+  UNPAID: 'UNPAID',
   FREE: 'FREE'
 } as const
 

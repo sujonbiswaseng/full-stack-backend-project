@@ -11,4 +11,6 @@ router.get("/participants", ParticipantControllers.getAllParticipants);
 router.get("/participant/:id", ParticipantControllers.getSingleParticipant);
 router.put("/participant/:id",auth([Role.ADMIN]),ParticipantControllers.updateParticipant);
 router.delete("/participant/:id",auth([Role.ADMIN]),ParticipantControllers.deleteParticipant);
+router.post("/participant-with-pay-later", auth([Role.USER]), ParticipantControllers.ParticipantCreateWithPayLater);
+router.post("/initiate-payment/:id", auth([Role.USER]), ParticipantControllers.initiatePayment);
 export const ParticipantRoutes=router;

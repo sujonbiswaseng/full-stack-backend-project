@@ -192,6 +192,7 @@ export type ParticipantWhereInput = {
   joinedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
 }
 
 export type ParticipantOrderByWithRelationInput = {
@@ -203,6 +204,7 @@ export type ParticipantOrderByWithRelationInput = {
   joinedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   event?: Prisma.EventOrderByWithRelationInput
+  payment?: Prisma.PaymentOrderByWithRelationInput
 }
 
 export type ParticipantWhereUniqueInput = Prisma.AtLeast<{
@@ -217,6 +219,7 @@ export type ParticipantWhereUniqueInput = Prisma.AtLeast<{
   joinedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
 }, "id">
 
 export type ParticipantOrderByWithAggregationInput = {
@@ -250,6 +253,7 @@ export type ParticipantCreateInput = {
   joinedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutParticipantsInput
   event: Prisma.EventCreateNestedOneWithoutParticipantsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantUncheckedCreateInput = {
@@ -259,6 +263,7 @@ export type ParticipantUncheckedCreateInput = {
   status?: $Enums.ParticipantStatus
   paymentStatus?: $Enums.PaymentStatus
   joinedAt?: Date | string
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantUpdateInput = {
@@ -268,6 +273,7 @@ export type ParticipantUpdateInput = {
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutParticipantsNestedInput
   event?: Prisma.EventUpdateOneRequiredWithoutParticipantsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantUncheckedUpdateInput = {
@@ -277,6 +283,7 @@ export type ParticipantUncheckedUpdateInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantCreateManyInput = {
@@ -339,6 +346,11 @@ export type ParticipantMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+}
+
+export type ParticipantScalarRelationFilter = {
+  is?: Prisma.ParticipantWhereInput
+  isNot?: Prisma.ParticipantWhereInput
 }
 
 export type ParticipantCreateNestedManyWithoutUserInput = {
@@ -429,12 +441,31 @@ export type EnumParticipantStatusFieldUpdateOperationsInput = {
   set?: $Enums.ParticipantStatus
 }
 
+export type EnumPaymentStatusFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentStatus
+}
+
+export type ParticipantCreateNestedOneWithoutPaymentInput = {
+  create?: Prisma.XOR<Prisma.ParticipantCreateWithoutPaymentInput, Prisma.ParticipantUncheckedCreateWithoutPaymentInput>
+  connectOrCreate?: Prisma.ParticipantCreateOrConnectWithoutPaymentInput
+  connect?: Prisma.ParticipantWhereUniqueInput
+}
+
+export type ParticipantUpdateOneRequiredWithoutPaymentNestedInput = {
+  create?: Prisma.XOR<Prisma.ParticipantCreateWithoutPaymentInput, Prisma.ParticipantUncheckedCreateWithoutPaymentInput>
+  connectOrCreate?: Prisma.ParticipantCreateOrConnectWithoutPaymentInput
+  upsert?: Prisma.ParticipantUpsertWithoutPaymentInput
+  connect?: Prisma.ParticipantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ParticipantUpdateToOneWithWhereWithoutPaymentInput, Prisma.ParticipantUpdateWithoutPaymentInput>, Prisma.ParticipantUncheckedUpdateWithoutPaymentInput>
+}
+
 export type ParticipantCreateWithoutUserInput = {
   id?: string
   status?: $Enums.ParticipantStatus
   paymentStatus?: $Enums.PaymentStatus
   joinedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutParticipantsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantUncheckedCreateWithoutUserInput = {
@@ -443,6 +474,7 @@ export type ParticipantUncheckedCreateWithoutUserInput = {
   status?: $Enums.ParticipantStatus
   paymentStatus?: $Enums.PaymentStatus
   joinedAt?: Date | string
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantCreateOrConnectWithoutUserInput = {
@@ -489,6 +521,7 @@ export type ParticipantCreateWithoutEventInput = {
   paymentStatus?: $Enums.PaymentStatus
   joinedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutParticipantsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantUncheckedCreateWithoutEventInput = {
@@ -497,6 +530,7 @@ export type ParticipantUncheckedCreateWithoutEventInput = {
   status?: $Enums.ParticipantStatus
   paymentStatus?: $Enums.PaymentStatus
   joinedAt?: Date | string
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantCreateOrConnectWithoutEventInput = {
@@ -525,6 +559,58 @@ export type ParticipantUpdateManyWithWhereWithoutEventInput = {
   data: Prisma.XOR<Prisma.ParticipantUpdateManyMutationInput, Prisma.ParticipantUncheckedUpdateManyWithoutEventInput>
 }
 
+export type ParticipantCreateWithoutPaymentInput = {
+  id?: string
+  status?: $Enums.ParticipantStatus
+  paymentStatus?: $Enums.PaymentStatus
+  joinedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutParticipantsInput
+  event: Prisma.EventCreateNestedOneWithoutParticipantsInput
+}
+
+export type ParticipantUncheckedCreateWithoutPaymentInput = {
+  id?: string
+  userId: string
+  eventId: string
+  status?: $Enums.ParticipantStatus
+  paymentStatus?: $Enums.PaymentStatus
+  joinedAt?: Date | string
+}
+
+export type ParticipantCreateOrConnectWithoutPaymentInput = {
+  where: Prisma.ParticipantWhereUniqueInput
+  create: Prisma.XOR<Prisma.ParticipantCreateWithoutPaymentInput, Prisma.ParticipantUncheckedCreateWithoutPaymentInput>
+}
+
+export type ParticipantUpsertWithoutPaymentInput = {
+  update: Prisma.XOR<Prisma.ParticipantUpdateWithoutPaymentInput, Prisma.ParticipantUncheckedUpdateWithoutPaymentInput>
+  create: Prisma.XOR<Prisma.ParticipantCreateWithoutPaymentInput, Prisma.ParticipantUncheckedCreateWithoutPaymentInput>
+  where?: Prisma.ParticipantWhereInput
+}
+
+export type ParticipantUpdateToOneWithWhereWithoutPaymentInput = {
+  where?: Prisma.ParticipantWhereInput
+  data: Prisma.XOR<Prisma.ParticipantUpdateWithoutPaymentInput, Prisma.ParticipantUncheckedUpdateWithoutPaymentInput>
+}
+
+export type ParticipantUpdateWithoutPaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
+  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutParticipantsNestedInput
+  event?: Prisma.EventUpdateOneRequiredWithoutParticipantsNestedInput
+}
+
+export type ParticipantUncheckedUpdateWithoutPaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
+  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ParticipantCreateManyUserInput = {
   id?: string
   eventId: string
@@ -539,6 +625,7 @@ export type ParticipantUpdateWithoutUserInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutParticipantsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantUncheckedUpdateWithoutUserInput = {
@@ -547,6 +634,7 @@ export type ParticipantUncheckedUpdateWithoutUserInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantUncheckedUpdateManyWithoutUserInput = {
@@ -571,6 +659,7 @@ export type ParticipantUpdateWithoutEventInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutParticipantsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantUncheckedUpdateWithoutEventInput = {
@@ -579,6 +668,7 @@ export type ParticipantUncheckedUpdateWithoutEventInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantUncheckedUpdateManyWithoutEventInput = {
@@ -600,6 +690,7 @@ export type ParticipantSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   joinedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  payment?: boolean | Prisma.Participant$paymentArgs<ExtArgs>
 }, ExtArgs["result"]["participant"]>
 
 export type ParticipantSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -637,6 +728,7 @@ export type ParticipantOmit<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type ParticipantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  payment?: boolean | Prisma.Participant$paymentArgs<ExtArgs>
 }
 export type ParticipantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -652,6 +744,7 @@ export type $ParticipantPayload<ExtArgs extends runtime.Types.Extensions.Interna
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     event: Prisma.$EventPayload<ExtArgs>
+    payment: Prisma.$PaymentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1056,6 +1149,7 @@ export interface Prisma__ParticipantClient<T, Null = never, ExtArgs extends runt
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   event<T extends Prisma.EventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventDefaultArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  payment<T extends Prisma.Participant$paymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Participant$paymentArgs<ExtArgs>>): Prisma.Prisma__PaymentClient<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1489,6 +1583,25 @@ export type ParticipantDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many Participants to delete.
    */
   limit?: number
+}
+
+/**
+ * Participant.payment
+ */
+export type Participant$paymentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
 }
 
 /**

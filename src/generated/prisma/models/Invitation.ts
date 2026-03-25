@@ -30,7 +30,6 @@ export type InvitationMinAggregateOutputType = {
   inviterId: string | null
   inviteeId: string | null
   status: $Enums.InvitationStatus | null
-  paymentStatus: $Enums.PaymentStatus | null
   createdAt: Date | null
 }
 
@@ -40,7 +39,6 @@ export type InvitationMaxAggregateOutputType = {
   inviterId: string | null
   inviteeId: string | null
   status: $Enums.InvitationStatus | null
-  paymentStatus: $Enums.PaymentStatus | null
   createdAt: Date | null
 }
 
@@ -50,7 +48,6 @@ export type InvitationCountAggregateOutputType = {
   inviterId: number
   inviteeId: number
   status: number
-  paymentStatus: number
   createdAt: number
   _all: number
 }
@@ -62,7 +59,6 @@ export type InvitationMinAggregateInputType = {
   inviterId?: true
   inviteeId?: true
   status?: true
-  paymentStatus?: true
   createdAt?: true
 }
 
@@ -72,7 +68,6 @@ export type InvitationMaxAggregateInputType = {
   inviterId?: true
   inviteeId?: true
   status?: true
-  paymentStatus?: true
   createdAt?: true
 }
 
@@ -82,7 +77,6 @@ export type InvitationCountAggregateInputType = {
   inviterId?: true
   inviteeId?: true
   status?: true
-  paymentStatus?: true
   createdAt?: true
   _all?: true
 }
@@ -165,7 +159,6 @@ export type InvitationGroupByOutputType = {
   inviterId: string
   inviteeId: string
   status: $Enums.InvitationStatus
-  paymentStatus: $Enums.PaymentStatus
   createdAt: Date
   _count: InvitationCountAggregateOutputType | null
   _min: InvitationMinAggregateOutputType | null
@@ -196,7 +189,6 @@ export type InvitationWhereInput = {
   inviterId?: Prisma.StringFilter<"Invitation"> | string
   inviteeId?: Prisma.StringFilter<"Invitation"> | string
   status?: Prisma.EnumInvitationStatusFilter<"Invitation"> | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFilter<"Invitation"> | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFilter<"Invitation"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
   inviter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -209,7 +201,6 @@ export type InvitationOrderByWithRelationInput = {
   inviterId?: Prisma.SortOrder
   inviteeId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paymentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   event?: Prisma.EventOrderByWithRelationInput
   inviter?: Prisma.UserOrderByWithRelationInput
@@ -225,7 +216,6 @@ export type InvitationWhereUniqueInput = Prisma.AtLeast<{
   inviterId?: Prisma.StringFilter<"Invitation"> | string
   inviteeId?: Prisma.StringFilter<"Invitation"> | string
   status?: Prisma.EnumInvitationStatusFilter<"Invitation"> | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFilter<"Invitation"> | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFilter<"Invitation"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
   inviter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -238,7 +228,6 @@ export type InvitationOrderByWithAggregationInput = {
   inviterId?: Prisma.SortOrder
   inviteeId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paymentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.InvitationCountOrderByAggregateInput
   _max?: Prisma.InvitationMaxOrderByAggregateInput
@@ -254,14 +243,12 @@ export type InvitationScalarWhereWithAggregatesInput = {
   inviterId?: Prisma.StringWithAggregatesFilter<"Invitation"> | string
   inviteeId?: Prisma.StringWithAggregatesFilter<"Invitation"> | string
   status?: Prisma.EnumInvitationStatusWithAggregatesFilter<"Invitation"> | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusWithAggregatesFilter<"Invitation"> | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Invitation"> | Date | string
 }
 
 export type InvitationCreateInput = {
   id?: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutInvitationsInput
   inviter: Prisma.UserCreateNestedOneWithoutInvitationsSentInput
@@ -274,14 +261,12 @@ export type InvitationUncheckedCreateInput = {
   inviterId: string
   inviteeId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
 export type InvitationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutInvitationsNestedInput
   inviter?: Prisma.UserUpdateOneRequiredWithoutInvitationsSentNestedInput
@@ -294,7 +279,6 @@ export type InvitationUncheckedUpdateInput = {
   inviterId?: Prisma.StringFieldUpdateOperationsInput | string
   inviteeId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -304,14 +288,12 @@ export type InvitationCreateManyInput = {
   inviterId: string
   inviteeId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
 export type InvitationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -321,7 +303,6 @@ export type InvitationUncheckedUpdateManyInput = {
   inviterId?: Prisma.StringFieldUpdateOperationsInput | string
   inviteeId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -341,7 +322,6 @@ export type InvitationCountOrderByAggregateInput = {
   inviterId?: Prisma.SortOrder
   inviteeId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paymentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -351,7 +331,6 @@ export type InvitationMaxOrderByAggregateInput = {
   inviterId?: Prisma.SortOrder
   inviteeId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paymentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -361,7 +340,6 @@ export type InvitationMinOrderByAggregateInput = {
   inviterId?: Prisma.SortOrder
   inviteeId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paymentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -495,14 +473,9 @@ export type EnumInvitationStatusFieldUpdateOperationsInput = {
   set?: $Enums.InvitationStatus
 }
 
-export type EnumPaymentStatusFieldUpdateOperationsInput = {
-  set?: $Enums.PaymentStatus
-}
-
 export type InvitationCreateWithoutInviterInput = {
   id?: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutInvitationsInput
   invitee: Prisma.UserCreateNestedOneWithoutInvitationsReceivedInput
@@ -513,7 +486,6 @@ export type InvitationUncheckedCreateWithoutInviterInput = {
   eventId: string
   inviteeId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
@@ -530,7 +502,6 @@ export type InvitationCreateManyInviterInputEnvelope = {
 export type InvitationCreateWithoutInviteeInput = {
   id?: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutInvitationsInput
   inviter: Prisma.UserCreateNestedOneWithoutInvitationsSentInput
@@ -541,7 +512,6 @@ export type InvitationUncheckedCreateWithoutInviteeInput = {
   eventId: string
   inviterId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
@@ -580,7 +550,6 @@ export type InvitationScalarWhereInput = {
   inviterId?: Prisma.StringFilter<"Invitation"> | string
   inviteeId?: Prisma.StringFilter<"Invitation"> | string
   status?: Prisma.EnumInvitationStatusFilter<"Invitation"> | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFilter<"Invitation"> | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFilter<"Invitation"> | Date | string
 }
 
@@ -603,7 +572,6 @@ export type InvitationUpdateManyWithWhereWithoutInviteeInput = {
 export type InvitationCreateWithoutEventInput = {
   id?: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
   inviter: Prisma.UserCreateNestedOneWithoutInvitationsSentInput
   invitee: Prisma.UserCreateNestedOneWithoutInvitationsReceivedInput
@@ -614,7 +582,6 @@ export type InvitationUncheckedCreateWithoutEventInput = {
   inviterId: string
   inviteeId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
@@ -649,7 +616,6 @@ export type InvitationCreateManyInviterInput = {
   eventId: string
   inviteeId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
@@ -658,14 +624,12 @@ export type InvitationCreateManyInviteeInput = {
   eventId: string
   inviterId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
 export type InvitationUpdateWithoutInviterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutInvitationsNestedInput
   invitee?: Prisma.UserUpdateOneRequiredWithoutInvitationsReceivedNestedInput
@@ -676,7 +640,6 @@ export type InvitationUncheckedUpdateWithoutInviterInput = {
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   inviteeId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -685,14 +648,12 @@ export type InvitationUncheckedUpdateManyWithoutInviterInput = {
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   inviteeId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type InvitationUpdateWithoutInviteeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutInvitationsNestedInput
   inviter?: Prisma.UserUpdateOneRequiredWithoutInvitationsSentNestedInput
@@ -703,7 +664,6 @@ export type InvitationUncheckedUpdateWithoutInviteeInput = {
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   inviterId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -712,7 +672,6 @@ export type InvitationUncheckedUpdateManyWithoutInviteeInput = {
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   inviterId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -721,14 +680,12 @@ export type InvitationCreateManyEventInput = {
   inviterId: string
   inviteeId: string
   status?: $Enums.InvitationStatus
-  paymentStatus?: $Enums.PaymentStatus
   createdAt?: Date | string
 }
 
 export type InvitationUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inviter?: Prisma.UserUpdateOneRequiredWithoutInvitationsSentNestedInput
   invitee?: Prisma.UserUpdateOneRequiredWithoutInvitationsReceivedNestedInput
@@ -739,7 +696,6 @@ export type InvitationUncheckedUpdateWithoutEventInput = {
   inviterId?: Prisma.StringFieldUpdateOperationsInput | string
   inviteeId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -748,7 +704,6 @@ export type InvitationUncheckedUpdateManyWithoutEventInput = {
   inviterId?: Prisma.StringFieldUpdateOperationsInput | string
   inviteeId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvitationStatusFieldUpdateOperationsInput | $Enums.InvitationStatus
-  paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -760,7 +715,6 @@ export type InvitationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   inviterId?: boolean
   inviteeId?: boolean
   status?: boolean
-  paymentStatus?: boolean
   createdAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
   inviter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -773,7 +727,6 @@ export type InvitationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   inviterId?: boolean
   inviteeId?: boolean
   status?: boolean
-  paymentStatus?: boolean
   createdAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
   inviter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -786,7 +739,6 @@ export type InvitationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   inviterId?: boolean
   inviteeId?: boolean
   status?: boolean
-  paymentStatus?: boolean
   createdAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
   inviter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -799,11 +751,10 @@ export type InvitationSelectScalar = {
   inviterId?: boolean
   inviteeId?: boolean
   status?: boolean
-  paymentStatus?: boolean
   createdAt?: boolean
 }
 
-export type InvitationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "inviterId" | "inviteeId" | "status" | "paymentStatus" | "createdAt", ExtArgs["result"]["invitation"]>
+export type InvitationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "inviterId" | "inviteeId" | "status" | "createdAt", ExtArgs["result"]["invitation"]>
 export type InvitationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
   inviter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -833,7 +784,6 @@ export type $InvitationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     inviterId: string
     inviteeId: string
     status: $Enums.InvitationStatus
-    paymentStatus: $Enums.PaymentStatus
     createdAt: Date
   }, ExtArgs["result"]["invitation"]>
   composites: {}
@@ -1266,7 +1216,6 @@ export interface InvitationFieldRefs {
   readonly inviterId: Prisma.FieldRef<"Invitation", 'String'>
   readonly inviteeId: Prisma.FieldRef<"Invitation", 'String'>
   readonly status: Prisma.FieldRef<"Invitation", 'InvitationStatus'>
-  readonly paymentStatus: Prisma.FieldRef<"Invitation", 'PaymentStatus'>
   readonly createdAt: Prisma.FieldRef<"Invitation", 'DateTime'>
 }
     

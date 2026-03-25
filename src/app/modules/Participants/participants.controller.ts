@@ -64,4 +64,31 @@ const deleteParticipant = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant}
+
+const ParticipantCreateWithPayLater = catchAsync(async (req: Request, res: Response) => {
+    const payload = req.body;
+    const user = req.user;
+    const id=req.params.id
+    const appointment = await ParticipantService.createParticipantPayLater(user.userId,id as string,payload);
+    sendResponse(res, {
+        success: true,  
+        httpStatusCode: status.CREATED,
+        message: 'participant create with pay later successfully',
+        data: appointment
+    });
+});
+
+
+const initiatePayment = catchAsync(async (req: Request, res: Response) => {
+    const eventId = req.params.id;
+    const user = req.user;
+    const paymentInfo = await ParticipantService.initiatePayment(eventId as string, user);
+
+    sendResponse(res, {
+        success: true,
+        httpStatusCode: status.OK,
+        message: 'Payment initiated successfully',
+        data: paymentInfo
+    });
+});
+export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant,ParticipantCreateWithPayLater,initiatePayment}

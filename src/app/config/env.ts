@@ -7,6 +7,7 @@ dotenv.config();
 interface EnvConfig {
   NODE_ENV?: string;
   PORT: string;
+  FRONTEND_URL:string;
   ACCESS_TOKEN_SECRET?: string;
   REFRESH_TOKEN_SECRET?: string;
   ACCESS_TOKEN_EXPIRES_IN?: string;
@@ -19,6 +20,10 @@ interface EnvConfig {
     SMTP_PORT: string;
     SMTP_FROM: string;
   };
+      STRIPE:{
+        STRIPE_SECRET_KEY: string;
+        STRIPE_WEBHOOK_SECRET: string;
+    },
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -30,6 +35,9 @@ const loadEnvVariables = (): EnvConfig => {
     "ACCESS_TOKEN_EXPIRES_IN",
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",
+     'STRIPE_SECRET_KEY',
+      'STRIPE_WEBHOOK_SECRET',
+      'FRONTEND_URL'
   ];
   requireEnvVariable.forEach((variable) => {
     if (!process.env[variable]) {
@@ -55,6 +63,11 @@ const loadEnvVariables = (): EnvConfig => {
       SMTP_PORT: process.env.EMAIL_SENDER_SMTP_PORT as string,
       SMTP_FROM: process.env.EMAIL_SENDER_SMTP_FROM as string,
     },
+     STRIPE: {
+            STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+            STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET as string,
+        },
+      FRONTEND_URL:process.env.FRONTEND_URL as string
   };
 };
 

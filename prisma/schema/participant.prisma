@@ -8,7 +8,8 @@ model Participant {
   event         Event    @relation(fields: [eventId], references: [id])
 
   status        ParticipantStatus @default(PENDING)
-  paymentStatus PaymentStatus     @default(PENDING)
+  paymentStatus PaymentStatus     @default(UNPAID)
+  payment      Payment?
 
   joinedAt      DateTime @default(now())
 }
