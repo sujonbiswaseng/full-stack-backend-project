@@ -14,4 +14,5 @@ router.post("/change-password", auth([Role.ADMIN, Role.USER]), AuthController.ch
 router.post("/logout", auth([Role.ADMIN, Role.USER]), AuthController.logoutUser)
 router.post("/forget-password", AuthController.forgetPassword)
 router.post("/reset-password", AuthController.resetPassword)
+router.post("/verify-email", AuthController.verifyEmail)
 export const AuthRouters=router

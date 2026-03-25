@@ -35,7 +35,7 @@ export const sendEmail = async ({subject, templateData, templateName, to, attach
         const html = await ejs.renderFile(templatePath, templateData);
 
         const info = await transporter.sendMail({
-            from: envVars.EMAIL_SENDER.SMTP_FROM,
+            from: `Planora <${envVars.EMAIL_SENDER.SMTP_USER}>`,
             to : to,
             subject : subject,
             html : html,

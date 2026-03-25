@@ -12,6 +12,12 @@ import {
 import status from "http-status";
 const UserRegister = async (payload: ICreateUser) => {
   const { name, email, password, role, status } = payload;
+  const userExist=await prisma.user.findUnique({
+    where:{email:email}}
+  )
+  if(userExist){
+    throw new AppError(409,'user already exist,please try another email')
+  }
   const data = await auth.api.signUpEmail({
     body: {
       name,
@@ -97,24 +103,51 @@ const loginUser = async (payload: ILoginUser) => {
 };
 
 const getMe = async (user: IRequestUser) => {
-  console.log("user data for business");
   const isUserExists = await prisma.user.findUnique({
     where: {
       id: user.userId,
     },
     include: {
-      reviews: {
-        include: {
-          event: true,
-        },
-      },
+      events:{
+        include:{
+          reviews:true
+        }
+      }
     },
   });
   if (!isUserExists) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
-  return isUserExists;
+    const userid = isUserExists.id;
+  const ratings = await prisma.review.groupBy({
+    by: ["eventId"],
+    where: {
+      userId:userid,
+      rating: {
+        gt: 0,
+      },
+    },
+    _avg: {
+      rating: true,
+    },
+    _count: {
+      rating: true,
+    },
+  });
+
+  const totalReview = ratings.reduce((sum, r) => sum + r._count.rating, 0);
+
+  const totalRating = ratings.reduce(
+    (sum, r) => sum + (r._avg.rating ?? 0) * r._count.rating,
+    0,
+  );
+  const averageRating = totalReview > 0 ? totalRating / totalReview : 0;
+    return {
+      ...isUserExists,
+      totalReview: totalReview || 0,
+      averageRating: Number(averageRating.toFixed(1)) || 0,
+  };
 };
 
 const changePassword = async (
@@ -200,7 +233,7 @@ const forgetPassword = async (email: string) => {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
-  await auth.api.requestPasswordReset({
+  await auth.api.requestPasswordResetEmailOTP({
     body: {
       email,
     },
@@ -209,7 +242,7 @@ const forgetPassword = async (email: string) => {
 
 const resetPassword = async (
   email: string,
-  token: string,
+  otp: string,
   newPassword: string,
 ) => {
   const isUserExist = await prisma.user.findUnique({
@@ -230,10 +263,11 @@ const resetPassword = async (
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
-  await auth.api.resetPassword({
+  await auth.api.resetPasswordEmailOTP({
     body: {
-      newPassword,
-      token, 
+      email,
+      otp,
+      password: newPassword,
     },
   });
   await prisma.session.deleteMany({
@@ -241,6 +275,26 @@ const resetPassword = async (
       userId: isUserExist.id,
     },
   });
+};
+
+const verifyEmail = async (email: string, otp: string) => {
+  const result = await auth.api.verifyEmailOTP({
+    body: {
+      email,
+      otp,
+    },
+  });
+
+  if (result.status && !result.user.emailVerified) {
+    await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        emailVerified: true,
+      },
+    });
+  }
 };
 
 export const AuthService = {
@@ -251,4 +305,5 @@ export const AuthService = {
   logoutUser,
   forgetPassword,
   resetPassword,
+  verifyEmail,
 };
