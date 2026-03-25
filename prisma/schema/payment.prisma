@@ -1,0 +1,15 @@
+model Payment {
+  id            String   @id @default(uuid())
+
+  userId        String
+  eventId       String
+
+  user          User     @relation(fields: [userId], references: [id])
+  event         Event    @relation(fields: [eventId], references: [id])
+
+  amount        Float
+  status        PaymentStatus
+  transactionId String?
+
+  createdAt     DateTime @default(now())
+}
