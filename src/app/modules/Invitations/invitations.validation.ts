@@ -5,6 +5,6 @@ export const createInvitationSchema = z.object({
 });
 
 export const updateInvitationSchema = z.object({
-  status: z.enum(["PENDING", "ACCEPTED", "DECLINED", "CANCELLED"]).optional(),
-  paymentStatus: z.enum(["PENDING", "COMPLETED", "FAILED"]).optional(),
+  status: z.enum(["PENDING", "ACCEPTED", "DECLINED"]).optional(),
+  paymentStatus: z.enum(["PENDING", "FREE", "FAILED","SUCCESS"]).optional(),
 });

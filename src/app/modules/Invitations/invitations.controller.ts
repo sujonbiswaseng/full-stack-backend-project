@@ -41,8 +41,36 @@ const GetUserInvitationsController = catchAsync(async (req: Request, res: Respon
 });
 
 
+const GetSingleInvitationController = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await invitationsServices.getSingleInvitationService(id as string);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "single Invitation fetched successfully",
+    data: result,
+  });
+});
+
+
+const deleteInvitation= catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await invitationsServices.deleteInvitationService(id as string);
+    sendResponse(res, { httpStatusCode: status.OK, success: true, message: "Invitation deleted", data: result });
+  })
+
+
+  const updateInvitation= catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await invitationsServices.updateInvitationService(id as string, req.body);
+    sendResponse(res, { httpStatusCode: status.OK, success: true, message: "Invitation updated", data: result });
+  })
+
 export const InvitationController={
 CreateInvitation,
 GetAllInvitationsController,
-GetUserInvitationsController
+GetUserInvitationsController,
+GetSingleInvitationController,
+deleteInvitation,
+updateInvitation
 }

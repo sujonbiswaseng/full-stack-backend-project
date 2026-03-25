@@ -1,6 +1,6 @@
 import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
-import { IInvitationInput } from "./invitations.interface";
+import { IInvitationInput, IUpdateInvitationInput } from "./invitations.interface";
 
 // Create Invitation
 const createInvitationService = async (
@@ -62,8 +62,56 @@ const getUserInvitationsService = async (userId: string) => {
 };
 
 
+ const getSingleInvitationService = async (id: string) => {
+  const result= await prisma.invitation.findUnique({
+    where: { id },
+    include: {
+      event: { select: { id: true, title: true, date: true, venue: true }},
+      inviter: { select: { id: true, name: true, email: true ,image:true}},
+      invitee: { select: { id: true, name: true, email: true ,image:true}},
+    },
+  });
+  if(!result){
+    throw new AppError(404,'invitation not found')
+  }
+  return result
+};
+
+ const updateInvitationService = async (id: string, data: IUpdateInvitationInput) => {
+  const invitation = await prisma.invitation.findUnique({ where: { id } });
+  if (!invitation) throw new Error(`Invitation with id ${id} not found`);
+
+  // Optional extra check: prevent invalid transitions
+  if (data.status === "ACCEPTED" && invitation.paymentStatus === "PENDING") {
+    throw new Error("Cannot accept invitation before payment is completed");
+  }
+
+  if (data.paymentStatus === 'SUCCESS' && invitation.status === "DECLINED") {
+    throw new Error("Cannot mark payment SUCCESS for a declined invitation");
+  }
+
+  // Update
+  const updated = await prisma.invitation.update({
+    where: { id },
+    data,
+    include: {
+      event: { select: { id: true, title: true, date: true, venue: true } },
+      inviter: { select: { id: true, name: true, email: true } },
+      invitee: { select: { id: true, name: true, email: true } },
+    },
+  });
+
+  return updated;
+};
 
 
+const deleteInvitationService = async (id: string) => {
+  // Check existence
+  const invitation = await prisma.invitation.findUnique({ where: { id } });
+  if (!invitation) throw new Error(`Invitation with id ${id} not found`);
+
+  return await prisma.invitation.delete({ where: { id } });
+};
 export const invitationsServices = {
-  createInvitationService,getAllInvitationsService,getUserInvitationsService
+  createInvitationService,getAllInvitationsService,getUserInvitationsService,getSingleInvitationService,deleteInvitationService,updateInvitationService
 };
