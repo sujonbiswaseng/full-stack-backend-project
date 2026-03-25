@@ -17,7 +17,19 @@ const CreateInvitation = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const GetAllInvitationsController = catchAsync(async (req: Request, res: Response) => {
+  const result = await invitationsServices.getAllInvitationsService();
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "All invitations fetched successfully",
+    data: result,
+  });
+});
+
 
 export const InvitationController={
-CreateInvitation
+CreateInvitation,
+GetAllInvitationsController
 }

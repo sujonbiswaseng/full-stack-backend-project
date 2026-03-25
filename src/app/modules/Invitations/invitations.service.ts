@@ -35,8 +35,18 @@ const createInvitationService = async (
   return result;
 };
 
+const getAllInvitationsService = async () => {
+  return await prisma.invitation.findMany({
+    include: {
+      event: true,
+      inviter: true,
+      invitee: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
 
 
 export const invitationsServices = {
-  createInvitationService,
+  createInvitationService,getAllInvitationsService
 };

@@ -8,4 +8,5 @@ import { InvitationController } from "./invitations.controller"
 
 const router=Router()
 router.post("/event/:id",auth([Role.ADMIN,Role.USER]),validateRequest(createInvitationSchema),InvitationController.CreateInvitation)
+router.get("/", InvitationController.GetAllInvitationsController);
 export const InvitationsRouters=router
