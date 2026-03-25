@@ -79,16 +79,7 @@ const getUserInvitationsService = async (userId: string) => {
 
  const updateInvitationService = async (id: string, data: IUpdateInvitationInput) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
-  if (!invitation) throw new Error(`Invitation with id ${id} not found`);
-
-  // Optional extra check: prevent invalid transitions
-  if (data.status === "ACCEPTED" && invitation.paymentStatus === "PENDING") {
-    throw new Error("Cannot accept invitation before payment is completed");
-  }
-
-  if (data.paymentStatus === 'SUCCESS' && invitation.status === "DECLINED") {
-    throw new Error("Cannot mark payment SUCCESS for a declined invitation");
-  }
+  if (!invitation) throw new Error(`Invitation with id ${id} not found`)
 
   // Update
   const updated = await prisma.invitation.update({
