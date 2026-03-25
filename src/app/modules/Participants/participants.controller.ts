@@ -51,4 +51,17 @@ const getSingleParticipant= catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant}
+const deleteParticipant = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const participant = await ParticipantService.deleteParticipantService(id as string);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Participant deleted successfully",
+    data: participant,
+  });
+});
+
+export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant}

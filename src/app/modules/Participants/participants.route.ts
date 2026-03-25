@@ -9,5 +9,6 @@ const router = express.Router();
 router.post("/event/:id",auth([Role.ADMIN,Role.USER]), ParticipantControllers.createParticipantController);
 router.get("/", ParticipantControllers.getAllParticipants);
 router.get("/:id", ParticipantControllers.getSingleParticipant);
-router.put("/:id", ParticipantControllers.updateParticipant);
+router.put("/:id",auth([Role.ADMIN]),ParticipantControllers.updateParticipant);
+router.delete("/:id",auth([Role.ADMIN]),ParticipantControllers.deleteParticipant);
 export const ParticipantRoutes=router;

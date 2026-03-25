@@ -8,6 +8,7 @@ export interface ICreateEvent {
   visibility: EventType;
   categories:EventCategory;
   status:EventStatus;
+  image:string;
   fee?: number;
 }
 
@@ -17,6 +18,7 @@ export interface IUpdateEventInput {
   date?: string;   
   time?: string;      
   venue?: string;
+  image?:string;
   categories?:EventCategory;
   status?:EventStatus;
   visibility?: "PUBLIC" | "PRIVATE" ;

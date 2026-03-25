@@ -62,6 +62,7 @@ export const CreateEventSchema = z.object({
   time: z.string().regex(timeRegex, "Time must be in HH:MM format"),
 
   venue: z.string().min(3, "Venue must be at least 3 characters"),
+  image: z.string(),
 
   visibility: z.enum([EventType.PRIVATE, EventType.PUBLIC]),
 

@@ -2,10 +2,13 @@ import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreateParticipantInput } from "./participants.interface";
 
- const createParticipantService = async (userId:string,eventId:string,data: ICreateParticipantInput) => {
-
+const createParticipantService = async (
+  userId: string,
+  eventId: string,
+  data: ICreateParticipantInput,
+) => {
   const { status, paymentStatus } = data;
-//   check exist participant user
+  //   check exist participant user
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId },
   });
@@ -19,10 +22,13 @@ import { ICreateParticipantInput } from "./participants.interface";
   const finalPayment = paymentStatus || "PENDING";
 
   if (finalStatus === "APPROVED" && finalPayment === "PENDING") {
-    throw new AppError(400,"Cannot approve participant before payment is completed");
+    throw new AppError(
+      400,
+      "Cannot approve participant before payment is completed",
+    );
   }
   if (finalStatus === "REJECTED" && finalPayment === "SUCCESS") {
-    throw new AppError(400,"Rejected participant cannot have SUCCESS payment");
+    throw new AppError(400, "Rejected participant cannot have SUCCESS payment");
   }
 
   // Step 3: Create participant
@@ -42,56 +48,72 @@ import { ICreateParticipantInput } from "./participants.interface";
   return participant;
 };
 
-
- const getAllParticipantsService = async () => {
-  const result= await prisma.participant.findMany({
+const getAllParticipantsService = async () => {
+  const result = await prisma.participant.findMany({
     include: {
-      user: { select: { id: true, name: true, email: true ,image:true} },
-      event: { select: { id: true, title: true, date: true, venue: true} },
+      user: { select: { id: true, name: true, email: true, image: true } },
+      event: { select: { id: true, title: true, date: true, venue: true } },
     },
     orderBy: {
       joinedAt: "desc",
     },
   });
-  if(!result.length){
-    throw new AppError(400,'participant user not found')
+  if (!result.length) {
+    throw new AppError(400, "participant user not found");
   }
-  return result
+  return result;
 };
-
 
 const getSingleParticipantService = async (id: string) => {
   return await prisma.participant.findUnique({
     where: { id },
     include: {
-      user: { select: { id: true, name: true,role:true, email: true,image:true } },
+      user: {
+        select: { id: true, name: true, role: true, email: true, image: true },
+      },
       event: { select: { id: true, title: true, date: true, venue: true } },
     },
   });
 };
 
-const UpdateParticipantService = async (id: string,data:Partial<ICreateParticipantInput>) => {
-  const existsParticipant= await prisma.participant.findUnique({
-    where: { id }
+const UpdateParticipantService = async (
+  id: string,
+  data: Partial<ICreateParticipantInput>,
+) => {
+  const existsParticipant = await prisma.participant.findUnique({
+    where: { id },
   });
-  if(!existsParticipant){
-    throw new AppError(404,'participant not found')
+  if (!existsParticipant) {
+    throw new AppError(404, "participant not found");
   }
   const result = await prisma.participant.update({
-    where:{
-        id:id
+    where: {
+      id: id,
     },
-    data:{
-        status:data.status,
-        paymentStatus:data.paymentStatus
-    }
-  })
-  return result
+    data: {
+      status: data.status,
+      paymentStatus: data.paymentStatus,
+    },
+  });
+  return result;
 };
-export const ParticipantService={
-    createParticipantService,
-    getAllParticipantsService,
-    getSingleParticipantService,
-    UpdateParticipantService
-    
-}
+
+const deleteParticipantService = async (id: string) => {
+  const existsParticipant = await prisma.participant.findUnique({
+    where: { id },
+  });
+  if (!existsParticipant) {
+    throw new AppError(404, "participant not found");
+  }
+  return await prisma.participant.delete({
+    where: { id },
+  });
+};
+
+export const ParticipantService = {
+  createParticipantService,
+  getAllParticipantsService,
+  getSingleParticipantService,
+  UpdateParticipantService,
+  deleteParticipantService
+};

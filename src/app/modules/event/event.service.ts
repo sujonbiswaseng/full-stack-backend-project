@@ -5,7 +5,7 @@ import { prisma } from "../../lib/prisma";
 import { ICreateEvent, IUpdateEventInput } from "./event.interface";
 
 const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
-  const { description, date, time, title, visibility, venue, fee, categories } =
+  const { description, date, time, title, visibility, venue, fee, categories,image } =
     payload;
   const event = await prisma.event.create({
     data: {
@@ -13,8 +13,9 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
       description,
       date,
       time,
-      categories: payload.categories,
+      categories,
       venue,
+      image,
       visibility,
       fee,
       organizerId: user.userId,

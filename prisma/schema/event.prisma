@@ -5,6 +5,7 @@ model Event {
   date         DateTime
   time         String
   venue        String
+  image       String
   visibility         EventType @default(PUBLIC)
   status EventStatus @default(UPCOMING)
   categories EventCategory

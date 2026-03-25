@@ -26,6 +26,16 @@ export const UserStatus = {
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 
+export const EventType = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+  PUBLIC_PAID: 'PUBLIC_PAID',
+  PRIVATE_PAID: 'PRIVATE_PAID'
+} as const
+
+export type EventType = (typeof EventType)[keyof typeof EventType]
+
+
 export const EventStatus = {
   DRAFT: 'DRAFT',
   UPCOMING: 'UPCOMING',
@@ -35,16 +45,6 @@ export const EventStatus = {
 } as const
 
 export type EventStatus = (typeof EventStatus)[keyof typeof EventStatus]
-
-
-export const EventType = {
-  PUBLIC: 'PUBLIC',
-  PRIVATE: 'PRIVATE',
-  PUBLIC_PAID: 'PUBLIC_PAID',
-  PRIVATE_PAID: 'PRIVATE_PAID'
-} as const
-
-export type EventType = (typeof EventType)[keyof typeof EventType]
 
 
 export const EventCategory = {
