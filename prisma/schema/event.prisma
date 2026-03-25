@@ -6,6 +6,8 @@ model Event {
   time         String
   venue        String
   visibility         EventType @default(PUBLIC)
+  status EventStatus @default(UPCOMING)
+  categories EventCategory
   fee          Float    @default(0)
   organizerId  String
   organizer    User     @relation("UserEvents", fields: [organizerId], references: [id])

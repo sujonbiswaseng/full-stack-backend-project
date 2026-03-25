@@ -149,6 +149,8 @@ export const EventScalarFieldEnum = {
   time: 'time',
   venue: 'venue',
   visibility: 'visibility',
+  status: 'status',
+  categories: 'categories',
   fee: 'fee',
   organizerId: 'organizerId',
   createdAt: 'createdAt',

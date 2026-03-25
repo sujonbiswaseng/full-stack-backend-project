@@ -17,14 +17,6 @@ export const Role = {
 export type Role = (typeof Role)[keyof typeof Role]
 
 
-export const EventType = {
-  PUBLIC: 'PUBLIC',
-  PRIVATE: 'PRIVATE'
-} as const
-
-export type EventType = (typeof EventType)[keyof typeof EventType]
-
-
 export const UserStatus = {
   ACTIVE: 'ACTIVE',
   BLOCKED: 'BLOCKED',
@@ -32,6 +24,61 @@ export const UserStatus = {
 } as const
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
+
+export const EventStatus = {
+  DRAFT: 'DRAFT',
+  UPCOMING: 'UPCOMING',
+  ONGOING: 'ONGOING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type EventStatus = (typeof EventStatus)[keyof typeof EventStatus]
+
+
+export const EventType = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+  PUBLIC_PAID: 'PUBLIC_PAID',
+  PRIVATE_PAID: 'PRIVATE_PAID'
+} as const
+
+export type EventType = (typeof EventType)[keyof typeof EventType]
+
+
+export const EventCategory = {
+  BIRTHDAY: 'BIRTHDAY',
+  WEDDING: 'WEDDING',
+  ANNIVERSARY: 'ANNIVERSARY',
+  REUNION: 'REUNION',
+  SEMINAR: 'SEMINAR',
+  WORKSHOP: 'WORKSHOP',
+  CONFERENCE: 'CONFERENCE',
+  CAREER_FAIR: 'CAREER_FAIR',
+  MEETING: 'MEETING',
+  NETWORKING: 'NETWORKING',
+  PRODUCT_LAUNCH: 'PRODUCT_LAUNCH',
+  STARTUP_EVENT: 'STARTUP_EVENT',
+  CONCERT: 'CONCERT',
+  PARTY: 'PARTY',
+  FESTIVAL: 'FESTIVAL',
+  MOVIE_NIGHT: 'MOVIE_NIGHT',
+  TOURNAMENT: 'TOURNAMENT',
+  FITNESS: 'FITNESS',
+  YOGA: 'YOGA',
+  CHARITY: 'CHARITY',
+  COMMUNITY: 'COMMUNITY',
+  RELIGIOUS: 'RELIGIOUS',
+  ART: 'ART',
+  PHOTOGRAPHY: 'PHOTOGRAPHY',
+  FASHION_SHOW: 'FASHION_SHOW',
+  GAMING: 'GAMING',
+  FOOD_EVENT: 'FOOD_EVENT',
+  TRAVEL_MEETUP: 'TRAVEL_MEETUP'
+} as const
+
+export type EventCategory = (typeof EventCategory)[keyof typeof EventCategory]
 
 
 export const ParticipantStatus = {

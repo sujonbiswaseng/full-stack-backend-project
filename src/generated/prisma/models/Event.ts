@@ -42,6 +42,8 @@ export type EventMinAggregateOutputType = {
   time: string | null
   venue: string | null
   visibility: $Enums.EventType | null
+  status: $Enums.EventStatus | null
+  categories: $Enums.EventCategory | null
   fee: number | null
   organizerId: string | null
   createdAt: Date | null
@@ -56,6 +58,8 @@ export type EventMaxAggregateOutputType = {
   time: string | null
   venue: string | null
   visibility: $Enums.EventType | null
+  status: $Enums.EventStatus | null
+  categories: $Enums.EventCategory | null
   fee: number | null
   organizerId: string | null
   createdAt: Date | null
@@ -70,6 +74,8 @@ export type EventCountAggregateOutputType = {
   time: number
   venue: number
   visibility: number
+  status: number
+  categories: number
   fee: number
   organizerId: number
   createdAt: number
@@ -94,6 +100,8 @@ export type EventMinAggregateInputType = {
   time?: true
   venue?: true
   visibility?: true
+  status?: true
+  categories?: true
   fee?: true
   organizerId?: true
   createdAt?: true
@@ -108,6 +116,8 @@ export type EventMaxAggregateInputType = {
   time?: true
   venue?: true
   visibility?: true
+  status?: true
+  categories?: true
   fee?: true
   organizerId?: true
   createdAt?: true
@@ -122,6 +132,8 @@ export type EventCountAggregateInputType = {
   time?: true
   venue?: true
   visibility?: true
+  status?: true
+  categories?: true
   fee?: true
   organizerId?: true
   createdAt?: true
@@ -223,6 +235,8 @@ export type EventGroupByOutputType = {
   time: string
   venue: string
   visibility: $Enums.EventType
+  status: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee: number
   organizerId: string
   createdAt: Date
@@ -260,6 +274,8 @@ export type EventWhereInput = {
   time?: Prisma.StringFilter<"Event"> | string
   venue?: Prisma.StringFilter<"Event"> | string
   visibility?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
+  status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFilter<"Event"> | $Enums.EventCategory
   fee?: Prisma.FloatFilter<"Event"> | number
   organizerId?: Prisma.StringFilter<"Event"> | string
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
@@ -279,6 +295,8 @@ export type EventOrderByWithRelationInput = {
   time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  categories?: Prisma.SortOrder
   fee?: Prisma.SortOrder
   organizerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -301,6 +319,8 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   time?: Prisma.StringFilter<"Event"> | string
   venue?: Prisma.StringFilter<"Event"> | string
   visibility?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
+  status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFilter<"Event"> | $Enums.EventCategory
   fee?: Prisma.FloatFilter<"Event"> | number
   organizerId?: Prisma.StringFilter<"Event"> | string
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
@@ -320,6 +340,8 @@ export type EventOrderByWithAggregationInput = {
   time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  categories?: Prisma.SortOrder
   fee?: Prisma.SortOrder
   organizerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -342,6 +364,8 @@ export type EventScalarWhereWithAggregatesInput = {
   time?: Prisma.StringWithAggregatesFilter<"Event"> | string
   venue?: Prisma.StringWithAggregatesFilter<"Event"> | string
   visibility?: Prisma.EnumEventTypeWithAggregatesFilter<"Event"> | $Enums.EventType
+  status?: Prisma.EnumEventStatusWithAggregatesFilter<"Event"> | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryWithAggregatesFilter<"Event"> | $Enums.EventCategory
   fee?: Prisma.FloatWithAggregatesFilter<"Event"> | number
   organizerId?: Prisma.StringWithAggregatesFilter<"Event"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
@@ -356,6 +380,8 @@ export type EventCreateInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -374,6 +400,8 @@ export type EventUncheckedCreateInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   organizerId: string
   createdAt?: Date | string
@@ -392,6 +420,8 @@ export type EventUpdateInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -410,6 +440,8 @@ export type EventUncheckedUpdateInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   organizerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -428,6 +460,8 @@ export type EventCreateManyInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   organizerId: string
   createdAt?: Date | string
@@ -442,6 +476,8 @@ export type EventUpdateManyMutationInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -455,6 +491,8 @@ export type EventUncheckedUpdateManyInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   organizerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -479,6 +517,8 @@ export type EventCountOrderByAggregateInput = {
   time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  categories?: Prisma.SortOrder
   fee?: Prisma.SortOrder
   organizerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -497,6 +537,8 @@ export type EventMaxOrderByAggregateInput = {
   time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  categories?: Prisma.SortOrder
   fee?: Prisma.SortOrder
   organizerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -511,6 +553,8 @@ export type EventMinOrderByAggregateInput = {
   time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  categories?: Prisma.SortOrder
   fee?: Prisma.SortOrder
   organizerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -570,6 +614,14 @@ export type EventUncheckedUpdateManyWithoutOrganizerNestedInput = {
 
 export type EnumEventTypeFieldUpdateOperationsInput = {
   set?: $Enums.EventType
+}
+
+export type EnumEventStatusFieldUpdateOperationsInput = {
+  set?: $Enums.EventStatus
+}
+
+export type EnumEventCategoryFieldUpdateOperationsInput = {
+  set?: $Enums.EventCategory
 }
 
 export type FloatFieldUpdateOperationsInput = {
@@ -644,6 +696,8 @@ export type EventCreateWithoutOrganizerInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -661,6 +715,8 @@ export type EventUncheckedCreateWithoutOrganizerInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -707,6 +763,8 @@ export type EventScalarWhereInput = {
   time?: Prisma.StringFilter<"Event"> | string
   venue?: Prisma.StringFilter<"Event"> | string
   visibility?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
+  status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFilter<"Event"> | $Enums.EventCategory
   fee?: Prisma.FloatFilter<"Event"> | number
   organizerId?: Prisma.StringFilter<"Event"> | string
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
@@ -721,6 +779,8 @@ export type EventCreateWithoutInvitationsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -738,6 +798,8 @@ export type EventUncheckedCreateWithoutInvitationsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   organizerId: string
   createdAt?: Date | string
@@ -771,6 +833,8 @@ export type EventUpdateWithoutInvitationsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -788,6 +852,8 @@ export type EventUncheckedUpdateWithoutInvitationsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   organizerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -805,6 +871,8 @@ export type EventCreateWithoutParticipantsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -822,6 +890,8 @@ export type EventUncheckedCreateWithoutParticipantsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   organizerId: string
   createdAt?: Date | string
@@ -855,6 +925,8 @@ export type EventUpdateWithoutParticipantsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -872,6 +944,8 @@ export type EventUncheckedUpdateWithoutParticipantsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   organizerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -889,6 +963,8 @@ export type EventCreateWithoutPaymentsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -906,6 +982,8 @@ export type EventUncheckedCreateWithoutPaymentsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   organizerId: string
   createdAt?: Date | string
@@ -939,6 +1017,8 @@ export type EventUpdateWithoutPaymentsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -956,6 +1036,8 @@ export type EventUncheckedUpdateWithoutPaymentsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   organizerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -973,6 +1055,8 @@ export type EventCreateWithoutReviewsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -990,6 +1074,8 @@ export type EventUncheckedCreateWithoutReviewsInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   organizerId: string
   createdAt?: Date | string
@@ -1023,6 +1109,8 @@ export type EventUpdateWithoutReviewsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1040,6 +1128,8 @@ export type EventUncheckedUpdateWithoutReviewsInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   organizerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1057,6 +1147,8 @@ export type EventCreateManyOrganizerInput = {
   time: string
   venue: string
   visibility?: $Enums.EventType
+  status?: $Enums.EventStatus
+  categories: $Enums.EventCategory
   fee?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1070,6 +1162,8 @@ export type EventUpdateWithoutOrganizerInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1087,6 +1181,8 @@ export type EventUncheckedUpdateWithoutOrganizerInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1104,6 +1200,8 @@ export type EventUncheckedUpdateManyWithoutOrganizerInput = {
   time?: Prisma.StringFieldUpdateOperationsInput | string
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   visibility?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  categories?: Prisma.EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
   fee?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1175,6 +1273,8 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   time?: boolean
   venue?: boolean
   visibility?: boolean
+  status?: boolean
+  categories?: boolean
   fee?: boolean
   organizerId?: boolean
   createdAt?: boolean
@@ -1195,6 +1295,8 @@ export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   time?: boolean
   venue?: boolean
   visibility?: boolean
+  status?: boolean
+  categories?: boolean
   fee?: boolean
   organizerId?: boolean
   createdAt?: boolean
@@ -1210,6 +1312,8 @@ export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   time?: boolean
   venue?: boolean
   visibility?: boolean
+  status?: boolean
+  categories?: boolean
   fee?: boolean
   organizerId?: boolean
   createdAt?: boolean
@@ -1225,13 +1329,15 @@ export type EventSelectScalar = {
   time?: boolean
   venue?: boolean
   visibility?: boolean
+  status?: boolean
+  categories?: boolean
   fee?: boolean
   organizerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "date" | "time" | "venue" | "visibility" | "fee" | "organizerId" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "date" | "time" | "venue" | "visibility" | "status" | "categories" | "fee" | "organizerId" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   participants?: boolean | Prisma.Event$participantsArgs<ExtArgs>
@@ -1264,6 +1370,8 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     time: string
     venue: string
     visibility: $Enums.EventType
+    status: $Enums.EventStatus
+    categories: $Enums.EventCategory
     fee: number
     organizerId: string
     createdAt: Date
@@ -1703,6 +1811,8 @@ export interface EventFieldRefs {
   readonly time: Prisma.FieldRef<"Event", 'String'>
   readonly venue: Prisma.FieldRef<"Event", 'String'>
   readonly visibility: Prisma.FieldRef<"Event", 'EventType'>
+  readonly status: Prisma.FieldRef<"Event", 'EventStatus'>
+  readonly categories: Prisma.FieldRef<"Event", 'EventCategory'>
   readonly fee: Prisma.FieldRef<"Event", 'Float'>
   readonly organizerId: Prisma.FieldRef<"Event", 'String'>
   readonly createdAt: Prisma.FieldRef<"Event", 'DateTime'>

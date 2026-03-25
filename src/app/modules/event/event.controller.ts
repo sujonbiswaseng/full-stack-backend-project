@@ -16,4 +16,49 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const EventController={createEvent}
+const getAllEvents = catchAsync(async (req: Request, res: Response) => {
+  const events = await EventServices.getAllEvents();
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "All events fetched successfully",
+    data: events,
+  });
+});
+
+const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
+  const eventId = req.params.id;
+
+  const event = await EventServices.getSingleEvent(eventId as string);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "single Event fetched successfully",
+    data: event,
+  });
+});
+
+ const updateEvent = catchAsync(async (req: Request, res: Response) => {
+  const eventId = req.params.id;
+
+  const updatedEvent = await EventServices.updateEvent(eventId as string, req.body);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Event updated successfully",
+    data: updatedEvent,
+  });
+});
+
+ const DeletedEvent = catchAsync(async (req: Request, res: Response) => {
+  const eventId = req.params.id;
+  const deletedEvent = await EventServices.DeleteEvent(req.user,eventId as string);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Event deleted successfully",
+  });
+});
+
+export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent}
