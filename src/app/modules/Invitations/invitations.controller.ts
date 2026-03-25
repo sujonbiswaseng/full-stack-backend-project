@@ -28,8 +28,21 @@ const GetAllInvitationsController = catchAsync(async (req: Request, res: Respons
   });
 });
 
+const GetUserInvitationsController = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await invitationsServices.getUserInvitationsService(id as string);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: `Invitations for user ${id} fetched successfully`,
+    data: result,
+  });
+});
+
 
 export const InvitationController={
 CreateInvitation,
-GetAllInvitationsController
+GetAllInvitationsController,
+GetUserInvitationsController
 }

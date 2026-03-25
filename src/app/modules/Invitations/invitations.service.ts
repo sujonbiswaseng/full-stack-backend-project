@@ -46,7 +46,24 @@ const getAllInvitationsService = async () => {
   });
 };
 
+const getUserInvitationsService = async (userId: string) => {
+    const userExist=await prisma.user.findUnique({where:{id:userId}})
+    if(!userExist){
+        throw new AppError(404,'user not found')
+    }
+  return await prisma.invitation.findMany({
+    where: { inviteeId: userId },
+    include: {
+      event: true,
+      inviter: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+
+
 
 export const invitationsServices = {
-  createInvitationService,getAllInvitationsService
+  createInvitationService,getAllInvitationsService,getUserInvitationsService
 };
