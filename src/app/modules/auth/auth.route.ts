@@ -11,4 +11,5 @@ router.post("/login", AuthController.loginUser)
 router.get("/me",auth([Role.ADMIN, Role.USER]), AuthController.getMe)
 
 router.post("/change-password", auth([Role.ADMIN, Role.USER]), AuthController.changePassword)
+router.post("/logout", auth([Role.ADMIN, Role.USER]), AuthController.logoutUser)
 export const AuthRouters=router
