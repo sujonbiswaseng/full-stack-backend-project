@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EventType } from "../../../generated/prisma/enums";
+import { EventType, PricingType } from "../../../generated/prisma/enums";
 const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/;
 
 export const EventCategoryEnum = z.enum([
@@ -65,6 +65,8 @@ export const CreateEventSchema = z.object({
   image: z.string(),
 
   visibility: z.enum([EventType.PRIVATE, EventType.PUBLIC]),
+  priceType: z.enum([PricingType.FREE, PricingType.PAID]),
+  
 
   fee: z.number().min(0, "Fee cannot be negative").optional(),
 });

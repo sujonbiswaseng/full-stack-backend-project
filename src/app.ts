@@ -26,7 +26,6 @@ app.use(cors({
   origin: "http://localhost:3000",
   credentials: true
 }));
-// Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));
 
 // Middleware to parse JSON bodies

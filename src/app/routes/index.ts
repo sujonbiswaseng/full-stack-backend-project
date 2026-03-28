@@ -4,6 +4,7 @@ import { EventRouters } from "../modules/event/event.route";
 import { InvitationsRouters } from "../modules/Invitations/invitations.route";
 import { ParticipantRoutes } from "../modules/Participants/participants.route";
 import { ReviewsRouters } from "../modules/reviews/reviews.route";
+import { StatsRoutes } from "../modules/stats/stats.route";
 
 const router = Router()
 router.use("/v1/auth", AuthRouters);
@@ -18,4 +19,6 @@ router.use("/v1", ParticipantRoutes);
 
 // reviews
 router.use("/v1", ReviewsRouters);
+// reviews
+router.use("/v1", StatsRoutes);
 export const IndexRouter=router
