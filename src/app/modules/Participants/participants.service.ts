@@ -13,33 +13,40 @@ const createParticipantService = async (
   eventId: string,
   data: ICreateParticipantInput,
 ) => {
-  const { status, paymentStatus } = data;
-  //   check exist participant user
+  // 🔍 Check existing participant
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId },
   });
 
   if (existing) {
-    throw new AppError(409,'User already joined')
+    throw new AppError(409, "User already joined");
   }
 
-  // Step 2: Validate status & paymentStatus combination
-  const finalStatus = status || "PENDING";
-  const finalPayment = paymentStatus || "UNPAID";
+  // 🔍 Get event info (IMPORTANT)
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+    select: {
+      id: true,
+      title: true,
+      fee: true,
+      date: true,
+      venue: true,
+    },
+  });
 
-  if (finalStatus === "APPROVED" && finalPayment === "UNPAID") {
-    throw new AppError(
-      400,
-      "Cannot approve participant before payment is completed",
-    );
-  }
-  if (finalStatus === "REJECTED" && finalPayment === "PAID") {
-    throw new AppError(400, "Rejected participant cannot have SUCCESS payment");
+  if (!event) {
+    throw new AppError(404, "Event not found");
   }
 
-  // Step 3: Create participant
+  const isFree = Number(event.fee) === 0;
+
+  // 🎯 Decide status based on event type
+  const finalStatus = isFree ? "APPROVED" : "PENDING";
+  const finalPayment = isFree ? "PAID" : "UNPAID";
+
   const result = await prisma.$transaction(async (tx) => {
-    const participantData = await prisma.participant.create({
+    // ✅ Create participant
+    const participantData = await tx.participant.create({
       data: {
         userId,
         eventId,
@@ -48,22 +55,33 @@ const createParticipantService = async (
       },
       include: {
         user: { select: { id: true, name: true, email: true } },
-        event: {
-          select: { id: true, title: true, date: true, venue: true, fee: true },
-        },
-      },
-    });
-    const transactionId =String(uuidv6());
-    const paymentData = await tx.payment.create({
-      data: {
-        participantId: participantData.id,
-        amount: participantData.event.fee,
-        transactionId: transactionId as string,
-        eventId: eventId,
-        userId: userId,
+        event: true,
       },
     });
 
+    // 🟢 FREE EVENT → No payment needed
+    if (isFree) {
+      return {
+        participantData,
+        paymentData: null,
+        paymentUrl: null,
+      };
+    }
+
+    // 🔴 PAID EVENT → Create payment
+    const transactionId = String(uuidv6());
+
+    const paymentData = await tx.payment.create({
+      data: {
+        participantId: participantData.id,
+        amount: event.fee,
+        transactionId,
+        eventId,
+        userId,
+      },
+    });
+
+    // 💳 Stripe session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -72,22 +90,19 @@ const createParticipantService = async (
           price_data: {
             currency: "bdt",
             product_data: {
-              name: `participants with . ${participantData.event.title}`,
+              name: `Ticket for ${event.title}`,
             },
-            unit_amount: participantData.event.fee*100,
+            unit_amount: event.fee * 100,
           },
           quantity: 1,
         },
       ],
       metadata: {
-        appointmentId: participantData.id,
+        participantId: participantData.id,
         paymentId: paymentData.id,
       },
-
       success_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-success`,
-
-      // cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
-      cancel_url: `${envVars.FRONTEND_URL}/dashboard/appointments`,
+      cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
     });
 
     return {
@@ -98,7 +113,7 @@ const createParticipantService = async (
   });
 
   return {
-    appointment: result.participantData,
+    participant: result.participantData,
     payment: result.paymentData,
     paymentUrl: result.paymentUrl,
   };

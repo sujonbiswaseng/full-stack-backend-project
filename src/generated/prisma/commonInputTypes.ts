@@ -189,6 +189,13 @@ export type EnumEventTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEventTypeFilter<$PrismaModel> | $Enums.EventType
 }
 
+export type EnumPricingTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingType | Prisma.EnumPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingTypeFilter<$PrismaModel> | $Enums.PricingType
+}
+
 export type EnumEventStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.EventStatus | Prisma.EnumEventStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EventStatus[] | Prisma.ListEnumEventStatusFieldRefInput<$PrismaModel>
@@ -227,6 +234,16 @@ export type EnumEventTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEventTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEventTypeFilter<$PrismaModel>
+}
+
+export type EnumPricingTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingType | Prisma.EnumPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingTypeWithAggregatesFilter<$PrismaModel> | $Enums.PricingType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPricingTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPricingTypeFilter<$PrismaModel>
 }
 
 export type EnumEventStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -634,6 +651,13 @@ export type NestedEnumEventTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEventTypeFilter<$PrismaModel> | $Enums.EventType
 }
 
+export type NestedEnumPricingTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingType | Prisma.EnumPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingTypeFilter<$PrismaModel> | $Enums.PricingType
+}
+
 export type NestedEnumEventStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.EventStatus | Prisma.EnumEventStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EventStatus[] | Prisma.ListEnumEventStatusFieldRefInput<$PrismaModel>
@@ -672,6 +696,16 @@ export type NestedEnumEventTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEventTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEventTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumPricingTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingType | Prisma.EnumPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingType[] | Prisma.ListEnumPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingTypeWithAggregatesFilter<$PrismaModel> | $Enums.PricingType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPricingTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPricingTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumEventStatusWithAggregatesFilter<$PrismaModel = never> = {

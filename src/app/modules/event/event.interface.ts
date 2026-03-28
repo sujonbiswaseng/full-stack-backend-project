@@ -7,6 +7,7 @@ export interface ICreateEvent {
   venue: string;
   visibility: EventType;
   categories:EventCategory;
+  priceType?: "FREE" | "PAID";
   status:EventStatus;
   image:string;
   fee?: number;
@@ -21,8 +22,9 @@ export interface IUpdateEventInput {
   venue?: string;
   image?: string;
   categories?: EventCategory;
+  priceType?: "FREE" | "PAID";
   status?: EventStatus;
-  visibility?: "PUBLIC" | "PRIVATE" | "PUBLIC_PAID" | "PRIVATE_PAID";
+  visibility?: "PUBLIC" | "PRIVATE";
   fee?: number;
 }
 

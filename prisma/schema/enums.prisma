@@ -11,9 +11,12 @@ enum UserStatus {
 enum EventType {
   PUBLIC
   PRIVATE
-  PUBLIC_PAID
-  PRIVATE_PAID
 }
+enum PricingType {
+  FREE
+  PAID
+}
+
 
 enum EventStatus {
   DRAFT

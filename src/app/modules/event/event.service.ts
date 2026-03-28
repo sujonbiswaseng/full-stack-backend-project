@@ -8,6 +8,7 @@ import {
   IUpdateEventInput,
 } from "./event.interface";
 import { EventWhereInput } from "../../../generated/prisma/models";
+import { EventType } from "../../../generated/prisma/enums";
 
 const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
   const {
@@ -16,6 +17,7 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
     time,
     title,
     visibility,
+    priceType,
     venue,
     fee,
     categories,
@@ -27,6 +29,7 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
       description,
       date,
       time,
+      priceType,
       categories,
       venue,
       image,
@@ -98,7 +101,7 @@ const getAllEvents = async (
 
   if (data.visibility) {
     andConditions.push({
-      visibility: data.visibility,
+      visibility: data.visibility as EventType,
     });
   }
 
@@ -209,9 +212,10 @@ const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:str
       time: payload.time,
       date: payload.date,
       fee: payload.fee,
-      visibility: payload.visibility,
+      visibility: payload.visibility as EventType,
       venue: payload.venue,
       status: payload.status,
+      priceType: payload.priceType,
       categories: payload.categories,
       is_featured:payload.is_featured
       

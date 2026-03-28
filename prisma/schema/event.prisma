@@ -7,6 +7,7 @@ model Event {
   venue        String
   image       String
   visibility         EventType @default(PUBLIC)
+  priceType     PricingType @default(FREE)
   status EventStatus @default(UPCOMING)
   is_featured Boolean? @default(false)
   categories EventCategory

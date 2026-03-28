@@ -150,6 +150,7 @@ export const EventScalarFieldEnum = {
   venue: 'venue',
   image: 'image',
   visibility: 'visibility',
+  priceType: 'priceType',
   status: 'status',
   is_featured: 'is_featured',
   categories: 'categories',

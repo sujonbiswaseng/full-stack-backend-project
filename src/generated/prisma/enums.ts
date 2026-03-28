@@ -28,12 +28,18 @@ export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 export const EventType = {
   PUBLIC: 'PUBLIC',
-  PRIVATE: 'PRIVATE',
-  PUBLIC_PAID: 'PUBLIC_PAID',
-  PRIVATE_PAID: 'PRIVATE_PAID'
+  PRIVATE: 'PRIVATE'
 } as const
 
 export type EventType = (typeof EventType)[keyof typeof EventType]
+
+
+export const PricingType = {
+  FREE: 'FREE',
+  PAID: 'PAID'
+} as const
+
+export type PricingType = (typeof PricingType)[keyof typeof PricingType]
 
 
 export const EventStatus = {
