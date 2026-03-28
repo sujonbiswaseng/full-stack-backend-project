@@ -140,8 +140,17 @@ const getAllEvents = async (
       return { ...event, avgRating, totalReviews };
     });
   }
+  const total = await prisma.event.count({ where: { AND: andConditions } });
 
-  return result;
+  return {
+     data:result,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalpage: Math.ceil(total / limit!) || 1,
+    },
+  };
 };
 
 const getSingleEvent = async (eventId: string) => {
