@@ -22,7 +22,6 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllEvents = catchAsync(async (req: Request, res: Response) => {
-
   const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
   const events = await EventServices.getAllEvents(req.query,page, limit, skip, sortBy, sortOrder);
   sendResponse(res, {
@@ -42,6 +41,16 @@ const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: "single Event fetched successfully",
     data: event,
+  });
+});
+
+const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
+  const events = await EventServices.GetPaidAndFreeEvent();
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Paid and Free events fetched successfully",
+    data: events,
   });
 });
 
@@ -69,4 +78,4 @@ const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent}
+export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent,getPaidAndFreeEvent}

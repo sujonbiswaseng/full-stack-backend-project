@@ -10,12 +10,12 @@ import { multerUpload } from "../../config/multer.config"
 const router=Router()
 router.post(
   "/event",
-  auth([Role.ADMIN, Role.USER]),
-  multerUpload.single('file'),  
+  auth([Role.ADMIN, Role.USER]), 
   validateRequest(CreateEventSchema),
   EventController.createEvent
 )
 router.get("/events", EventController.getAllEvents);
+router.get("/events/paidandfree", EventController.getPaidAndFreeEvent);
 router.get("/event/:id", EventController.getSingleEvent);
 router.put("/event/:id",auth([Role.ADMIN,Role.USER]),validateRequest(UpdateEventSchema), EventController.updateEvent);
 router.delete("/event/:id",auth([Role.ADMIN,Role.USER]), EventController.DeletedEvent);

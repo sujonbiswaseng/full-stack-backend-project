@@ -63,12 +63,42 @@ const getAllEvents = async (
     const orConditions: any[] = [];
     if (data.title) {
       orConditions.push({
-        meals_name: {
+        title: {
           contains: data.title,
           mode: "insensitive",
         },
       });
     }
+
+    if (data.search) {
+      orConditions.push(
+        {
+          title: {
+            contains: data.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: data.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          categories: {
+            contains: data.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          venue: {
+            contains: data.search,
+            mode: "insensitive",
+          },
+        }
+      );
+    }
+
     if (data.description) {
       orConditions.push({
         description: {
@@ -79,7 +109,7 @@ const getAllEvents = async (
     }
     if (data.categories) {
       orConditions.push({
-        category_name: {
+        categories: {
           contains: data.categories,
           mode: "insensitive",
         },
@@ -89,6 +119,7 @@ const getAllEvents = async (
       andConditions.push({ OR: orConditions });
     }
   }
+
 
   if (data.fee) {
     andConditions.push({
@@ -102,6 +133,17 @@ const getAllEvents = async (
   if (data.visibility) {
     andConditions.push({
       visibility: data.visibility as EventType,
+    });
+  }
+
+  if (data.priceType) {
+    andConditions.push({
+      priceType: data.priceType,
+    });
+  }
+  if (data.is_featured) {
+    andConditions.push({
+      is_featured: data.is_featured,
     });
   }
 
@@ -127,6 +169,14 @@ const getAllEvents = async (
         reviews: {
           where: { rating: { gt: 0 } },
         },
+        organizer:{
+          select:{
+            name:true,
+            email:true,
+            phone:true,
+            image:true
+          }
+        }
       },
       orderBy: {
         [sortBy!]:sortOrder
@@ -185,6 +235,141 @@ const getSingleEvent = async (eventId: string) => {
     totalReviews,
   };
 };
+
+
+const GetPaidAndFreeEvent = async () => {
+  const PublicPaidEventRaw = await prisma.event.findMany({
+    where: { 
+      payments: {
+        some: { status: "PAID" }
+      },
+      visibility: 'PUBLIC'
+    },
+    include: {
+      reviews: {
+        where: {
+          rating: {
+            gt: 0,
+          }
+        }
+      }
+    }
+  });
+
+  const PublicPaidEvent = PublicPaidEventRaw.map(event => {
+    const totalReviews = event.reviews.length || 0;
+    const avgRating = totalReviews > 0 
+      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+      : 0;
+    const { reviews, ...eventData } = event;
+    return { ...eventData, avgRating, totalReviews };
+  });
+
+  const PublicFreeEventRaw = await prisma.event.findMany({
+    where: {
+      payments: {
+        some: {
+          status: "FREE"
+        }
+      },
+      visibility: 'PUBLIC'
+    },
+    include: {
+      reviews: {
+        where: {
+          rating: {
+            gt: 0,
+          }
+        }
+      }
+    }
+  });
+
+  const PublicFreeEvent = PublicFreeEventRaw.map(event => {
+    const totalReviews = event.reviews.length || 0;
+    const avgRating = totalReviews > 0 
+      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+      : 0;
+    const { reviews, ...eventData } = event;
+    return { ...eventData, avgRating, totalReviews };
+  });
+
+  const PrivateFreeEventRaw = await prisma.event.findMany({
+    where: {
+      payments: {
+        some: {
+          status: "FREE"
+        }
+      },
+      visibility: 'PRIVATE'
+    },
+    include: {
+      reviews: {
+        where: {
+          rating: {
+            gt: 0,
+          }
+        }
+      }
+    }
+  });
+
+  const PrivateFreeEvent = PrivateFreeEventRaw.map(event => {
+    const totalReviews = event.reviews.length || 0;
+    const avgRating = totalReviews > 0 
+      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+      : 0;
+    const { reviews, ...eventData } = event;
+    return { ...eventData, avgRating, totalReviews };
+  });
+
+  const PrivatePaidEventRaw = await prisma.event.findMany({
+    where: {
+      payments: {
+        some: {
+          status: "PAID"
+        }
+      },
+      visibility: 'PRIVATE'
+    },
+    include: {
+      reviews: {
+        where: {
+          rating: {
+            gt: 0,
+          }
+        }
+      }
+    }
+  });
+
+  const PrivatePaidEvent = PrivatePaidEventRaw.map(event => {
+    const totalReviews = event.reviews.length || 0;
+    const avgRating = totalReviews > 0 
+      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+      : 0;
+    const { reviews, ...eventData } = event;
+    return { ...eventData, avgRating, totalReviews };
+  });
+
+
+  return {
+    PrivateFreeEvent,
+    PrivatePaidEvent,
+    PublicFreeEvent,
+    PublicPaidEvent
+  };
+  
+  
+
+
+  
+
+
+  
+};
+
+
 
 const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:string) => {
   const event = await prisma.event.findUnique({
@@ -258,4 +443,5 @@ export const EventServices = {
   getSingleEvent,
   updateEvent,
   DeleteEvent,
+  GetPaidAndFreeEvent
 };
