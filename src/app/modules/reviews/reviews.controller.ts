@@ -61,6 +61,22 @@ const getAllreviews=catchAsync(async (req: Request, res: Response) => {
     })
 }
 )
+const getReviewsByRole = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({ success: false, message: "you are unauthorized" });
+    }
+    // assuming user.role and user.userId are available on req.user
+    const result = await ReviewsServices.getReviewsByRole(user.role, user.userId);
+    sendResponse(res, {
+        httpStatusCode: status.OK,
+        success: true,
+        message: "retrieve reviews by role successfully",
+        data: result
+    });
+});
+
+
 
 const moderateReview = catchAsync(async (req: Request, res: Response) => {
         const { reviewid } = req.params;
@@ -78,5 +94,6 @@ export const ReviewsControllers={
     updateReview,
     deleteReview,
     getAllreviews,
-    moderateReview
+    moderateReview,
+    getReviewsByRole
 }

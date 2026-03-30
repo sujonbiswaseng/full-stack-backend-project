@@ -19,6 +19,5 @@ router.use("/v1", ParticipantRoutes);
 
 // reviews
 router.use("/v1", ReviewsRouters);
-// reviews
 router.use("/v1", StatsRoutes);
 export const IndexRouter=router

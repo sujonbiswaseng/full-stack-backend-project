@@ -97,6 +97,30 @@ const getAllreviews = async () => {
     return result
 }
 
+// Get reviews based on user role: admin gets all, user gets only their reviews
+const getReviewsByRole = async (role: string, userId: string) => {
+    if (role === "ADMIN") {
+        return await prisma.review.findMany({
+            include: {
+                user: true,
+                event: true,
+                replies: true
+            }
+        });
+    } else {
+        // User: get only their reviews
+        return await prisma.review.findMany({
+            where: { userId },
+            include: {
+                user: true,
+                event: true,
+                replies: true
+            }
+        });
+    }
+}
+
+
 
 
 const moderateReview = async (id: string, data: { status: ReviewStatus }) => {
@@ -138,5 +162,6 @@ export const ReviewsServices={
     updateReview,
     deleteReview,
     getAllreviews,
-    moderateReview
+    moderateReview,
+    getReviewsByRole
 }

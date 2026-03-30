@@ -9,6 +9,12 @@ import { createReviewsData, moderateData, updateReviewsData } from "./reviews.va
 
 const router=Router()
 router.get("/reviews", ReviewsControllers.getAllreviews)
+router.get(
+  "/my-reviews",
+  auth([Role.USER, Role.ADMIN]),
+  ReviewsControllers.getReviewsByRole
+)
+
 router.post("/event/:id/review",validateRequest(createReviewsData),auth([Role.USER]),ReviewsControllers.CreateReviews)
 
 router.put("/review/:reviewid", auth([Role.USER]),validateRequest(updateReviewsData), ReviewsControllers.updateReview)
