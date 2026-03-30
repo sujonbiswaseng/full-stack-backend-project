@@ -27,6 +27,7 @@ export interface IUpdateEventInput {
   visibility?: "PUBLIC" | "PRIVATE";
   fee?: number;
   search?:string;
+  createdAt?: string;
 }
 
 export type IEventQuery = Partial<IUpdateEventInput>;

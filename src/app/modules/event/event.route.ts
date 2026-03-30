@@ -15,6 +15,7 @@ router.post(
   EventController.createEvent
 )
 router.get("/events", EventController.getAllEvents);
+router.get("/my-events",auth([Role.USER,Role.ADMIN]), EventController.getEventsByRoleController);
 router.get("/events/paidandfree", EventController.getPaidAndFreeEvent);
 router.get("/event/:id", EventController.getSingleEvent);
 router.put("/event/:id",auth([Role.ADMIN,Role.USER]),validateRequest(UpdateEventSchema), EventController.updateEvent);

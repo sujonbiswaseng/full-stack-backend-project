@@ -32,6 +32,33 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+ const getEventsByRoleController = catchAsync(async (req: Request, res: Response) => {
+  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
+
+  const userId = req.user.userId;
+  const role = req.user.role;
+  const search=req.query?.search
+  const events = await EventServices.getEventsByRole(
+    req.query,
+    userId,
+    role,
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+    search as string
+  );
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Events fetched based on role successfully",
+    data: events,
+  });
+});
+
 const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
   const eventId = req.params.id;
 
@@ -79,4 +106,4 @@ const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent,getPaidAndFreeEvent}
+export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent,getPaidAndFreeEvent,getEventsByRoleController}

@@ -45,7 +45,14 @@ export const EventStatusEnum =z.enum([
   "COMPLETED",
   "CANCELLED",
 ]).default('UPCOMING');
-
+export const getEventsSchema = z.object({
+  createdAt: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid ISO date string",
+    })
+    .transform((val) => new Date(val).toISOString())
+});
 
 export const CreateEventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),

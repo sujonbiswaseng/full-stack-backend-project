@@ -9,6 +9,7 @@ import {
 } from "./event.interface";
 import { EventWhereInput } from "../../../generated/prisma/models";
 import { EventType } from "../../../generated/prisma/enums";
+import { parseDateForPrisma } from "../../utils/parseDate";
 
 const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
   const {
@@ -202,6 +203,94 @@ const getAllEvents = async (
       page,
       limit,
       totalpage: Math.ceil(total / limit!) || 1,
+    },
+  };
+};
+
+ const getEventsByRole = async (
+  data: IEventQuery,
+  userId: string,
+  role: string,
+  page?: number,
+  limit?: number,
+  skip?: number,
+  sortBy?: string,
+  sortOrder?: string,
+  search?:string
+) => {
+  const statuses = ["DRAFT", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as const;
+  const andConditions: EventWhereInput[] = [];
+
+  // ---------- Filters ----------
+  if (search) {
+    const orConditions: any[] = [];
+      orConditions.push(
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { venue: { contains: search, mode: "insensitive" } }
+      );
+    if (orConditions.length > 0) andConditions.push({ OR: orConditions });
+  }
+
+  if (data.categories) {
+    andConditions.push({ categories: data.categories });
+  }
+  if (data.createdAt) {
+    const isoString = new Date(data.createdAt).toISOString();
+    andConditions.push({ createdAt: isoString });
+  }
+  if (data.date) {
+    const dateRange = parseDateForPrisma(data.date);
+    andConditions.push({ date: dateRange });
+  } if (data.createdAt) {
+    const dateRange = parseDateForPrisma(data.createdAt);
+    andConditions.push({ createdAt:dateRange });
+  }
+  if (data.fee) andConditions.push({ fee: { lte: Number(data.fee) } });
+  if (data.visibility) andConditions.push({ visibility: data.visibility as EventType });
+  if (data.priceType) andConditions.push({ priceType: data.priceType });
+  if (data.is_featured !== undefined) {
+    andConditions.push({
+      is_featured: typeof data.is_featured === "string" ? data.is_featured === "true" : data.is_featured
+    });
+  }
+  if (data.status) andConditions.push({ status: data.status });
+  if (data.time) andConditions.push({ time: data.time });
+
+  // ---------- Role Based Filter ----------
+  if (role === "USER") {
+    andConditions.push({ organizerId: userId });
+  } 
+  const result: any = {};
+
+  for (const status of statuses) {
+    const events = await prisma.event.findMany({
+      where: { status, AND: andConditions },
+      take: limit,
+      skip,
+      include: {
+        reviews: { where: { rating: { gt: 0 } } },
+        organizer: { select: { name: true, email: true, phone: true, image: true } },
+      },
+      orderBy: sortBy ? { [sortBy]: sortOrder } : { date: "desc" },
+    });
+
+    result[status] = events.map((event) => {
+      const totalReviews = event.reviews.length;
+      const avgRating = totalReviews > 0 ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews : 0;
+      return { ...event, avgRating, totalReviews };
+    });
+  }
+
+  const total = await prisma.event.count({ where: { AND: andConditions } });
+
+  return {
+    data: result,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalpage: Math.ceil(total / (limit || 1)),
     },
   };
 };
@@ -408,5 +497,6 @@ export const EventServices = {
   getSingleEvent,
   updateEvent,
   DeleteEvent,
-  GetPaidAndFreeEvent
+  GetPaidAndFreeEvent,
+  getEventsByRole
 };
