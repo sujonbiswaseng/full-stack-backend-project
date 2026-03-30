@@ -5,7 +5,10 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
 CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED', 'DELETED');
 
 -- CreateEnum
-CREATE TYPE "EventType" AS ENUM ('PUBLIC', 'PRIVATE', 'PUBLIC_PAID', 'PRIVATE_PAID');
+CREATE TYPE "EventType" AS ENUM ('PUBLIC', 'PRIVATE');
+
+-- CreateEnum
+CREATE TYPE "PricingType" AS ENUM ('FREE', 'PAID');
 
 -- CreateEnum
 CREATE TYPE "EventStatus" AS ENUM ('DRAFT', 'UPCOMING', 'ONGOING', 'COMPLETED', 'CANCELLED');
@@ -98,6 +101,7 @@ CREATE TABLE "Event" (
     "venue" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "visibility" "EventType" NOT NULL DEFAULT 'PUBLIC',
+    "priceType" "PricingType" NOT NULL DEFAULT 'FREE',
     "status" "EventStatus" NOT NULL DEFAULT 'UPCOMING',
     "is_featured" BOOLEAN DEFAULT false,
     "categories" "EventCategory" NOT NULL,

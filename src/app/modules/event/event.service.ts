@@ -237,138 +237,103 @@ const getSingleEvent = async (eventId: string) => {
 };
 
 
-const GetPaidAndFreeEvent = async () => {
+const calculateReviewStats = (event: any) => {
+  const totalReviews = event.reviews.length;
+  const avgRating = totalReviews
+    ? event.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews
+    : 0;
+
+  const { reviews, ...eventData } = event;
+  return { ...eventData, avgRating, totalReviews };
+};
+
+const GetPaidAndFreeEvent = async (
+  page?: number,
+  limit?: number | undefined,
+  skip?: number,
+  sortBy?: string | undefined,
+  sortOrder?: string | undefined,) => {
+
+
   const PublicPaidEventRaw = await prisma.event.findMany({
-    where: { 
-      payments: {
-        some: { status: "PAID" }
-      },
-      visibility: 'PUBLIC'
+    take: limit,
+    skip,
+    where: {
+      visibility: "PUBLIC",
+      priceType:"PAID",
     },
     include: {
       reviews: {
         where: {
-          rating: {
-            gt: 0,
-          }
+          rating: { gt: 0 }
         }
       }
-    }
+    },
+    orderBy: {
+      [sortBy!]:sortOrder
+    },
   });
 
-  const PublicPaidEvent = PublicPaidEventRaw.map(event => {
-    const totalReviews = event.reviews.length || 0;
-    const avgRating = totalReviews > 0 
-      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
-      : 0;
-    const { reviews, ...eventData } = event;
-    return { ...eventData, avgRating, totalReviews };
-  });
+  const PublicPaidEvent = PublicPaidEventRaw.map(calculateReviewStats);
 
   const PublicFreeEventRaw = await prisma.event.findMany({
     where: {
-      payments: {
-        some: {
-          status: "FREE"
-        }
-      },
-      visibility: 'PUBLIC'
+      visibility: "PUBLIC",
+      priceType:"FREE"
     },
     include: {
       reviews: {
         where: {
-          rating: {
-            gt: 0,
-          }
+          rating: { gt: 0 }
         }
       }
     }
   });
 
-  const PublicFreeEvent = PublicFreeEventRaw.map(event => {
-    const totalReviews = event.reviews.length || 0;
-    const avgRating = totalReviews > 0 
-      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
-      : 0;
-    const { reviews, ...eventData } = event;
-    return { ...eventData, avgRating, totalReviews };
-  });
+  const PublicFreeEvent = PublicFreeEventRaw.map(calculateReviewStats);
 
   const PrivateFreeEventRaw = await prisma.event.findMany({
     where: {
-      payments: {
-        some: {
-          status: "FREE"
-        }
-      },
-      visibility: 'PRIVATE'
+      visibility: "PRIVATE",
+      priceType:"FREE",
     },
     include: {
       reviews: {
         where: {
-          rating: {
-            gt: 0,
-          }
+          rating: { gt: 0 }
         }
       }
     }
   });
 
-  const PrivateFreeEvent = PrivateFreeEventRaw.map(event => {
-    const totalReviews = event.reviews.length || 0;
-    const avgRating = totalReviews > 0 
-      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
-      : 0;
-    const { reviews, ...eventData } = event;
-    return { ...eventData, avgRating, totalReviews };
-  });
-
+  const PrivateFreeEvent = PrivateFreeEventRaw.map(calculateReviewStats);
   const PrivatePaidEventRaw = await prisma.event.findMany({
     where: {
-      payments: {
-        some: {
-          status: "PAID"
-        }
-      },
-      visibility: 'PRIVATE'
+      visibility: "PRIVATE",
+      priceType:"PAID",
     },
     include: {
       reviews: {
         where: {
-          rating: {
-            gt: 0,
-          }
+          rating: { gt: 0 }
         }
       }
     }
   });
 
-  const PrivatePaidEvent = PrivatePaidEventRaw.map(event => {
-    const totalReviews = event.reviews.length || 0;
-    const avgRating = totalReviews > 0 
-      ? event.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
-      : 0;
-    const { reviews, ...eventData } = event;
-    return { ...eventData, avgRating, totalReviews };
-  });
-
+  const PrivatePaidEvent = PrivatePaidEventRaw.map(calculateReviewStats);
 
   return {
+    PublicPaidEvent,
+    PublicFreeEvent,
     PrivateFreeEvent,
     PrivatePaidEvent,
-    PublicFreeEvent,
-    PublicPaidEvent
+    pagination: {
+      page,
+      limit
+    },
   };
-  
-  
-
-
-  
-
-
-  
 };
-
 
 
 const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:string) => {

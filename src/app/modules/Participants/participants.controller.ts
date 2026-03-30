@@ -18,7 +18,8 @@ const createParticipantController = catchAsync(async (req: Request, res: Respons
 
 
 const getAllParticipants= catchAsync(async (req: Request, res: Response) => {
-    const participants = await ParticipantService.getAllParticipantsService();
+  console.log('lsjfsjdklfj')
+    const participants = await ParticipantService.getAllParticipantsService(req.user.userId);
     sendResponse(res, {
       httpStatusCode: status.OK,
       success: true,
@@ -41,7 +42,7 @@ const getSingleParticipant= catchAsync(async (req: Request, res: Response) => {
 
   const updateParticipant = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const participant = await ParticipantService.UpdateParticipantService(id as string, req.body);
+  const participant = await ParticipantService.UpdateParticipantService(id as string, req.body,req.user.userId);
 
   sendResponse(res, {
     httpStatusCode: status.OK,

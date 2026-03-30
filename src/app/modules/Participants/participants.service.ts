@@ -13,16 +13,20 @@ const createParticipantService = async (
   eventId: string,
   data: ICreateParticipantInput,
 ) => {
-  // 🔍 Check existing participant
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId },
   });
+
+  if(existing?.status==='BANNED'){
+    throw new AppError(status.FORBIDDEN, "You have been banned from participating in this event.");
+  }
 
   if (existing) {
     throw new AppError(409, "User already joined");
   }
 
-  // 🔍 Get event info (IMPORTANT)
+
+
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     select: {
@@ -40,7 +44,6 @@ const createParticipantService = async (
 
   const isFree = Number(event.fee) === 0;
 
-  // 🎯 Decide status based on event type
   const finalStatus = isFree ? "APPROVED" : "PENDING";
   const finalPayment = isFree ? "PAID" : "UNPAID";
 
@@ -119,20 +122,42 @@ const createParticipantService = async (
   };
 };
 
-const getAllParticipantsService = async () => {
-  const result = await prisma.participant.findMany({
-    include: {
-      user: { select: { id: true, name: true, email: true, image: true } },
-      event: { select: { id: true, title: true, date: true, venue: true } },
-    },
-    orderBy: {
-      joinedAt: "desc",
-    },
+const getAllParticipantsService = async (userId:string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId }
   });
-  if (!result.length) {
-    throw new AppError(400, "participant user not found");
+  console.log(user,'su')
+  if (!user) {
+    throw new AppError(404, "User not found");
   }
-  return result;
+
+  if(user.role === "ADMIN"){
+
+    const result = await prisma.participant.findMany({
+      include: {
+        user: { select: { id: true, name: true, email: true, image: true } },
+        event: { select: { id: true, title: true, date: true, venue: true } },
+      },
+      orderBy: {
+        joinedAt: "desc",
+      },
+    })
+    result
+
+ } else if(user.role === "USER"){
+
+    const result = await prisma.participant.findMany({
+        where: { userId: userId },
+        include: {
+          user: { select: { id: true, name: true, email: true, image: true } },
+          event: { select: { id: true, title: true, date: true, venue: true } },
+        },
+        orderBy: {
+          joinedAt: "desc",
+        },
+    })
+    return result
+ }
 };
 
 const getSingleParticipantService = async (id: string) => {
@@ -150,21 +175,39 @@ const getSingleParticipantService = async (id: string) => {
 const UpdateParticipantService = async (
   id: string,
   data: Partial<ICreateParticipantInput>,
+  userId: string
 ) => {
+
   const existsParticipant = await prisma.participant.findUnique({
     where: { id },
   });
+
   if (!existsParticipant) {
-    throw new AppError(404, "participant not found");
+    throw new AppError(404, "Participant not found");
   }
+
+  // user বের করা
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  let updateData: any = {};
+  if (user.role === "USER") {
+    updateData.status = data.status;
+  }
+
+  if (user.role === "ADMIN") {
+    updateData.status = data.status;
+    updateData.paymentStatus = data.paymentStatus;
+  }
+
   const result = await prisma.participant.update({
-    where: {
-      id: id,
-    },
-    data: {
-      status: data.status,
-      paymentStatus: data.paymentStatus,
-    },
+    where: { id },
+    data: updateData,
   });
   return result;
 };

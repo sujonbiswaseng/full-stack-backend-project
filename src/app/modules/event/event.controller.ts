@@ -45,7 +45,8 @@ const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
-  const events = await EventServices.GetPaidAndFreeEvent();
+  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
+  const events = await EventServices.GetPaidAndFreeEvent(page, limit, skip, sortBy, sortOrder);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
