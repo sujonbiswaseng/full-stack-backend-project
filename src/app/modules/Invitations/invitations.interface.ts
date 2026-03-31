@@ -6,4 +6,5 @@ export interface IUpdateInvitationInput extends z.infer<typeof updateInvitationS
 export interface IInvitationInput {
   inviteeId: string[];
   message?: string;
+  eventId: string,
 }

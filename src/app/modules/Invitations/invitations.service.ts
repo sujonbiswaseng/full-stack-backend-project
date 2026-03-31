@@ -1,14 +1,23 @@
 import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
+import { parseDateForPrisma } from "../../utils/parseDate";
 import { IInvitationInput, IUpdateInvitationInput } from "./invitations.interface";
 
 export const createInvitationService = async (
-  eventId: string,
   inviterId: string,
   data: IInvitationInput
 ) => {
-  const { inviteeId, message } = data;
-
+  const { inviteeId, message,eventId } = data;
+  if (!eventId) {
+    throw new Error("Event ID is required");
+  }
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+    select: { id: true },
+  });
+  if (!event) {
+    throw new AppError(404, `Event with id ${eventId} does not exist`);
+  }
   const validUsers = await prisma.user.findMany({
     where: { id: { in: inviteeId } },
     select: { id: true },
@@ -81,19 +90,65 @@ const getAllInvitationsService = async () => {
   });
 };
 
-const getUserInvitationsService = async (userId: string) => {
-    const userExist=await prisma.user.findUnique({where:{id:userId}})
-    if(!userExist){
-        throw new AppError(404,'user not found')
+const getUserInvitationsService = async (
+  userId: string,
+  page?: number,
+  limit?: number,
+  skip?: number,
+  sortBy?: string,
+  sortOrder?: string,
+  query?: Record<string, any>
+) => {
+  const userExist = await prisma.user.findUnique({ where: { id: userId } });
+  if (!userExist) {
+    throw new AppError(404, 'user not found');
+  }
+  const andConditions: any[] = [];
+
+  if (query) {
+    if (query.eventId) {
+      andConditions.push({ eventId: query.eventId });
     }
-  return await prisma.invitation.findMany({
-    where: { inviteeId: userId },
-    include: {
-      event: true,
-      inviter: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+    if (query.inviterId) {
+      andConditions.push({ inviterId: query.inviterId });
+    }
+    if (query.inviteeId) {
+      andConditions.push({ inviteeId: query.inviteeId });
+    }
+    if (query.status) {
+      andConditions.push({ status: query.status });
+    }
+    if (query.createdAt) {
+      const dateRange = parseDateForPrisma(query.createdAt);
+      andConditions.push({ createdAt:dateRange });
+    }
+  }
+
+
+  const [receivedInvitations, sentInvitations] = await Promise.all([
+    prisma.invitation.findMany({
+      where: { inviteeId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
+      include: {
+        event: true,
+        inviter: true,
+      },
+      orderBy: { [sortBy || "createdAt"]: sortOrder === "asc" ? "asc" : "desc" },
+      skip: skip ?? 0,
+      take: limit ?? 10,
+    }),
+    prisma.invitation.findMany({
+      where: { inviterId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
+      include: {
+        event: true,
+        invitee: true,
+      },
+      orderBy: { [sortBy || "createdAt"]: sortOrder === "asc" ? "asc" : "desc" },
+      skip: skip ?? 0,
+      take: limit ?? 10,
+    }),
+  ]);
+
+  return { receivedInvitations, sentInvitations };
 };
 
 

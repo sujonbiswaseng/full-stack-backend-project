@@ -7,9 +7,9 @@ import { createInvitationSchema, updateInvitationSchema } from "./invitations.va
 import { InvitationController } from "./invitations.controller"
 
 const router=Router()
-router.post("/invitation/event/:id",auth([Role.ADMIN,Role.USER]),validateRequest(createInvitationSchema),InvitationController.CreateInvitation)
+router.post("/invitation",auth([Role.ADMIN,Role.USER]),InvitationController.CreateInvitation)
 router.get("/invitations", InvitationController.GetAllInvitationsController);
-router.get("/invitation/user/:id", InvitationController.GetUserInvitationsController);
+router.get("/invitation/user",auth([Role.ADMIN,Role.USER]), InvitationController.GetUserInvitationsController);
 router.get("/invitation/:id", InvitationController.GetSingleInvitationController);
 router.put("/invitation/:id",auth([Role.ADMIN,Role.USER]),validateRequest(updateInvitationSchema), InvitationController.updateInvitation);
 router.delete("/invitation/:id",auth([Role.ADMIN,Role.USER]),InvitationController.deleteInvitation);

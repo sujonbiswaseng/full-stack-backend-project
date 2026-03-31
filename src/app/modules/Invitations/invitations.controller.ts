@@ -3,11 +3,12 @@ import { catchAsync } from "../../shared/catchAsync";
 import { invitationsServices } from "./invitations.service";
 import { sendResponse } from "../../shared/sendResponse";
 import status from "http-status";
+import paginationSortingHelper from "../../helpers/paginationHelping";
 
 const CreateInvitation = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.user,'user')
   const user = req.user;
-  const id=req.params.id
-  const result = await invitationsServices.createInvitationService(id as string,user.userId,req.body);
+  const result = await invitationsServices.createInvitationService(user.userId,req.body);
 
   sendResponse(res, {
     httpStatusCode: status.CREATED,
@@ -29,13 +30,21 @@ const GetAllInvitationsController = catchAsync(async (req: Request, res: Respons
 });
 
 const GetUserInvitationsController = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await invitationsServices.getUserInvitationsService(id as string);
+  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
+  const result = await invitationsServices.getUserInvitationsService(
+    req.user.userId as string,
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+    req.query
+  );
 
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
-    message: `Invitations for user ${id} fetched successfully`,
+    message: `Invitations for user ${req.user.userId} fetched successfully`,
     data: result,
   });
 });
@@ -66,16 +75,7 @@ const deleteInvitation= catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, { httpStatusCode: status.OK, success: true, message: "Invitation updated", data: result });
   })
 
-  const getUserInvitationsService = async (userId: string) => {
-    return prisma.invitation.findMany({
-      where: { inviteeId: userId },
-      include: {
-        event: true,
-        inviter: { select: { id: true, name: true, email: true, image: true } }
-      },
-      orderBy: { createdAt: "desc" },
-    });
-  };
+  
 
 export const InvitationController={
 CreateInvitation,
