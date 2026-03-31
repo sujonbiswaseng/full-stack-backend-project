@@ -34,6 +34,8 @@ export type UserMinAggregateOutputType = {
   image: string | null
   isDeleted: boolean | null
   deletedAt: Date | null
+  bgimage: string | null
+  isActive: boolean | null
   emailVerified: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +51,8 @@ export type UserMaxAggregateOutputType = {
   image: string | null
   isDeleted: boolean | null
   deletedAt: Date | null
+  bgimage: string | null
+  isActive: boolean | null
   emailVerified: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -64,6 +68,8 @@ export type UserCountAggregateOutputType = {
   image: number
   isDeleted: number
   deletedAt: number
+  bgimage: number
+  isActive: number
   emailVerified: number
   createdAt: number
   updatedAt: number
@@ -81,6 +87,8 @@ export type UserMinAggregateInputType = {
   image?: true
   isDeleted?: true
   deletedAt?: true
+  bgimage?: true
+  isActive?: true
   emailVerified?: true
   createdAt?: true
   updatedAt?: true
@@ -96,6 +104,8 @@ export type UserMaxAggregateInputType = {
   image?: true
   isDeleted?: true
   deletedAt?: true
+  bgimage?: true
+  isActive?: true
   emailVerified?: true
   createdAt?: true
   updatedAt?: true
@@ -111,6 +121,8 @@ export type UserCountAggregateInputType = {
   image?: true
   isDeleted?: true
   deletedAt?: true
+  bgimage?: true
+  isActive?: true
   emailVerified?: true
   createdAt?: true
   updatedAt?: true
@@ -199,6 +211,8 @@ export type UserGroupByOutputType = {
   image: string
   isDeleted: boolean
   deletedAt: Date | null
+  bgimage: string | null
+  isActive: boolean
   emailVerified: boolean
   createdAt: Date
   updatedAt: Date
@@ -235,6 +249,8 @@ export type UserWhereInput = {
   image?: Prisma.StringFilter<"User"> | string
   isDeleted?: Prisma.BoolFilter<"User"> | boolean
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  bgimage?: Prisma.StringNullableFilter<"User"> | string | null
+  isActive?: Prisma.BoolFilter<"User"> | boolean
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -258,6 +274,8 @@ export type UserOrderByWithRelationInput = {
   image?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bgimage?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -284,6 +302,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   image?: Prisma.StringFilter<"User"> | string
   isDeleted?: Prisma.BoolFilter<"User"> | boolean
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  bgimage?: Prisma.StringNullableFilter<"User"> | string | null
+  isActive?: Prisma.BoolFilter<"User"> | boolean
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -307,6 +327,8 @@ export type UserOrderByWithAggregationInput = {
   image?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bgimage?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -328,6 +350,8 @@ export type UserScalarWhereWithAggregatesInput = {
   image?: Prisma.StringWithAggregatesFilter<"User"> | string
   isDeleted?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  bgimage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -343,6 +367,8 @@ export type UserCreateInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -366,6 +392,8 @@ export type UserUncheckedCreateInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -389,6 +417,8 @@ export type UserUpdateInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -412,6 +442,8 @@ export type UserUncheckedUpdateInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -435,6 +467,8 @@ export type UserCreateManyInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -450,6 +484,8 @@ export type UserUpdateManyMutationInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -465,6 +501,8 @@ export type UserUncheckedUpdateManyInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -480,6 +518,8 @@ export type UserCountOrderByAggregateInput = {
   image?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+  bgimage?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -495,6 +535,8 @@ export type UserMaxOrderByAggregateInput = {
   image?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+  bgimage?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -510,6 +552,8 @@ export type UserMinOrderByAggregateInput = {
   image?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+  bgimage?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -670,6 +714,8 @@ export type UserCreateWithoutSessionsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -692,6 +738,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -730,6 +778,8 @@ export type UserUpdateWithoutSessionsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -752,6 +802,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -774,6 +826,8 @@ export type UserCreateWithoutAccountsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -796,6 +850,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -834,6 +890,8 @@ export type UserUpdateWithoutAccountsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -856,6 +914,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -878,6 +938,8 @@ export type UserCreateWithoutEventsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -900,6 +962,8 @@ export type UserUncheckedCreateWithoutEventsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -938,6 +1002,8 @@ export type UserUpdateWithoutEventsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -960,6 +1026,8 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -982,6 +1050,8 @@ export type UserCreateWithoutInvitationsSentInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1004,6 +1074,8 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1031,6 +1103,8 @@ export type UserCreateWithoutInvitationsReceivedInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1053,6 +1127,8 @@ export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1091,6 +1167,8 @@ export type UserUpdateWithoutInvitationsSentInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1113,6 +1191,8 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1146,6 +1226,8 @@ export type UserUpdateWithoutInvitationsReceivedInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1168,6 +1250,8 @@ export type UserUncheckedUpdateWithoutInvitationsReceivedInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1190,6 +1274,8 @@ export type UserCreateWithoutParticipantsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1212,6 +1298,8 @@ export type UserUncheckedCreateWithoutParticipantsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1250,6 +1338,8 @@ export type UserUpdateWithoutParticipantsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1272,6 +1362,8 @@ export type UserUncheckedUpdateWithoutParticipantsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1294,6 +1386,8 @@ export type UserCreateWithoutPaymentsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1316,6 +1410,8 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1354,6 +1450,8 @@ export type UserUpdateWithoutPaymentsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1376,6 +1474,8 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1398,6 +1498,8 @@ export type UserCreateWithoutReviewsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1420,6 +1522,8 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   image?: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1458,6 +1562,8 @@ export type UserUpdateWithoutReviewsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1480,6 +1586,8 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1596,6 +1704,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   image?: boolean
   isDeleted?: boolean
   deletedAt?: boolean
+  bgimage?: boolean
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1620,6 +1730,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   image?: boolean
   isDeleted?: boolean
   deletedAt?: boolean
+  bgimage?: boolean
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1635,6 +1747,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   image?: boolean
   isDeleted?: boolean
   deletedAt?: boolean
+  bgimage?: boolean
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1650,12 +1764,14 @@ export type UserSelectScalar = {
   image?: boolean
   isDeleted?: boolean
   deletedAt?: boolean
+  bgimage?: boolean
+  isActive?: boolean
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "role" | "status" | "phone" | "image" | "isDeleted" | "deletedAt" | "emailVerified" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "role" | "status" | "phone" | "image" | "isDeleted" | "deletedAt" | "bgimage" | "isActive" | "emailVerified" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   events?: boolean | Prisma.User$eventsArgs<ExtArgs>
   participants?: boolean | Prisma.User$participantsArgs<ExtArgs>
@@ -1692,6 +1808,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     image: string
     isDeleted: boolean
     deletedAt: Date | null
+    bgimage: string | null
+    isActive: boolean
     emailVerified: boolean
     createdAt: Date
     updatedAt: Date
@@ -2135,6 +2253,8 @@ export interface UserFieldRefs {
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly isDeleted: Prisma.FieldRef<"User", 'Boolean'>
   readonly deletedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly bgimage: Prisma.FieldRef<"User", 'String'>
+  readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>

@@ -1,9 +1,22 @@
 import { Router } from "express"
 import { Role } from "../../../generated/prisma/enums"
-import { UserController } from "./user.service"
-import auth from "../../middleware/Auth"
+import auth from "../../middleware/Auth";
+import { UserController } from "./user.controller";
+import { validateRequest } from "../../middleware/validateRequest";
+import { UpdateuserProfileData } from "./user.validation";
 
 const router=Router()
 router.delete("/profile/own",auth([Role.USER]),UserController.OwnProfileDelete)
 
-export default router
+
+
+router.put(
+  "/profile/update",
+  auth([Role.USER, Role.ADMIN]),
+  validateRequest(UpdateuserProfileData),
+  UserController.UpdateUserProfile
+);
+router.delete("/profile/own/delete",auth([Role.USER,Role.ADMIN]),UserController.OwnProfileDelete)
+
+
+export const UsersRoutes = router;

@@ -9,6 +9,7 @@ model User {
   image         String    @default("https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg")
   isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
+  bgimage        String?
   isActive      Boolean    @default(false)
   emailVerified Boolean   @default(false)
   createdAt     DateTime  @default(now())
