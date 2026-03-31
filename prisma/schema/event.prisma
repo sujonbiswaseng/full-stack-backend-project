@@ -13,7 +13,7 @@ model Event {
   categories EventCategory
   fee          Float    @default(0)
   organizerId  String
-  organizer    User     @relation("UserEvents", fields: [organizerId], references: [id])
+  organizer    User     @relation("UserEvents", fields: [organizerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   // relations
   participants Participant[]
