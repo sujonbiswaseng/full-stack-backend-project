@@ -57,6 +57,7 @@ export const ModelName = {
   Verification: 'Verification',
   Event: 'Event',
   Invitation: 'Invitation',
+  Notification: 'Notification',
   Participant: 'Participant',
   Payment: 'Payment',
   Review: 'Review'
@@ -175,6 +176,19 @@ export const InvitationScalarFieldEnum = {
 } as const
 
 export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  message: 'message',
+  type: 'type',
+  read: 'read',
+  invitationId: 'invitationId',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
 export const ParticipantScalarFieldEnum = {

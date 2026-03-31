@@ -4,6 +4,7 @@ model Invitation {
   eventId       String
   inviterId     String
   inviteeId     String
+  notifications Notification[]
 
   event         Event    @relation(fields: [eventId], references: [id])
   inviter       User     @relation("Inviter", fields: [inviterId], references: [id], onDelete: Cascade, onUpdate: Cascade)

@@ -118,9 +118,6 @@ const getReviewsByRole = async (
 
 ) => {
   const andConditions: any[] = [];
-  console.log(andConditions,'sd')
-
-  // Add filters based on provided query data
 
     if (data.parentId !== undefined) {
       andConditions.push({
@@ -129,17 +126,14 @@ const getReviewsByRole = async (
     }
     if (data.status) {
       andConditions.push({
-        status: data.status,
+        status: data.status as ReviewStatus | undefined
       });
     }
-    console.log(data.rating , typeof data.rating,'s')
     if (typeof data.rating === "number") {
       andConditions.push({
         rating: Number(data.rating)
       });
     }
-
-
   if (role === "USER") {
     andConditions.push({
       event: {

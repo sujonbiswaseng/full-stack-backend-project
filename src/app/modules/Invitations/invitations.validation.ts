@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createInvitationSchema = z.object({
   inviteeId: z.array(z.string()),
+  message: z.string().optional(),
 });
 
 export const updateInvitationSchema = z.object({

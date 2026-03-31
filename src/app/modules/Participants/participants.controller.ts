@@ -52,6 +52,19 @@ const getSingleParticipant= catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getOwnPayment = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+  const result = await ParticipantService.getOwnPaymentParticipantService(req.params.id as string,userId);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Fetched own payment participants successfully",
+    data: result,
+  });
+});
+
+
 const deleteParticipant = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -92,4 +105,4 @@ const initiatePayment = catchAsync(async (req: Request, res: Response) => {
         data: paymentInfo
     });
 });
-export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant,ParticipantCreateWithPayLater,initiatePayment}
+export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant,ParticipantCreateWithPayLater,initiatePayment,getOwnPayment}

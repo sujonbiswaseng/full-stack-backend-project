@@ -48,6 +48,11 @@ export type Event = Prisma.EventModel
  */
 export type Invitation = Prisma.InvitationModel
 /**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model Participant
  * 
  */

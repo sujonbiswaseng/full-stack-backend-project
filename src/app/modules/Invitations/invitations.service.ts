@@ -2,37 +2,72 @@ import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
 import { IInvitationInput, IUpdateInvitationInput } from "./invitations.interface";
 
-// Create Invitation
-const createInvitationService = async (
+export const createInvitationService = async (
   eventId: string,
   inviterId: string,
-  data: IInvitationInput,
+  data: IInvitationInput
 ) => {
+  const { inviteeId, message } = data;
 
-      const existing = await prisma.invitation.findMany({
+  const validUsers = await prisma.user.findMany({
+    where: { id: { in: inviteeId } },
+    select: { id: true },
+  });
+
+  const validUserIds = validUsers.map(u => u.id);
+  const invalidIds = inviteeId.filter(id => !validUserIds.includes(id));
+  if (invalidIds.length) {
+    throw new AppError(
+      400,
+      `These invitee IDs do not exist: ${invalidIds.join(", ")}`
+    );
+  }
+
+  const existingInvitations = await prisma.invitation.findMany({
     where: {
       eventId,
       inviterId,
-      inviteeId: { in: data.inviteeId },
+      inviteeId: { in: inviteeId },
     },
     select: { inviteeId: true },
   });
-   const existingIds = existing.map(e => e.inviteeId);
-   const newInvitees = data.inviteeId.filter(id => !existingIds.includes(id));
-   if(!newInvitees.length){
-    throw new AppError(400,'invalid input ,plase check your input value')
-   }
-  const invitations = newInvitees.map((inviteeId) => ({
-    eventId: eventId,
-    inviterId: inviterId,
-    inviteeId,
-  }));
-   const result = await Promise.all(
-    invitations.map(inv =>
-      prisma.invitation.create({ data: inv })
+
+  const existingIds = existingInvitations.map(inv => inv.inviteeId);
+  const newInvitees = inviteeId.filter(id => !existingIds.includes(id));
+
+  if (newInvitees.length === 0) {
+    throw new AppError(
+      400,
+      `All specified users have already been invited: ${existingIds.join(", ")}`
+    );
+  }
+
+  const invitations = await Promise.all(
+    newInvitees.map(inviteeId =>
+      prisma.invitation.create({
+        data: {
+          eventId,
+          inviterId,
+          inviteeId,
+        },
+      })
     )
   );
-  return result;
+
+  const notifications = await Promise.all(
+    invitations.map(inv =>
+      prisma.notification.create({
+        data: {
+          userId: inv.inviteeId,
+          message: message || "You have a new invitation for an event.",
+          type: "INVITATION",
+          invitationId: inv.id,
+        },
+      })
+    )
+  );
+
+  return { invitations, notifications };
 };
 
 const getAllInvitationsService = async () => {
@@ -77,20 +112,36 @@ const getUserInvitationsService = async (userId: string) => {
   return result
 };
 
- const updateInvitationService = async (id: string, data: IUpdateInvitationInput) => {
+const updateInvitationService = async (
+  id: string,
+  data: IUpdateInvitationInput,
+  userRole: "ADMIN" | string
+) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
-  if (!invitation) throw new Error(`Invitation with id ${id} not found`)
+  if (!invitation) throw new Error(`Invitation with id ${id} not found`);
 
-  // Update
+  let updateData: any = {};
+
+  if (userRole === "ADMIN") {
+    updateData = data;
+  } else {
+    if (!Object.prototype.hasOwnProperty.call(data, "status")) {
+      throw new Error("Users are allowed to update status only.");
+    }
+    updateData.status = data.status;
+  }
+
   const updated = await prisma.invitation.update({
     where: { id },
-    data,
+    data: updateData,
     include: {
       event: { select: { id: true, title: true, date: true, venue: true } },
       inviter: { select: { id: true, name: true, email: true } },
       invitee: { select: { id: true, name: true, email: true } },
     },
   });
+
+  await prisma.notification.deleteMany({ where: { invitationId: id } });
 
   return updated;
 };
@@ -103,6 +154,7 @@ const deleteInvitationService = async (id: string) => {
 
   return await prisma.invitation.delete({ where: { id } });
 };
+
 export const invitationsServices = {
   createInvitationService,getAllInvitationsService,getUserInvitationsService,getSingleInvitationService,deleteInvitationService,updateInvitationService
 };

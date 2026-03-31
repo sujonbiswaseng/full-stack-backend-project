@@ -104,8 +104,8 @@ const createParticipantService = async (
         participantId: participantData.id,
         paymentId: paymentData.id,
       },
-      success_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-success`,
-      cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
+      success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
+      cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`,
     });
 
     return {
@@ -159,6 +159,26 @@ const getAllParticipantsService = async (userId:string) => {
     return result
  }
 };
+
+const getOwnPaymentParticipantService = async (eventId:string,userId: string) => {
+  // Get participant records for the user that have any payment, and include payment info
+  const participants = await prisma.participant.findMany({
+    where: {
+      userId: userId,
+      eventId:eventId
+    },
+    include: {
+      payment: true, // Assumes relation "payment" exists in Participant model
+      event: { select: { id: true, title: true, date: true, venue: true } },
+    },
+    orderBy: {
+      joinedAt: "desc",
+    },
+  });
+  return participants;
+};
+
+
 
 const getSingleParticipantService = async (id: string) => {
   return await prisma.participant.findUnique({
@@ -351,5 +371,6 @@ export const ParticipantService = {
   UpdateParticipantService,
   deleteParticipantService,
   createParticipantPayLater,
-  initiatePayment
+  initiatePayment,
+  getOwnPaymentParticipantService
 };

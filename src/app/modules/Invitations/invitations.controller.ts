@@ -62,9 +62,20 @@ const deleteInvitation= catchAsync(async (req: Request, res: Response) => {
 
   const updateInvitation= catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = await invitationsServices.updateInvitationService(id as string, req.body);
+    const result = await invitationsServices.updateInvitationService(id as string, req.body,req.user.role);
     sendResponse(res, { httpStatusCode: status.OK, success: true, message: "Invitation updated", data: result });
   })
+
+  const getUserInvitationsService = async (userId: string) => {
+    return prisma.invitation.findMany({
+      where: { inviteeId: userId },
+      include: {
+        event: true,
+        inviter: { select: { id: true, name: true, email: true, image: true } }
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  };
 
 export const InvitationController={
 CreateInvitation,

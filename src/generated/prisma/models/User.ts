@@ -221,7 +221,7 @@ export type UserGroupByOutputType = {
   _max: UserMaxAggregateOutputType | null
 }
 
-export type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserGroupByOutputType, T['by']> &
       {
@@ -258,6 +258,7 @@ export type UserWhereInput = {
   participants?: Prisma.ParticipantListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   invitationsSent?: Prisma.InvitationListRelationFilter
   invitationsReceived?: Prisma.InvitationListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
@@ -283,6 +284,7 @@ export type UserOrderByWithRelationInput = {
   participants?: Prisma.ParticipantOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
   invitationsSent?: Prisma.InvitationOrderByRelationAggregateInput
   invitationsReceived?: Prisma.InvitationOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
@@ -311,6 +313,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   participants?: Prisma.ParticipantListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   invitationsSent?: Prisma.InvitationListRelationFilter
   invitationsReceived?: Prisma.InvitationListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
@@ -376,6 +379,7 @@ export type UserCreateInput = {
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -401,6 +405,7 @@ export type UserUncheckedCreateInput = {
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -426,6 +431,7 @@ export type UserUpdateInput = {
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -451,6 +457,7 @@ export type UserUncheckedUpdateInput = {
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -662,6 +669,20 @@ export type UserUpdateOneRequiredWithoutInvitationsReceivedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInvitationsReceivedInput, Prisma.UserUpdateWithoutInvitationsReceivedInput>, Prisma.UserUncheckedUpdateWithoutInvitationsReceivedInput>
 }
 
+export type UserCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.UserUpsertWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
 export type UserCreateNestedOneWithoutParticipantsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutParticipantsInput, Prisma.UserUncheckedCreateWithoutParticipantsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutParticipantsInput
@@ -723,6 +744,7 @@ export type UserCreateWithoutSessionsInput = {
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -747,6 +769,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -787,6 +810,7 @@ export type UserUpdateWithoutSessionsInput = {
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -811,6 +835,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -835,6 +860,7 @@ export type UserCreateWithoutAccountsInput = {
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -859,6 +885,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -899,6 +926,7 @@ export type UserUpdateWithoutAccountsInput = {
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -923,6 +951,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -946,6 +975,7 @@ export type UserCreateWithoutEventsInput = {
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -970,6 +1000,7 @@ export type UserUncheckedCreateWithoutEventsInput = {
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1010,6 +1041,7 @@ export type UserUpdateWithoutEventsInput = {
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1034,6 +1066,7 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1059,6 +1092,7 @@ export type UserCreateWithoutInvitationsSentInput = {
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -1083,6 +1117,7 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1112,6 +1147,7 @@ export type UserCreateWithoutInvitationsReceivedInput = {
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -1136,6 +1172,7 @@ export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1176,6 +1213,7 @@ export type UserUpdateWithoutInvitationsSentInput = {
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -1200,6 +1238,7 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1235,6 +1274,7 @@ export type UserUpdateWithoutInvitationsReceivedInput = {
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -1259,7 +1299,124 @@ export type UserUncheckedUpdateWithoutInvitationsReceivedInput = {
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  phone?: string | null
+  image?: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
+  emailVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
+  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
+  invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  phone?: string | null
+  image?: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
+  emailVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
+  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
+  invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+}
+
+export type UserUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type UserUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
+  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
+  invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
+  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
+  invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1282,6 +1439,7 @@ export type UserCreateWithoutParticipantsInput = {
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1306,6 +1464,7 @@ export type UserUncheckedCreateWithoutParticipantsInput = {
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1346,6 +1505,7 @@ export type UserUpdateWithoutParticipantsInput = {
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1370,6 +1530,7 @@ export type UserUncheckedUpdateWithoutParticipantsInput = {
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1394,6 +1555,7 @@ export type UserCreateWithoutPaymentsInput = {
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1418,6 +1580,7 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1458,6 +1621,7 @@ export type UserUpdateWithoutPaymentsInput = {
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1482,6 +1646,7 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1506,6 +1671,7 @@ export type UserCreateWithoutReviewsInput = {
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1530,6 +1696,7 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
   invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1570,6 +1737,7 @@ export type UserUpdateWithoutReviewsInput = {
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1594,6 +1762,7 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
   invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1610,6 +1779,7 @@ export type UserCountOutputType = {
   participants: number
   reviews: number
   payments: number
+  notifications: number
   invitationsSent: number
   invitationsReceived: number
   sessions: number
@@ -1621,6 +1791,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   participants?: boolean | UserCountOutputTypeCountParticipantsArgs
   reviews?: boolean | UserCountOutputTypeCountReviewsArgs
   payments?: boolean | UserCountOutputTypeCountPaymentsArgs
+  notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   invitationsSent?: boolean | UserCountOutputTypeCountInvitationsSentArgs
   invitationsReceived?: boolean | UserCountOutputTypeCountInvitationsReceivedArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
@@ -1663,6 +1834,13 @@ export type UserCountOutputTypeCountReviewsArgs<ExtArgs extends runtime.Types.Ex
  */
 export type UserCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
 }
 
 /**
@@ -1713,6 +1891,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   participants?: boolean | Prisma.User$participantsArgs<ExtArgs>
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
   invitationsReceived?: boolean | Prisma.User$invitationsReceivedArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
@@ -1777,6 +1956,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   participants?: boolean | Prisma.User$participantsArgs<ExtArgs>
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
   invitationsReceived?: boolean | Prisma.User$invitationsReceivedArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
@@ -1793,6 +1973,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     participants: Prisma.$ParticipantPayload<ExtArgs>[]
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
     invitationsSent: Prisma.$InvitationPayload<ExtArgs>[]
     invitationsReceived: Prisma.$InvitationPayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
@@ -2211,6 +2392,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   participants<T extends Prisma.User$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.User$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.User$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitationsSent<T extends Prisma.User$invitationsSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitationsReceived<T extends Prisma.User$invitationsReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2744,6 +2926,30 @@ export type User$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * User.notifications
+ */
+export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**
