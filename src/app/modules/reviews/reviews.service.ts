@@ -1,7 +1,8 @@
 import { ReviewStatus } from "../../../generated/prisma/enums";
 import AppError from "../../errorHelper/AppError";
+import { IOptionsResult } from "../../helpers/paginationHelping";
 import { prisma } from "../../lib/prisma";
-import { ICreatereviewData, IUpdatereviewData } from "./reviews.interface";
+import { ICreatereviewData, IReviewQueryParams, IUpdatereviewData } from "./reviews.interface";
 
 // service for reviews module
 const CreateReviews = async (userId: string, eventId: string, data: ICreatereviewData) => {
@@ -62,18 +63,24 @@ const updateReview = async (reviewId: string, data: IUpdatereviewData, userid: s
     }
 }
 
-const deleteReview = async (reviewid: string) => {
+const deleteReview = async (reviewid: string,userid:string) => {
+
     const review = await prisma.review.findUnique({
         where: {
             id: reviewid,
         },
         select: {
-            id: true
+            id: true,
+            userId: true
         }
-    })
+    });
     if (!review) {
-        throw new AppError(404, "review not found")
+        throw new AppError(404, "review not found");
     }
+    if (userid !== review.userId && userid !== "admin") {
+        throw new AppError(403, "You are not authorized to delete this review");
+    }
+
 
     const result = await prisma.review.delete({
         where: {
@@ -97,28 +104,99 @@ const getAllreviews = async () => {
     return result
 }
 
-// Get reviews based on user role: admin gets all, user gets only their reviews
-const getReviewsByRole = async (role: string, userId: string) => {
-    if (role === "ADMIN") {
-        return await prisma.review.findMany({
-            include: {
-                user: true,
-                event: true,
-                replies: true
-            }
-        });
-    } else {
-        // User: get only their reviews
-        return await prisma.review.findMany({
-            where: { userId },
-            include: {
-                user: true,
-                event: true,
-                replies: true
-            }
-        });
+
+
+const getReviewsByRole = async (
+  role: string, 
+  userId: string, 
+  page = 1, 
+  limit = 10, 
+  skip = 0, 
+  data:IReviewQueryParams,
+  sortBy = "createdAt", 
+  sortOrder: "asc" | "desc" = "desc",
+
+) => {
+  const andConditions: any[] = [];
+  console.log(andConditions,'sd')
+
+  // Add filters based on provided query data
+
+    if (data.parentId !== undefined) {
+      andConditions.push({
+        parentId: data.parentId,
+      });
     }
-}
+    if (data.status) {
+      andConditions.push({
+        status: data.status,
+      });
+    }
+    console.log(data.rating , typeof data.rating,'s')
+    if (typeof data.rating === "number") {
+      andConditions.push({
+        rating: Number(data.rating)
+      });
+    }
+
+
+  if (role === "USER") {
+    andConditions.push({
+      event: {
+        organizerId: userId
+      }
+    });
+  } else if (role !== "ADMIN") {
+    throw new AppError(403, "You are not authorized to view these reviews");
+  }
+
+  // Prepare findMany arguments
+  const whereClause = andConditions.length > 0 ? { AND: andConditions } : undefined;
+
+  const [reviews, total] = await Promise.all([
+    prisma.review.findMany({
+      where: whereClause,
+      take: limit,
+      skip: skip,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        event: {
+          select: {
+            id: true,
+            title: true,
+            date: true,
+            venue: true,
+            ...(role === "ADMIN" && { organizerId: true }),
+          },
+        },
+        replies: true,
+      },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    }),
+    prisma.review.count({
+      where: whereClause,
+    }),
+  ]);
+  return {
+    data: reviews,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalpage: Math.ceil(total / (limit || 1)),
+    },
+  };
+};
+
 
 
 

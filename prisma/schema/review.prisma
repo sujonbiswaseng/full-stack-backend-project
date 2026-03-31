@@ -3,7 +3,7 @@ model Review {
 
   userId    String
   eventId   String
-  rating    Int      // 1-5
+  rating    Int 
   comment   String
   parentId  String?
   status ReviewStatus @default(APPROVED)

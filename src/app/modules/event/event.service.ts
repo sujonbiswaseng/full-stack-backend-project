@@ -300,12 +300,23 @@ const getSingleEvent = async (eventId: string) => {
     where: { id: eventId },
     include: {
       reviews: {
-        where: {
-          rating: {
-            gt: 0,
+        where: { rating: { gt: 0 }, parentId: null },
+        include: {
+          replies: {
+            include: {
+              replies: {
+                include: {
+                  replies: true,
+                  user: true,
+                }
+              },
+              user: true,
+            }
           },
+          user: true,
         },
       },
+      organizer:true
     },
   });
 

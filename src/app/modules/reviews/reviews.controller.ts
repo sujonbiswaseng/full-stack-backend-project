@@ -5,6 +5,8 @@ import { catchAsync } from "../../shared/catchAsync"
 import { sendResponse } from "../../shared/sendResponse"
 import { ReviewsServices } from "./reviews.service"
 import status from "http-status"
+import paginationSortingHelper from "../../helpers/paginationHelping"
+import { IReviewQueryParams } from "./reviews.interface"
 
 const CreateReviews =catchAsync(async (req: Request, res: Response) => {
          const user = req.user
@@ -41,7 +43,7 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
            return res.status(401).json({ success: false, message: "you are unauthorized" })
         }
         const { reviewid } = req.params;
-        const result = await ReviewsServices.deleteReview(reviewid as string)
+        const result = await ReviewsServices.deleteReview(reviewid as string,user.userId as string)
             sendResponse(res,{
                 httpStatusCode:status.OK,
                 success:true,
@@ -63,11 +65,14 @@ const getAllreviews=catchAsync(async (req: Request, res: Response) => {
 )
 const getReviewsByRole = catchAsync(async (req: Request, res: Response) => {
     const user = req.user;
+    const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
     if (!user) {
         return res.status(401).json({ success: false, message: "you are unauthorized" });
     }
-    // assuming user.role and user.userId are available on req.user
-    const result = await ReviewsServices.getReviewsByRole(user.role, user.userId);
+    // Pass paging, sorting info, and any other data you want to the ReviewsServices
+    const result = await ReviewsServices.getReviewsByRole(
+        user.role,
+        user.userId,page,limit,skip,req.query as any);
     sendResponse(res, {
         httpStatusCode: status.OK,
         success: true,
