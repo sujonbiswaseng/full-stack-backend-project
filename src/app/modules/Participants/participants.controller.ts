@@ -81,15 +81,27 @@ const deleteParticipant = catchAsync(async (req: Request, res: Response) => {
 
 
 const ParticipantCreateWithPayLater = catchAsync(async (req: Request, res: Response) => {
-    const payload = req.body;
     const user = req.user;
     const id=req.params.id
-    const appointment = await ParticipantService.createParticipantPayLater(user.userId,id as string,payload);
+    const appointment = await ParticipantService.createParticipantPayLater(user.userId,id as string);
     sendResponse(res, {
         success: true,  
         httpStatusCode: status.CREATED,
         message: 'participant create with pay later successfully',
         data: appointment
+    });
+});
+
+const ParticipantOwnRequestEvent = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user.userId;
+    const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
+    const result = await ParticipantService.ParticipantOwnRequestEventService(userId, page,limit,skip,req.query);
+
+    sendResponse(res, {
+        success: true,
+        httpStatusCode: status.OK,
+        message: "Fetched own participant event requests successfully",
+        data: result,
     });
 });
 
@@ -106,4 +118,4 @@ const initiatePayment = catchAsync(async (req: Request, res: Response) => {
         data: paymentInfo
     });
 });
-export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant,ParticipantCreateWithPayLater,initiatePayment,getOwnPayment}
+export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant,ParticipantCreateWithPayLater,initiatePayment,getOwnPayment,ParticipantOwnRequestEvent}

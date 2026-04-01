@@ -125,8 +125,14 @@ const createParticipantService = async (
 
 const getAllParticipantsService = async (userId:string,page:number,limit:number,skip:number,sortBy:string,sortOrder:string,query:any) => {
   const user = await prisma.user.findUnique({
-    where: { id: userId }
+    where: { id: userId },
   });
+  const EventData=await prisma.event.findMany({where:{
+    organizerId:user?.id
+  }})
+
+  const eventIds = EventData.map(event => event.id);
+  
   if (!user) {
     throw new AppError(404, "User not found");
   }
@@ -177,6 +183,9 @@ const getAllParticipantsService = async (userId:string,page:number,limit:number,
     }
 
  } else if(user.role === "USER"){
+  if(!EventData){
+    return null
+  }
 
     const result = await prisma.participant.findMany({      
       skip,
@@ -184,7 +193,7 @@ const getAllParticipantsService = async (userId:string,page:number,limit:number,
         orderBy: {
           "joinedAt":"desc"
         },
-        where: { ...where, userId: userId },
+        where: { ...where, userId: userId,eventId:{in:eventIds}},
         include: {
           user: { select: { id: true, name: true, email: true, image: true } },
           event: { select: { id: true, title: true, date: true, venue: true } },
@@ -216,6 +225,53 @@ const getOwnPaymentParticipantService = async (eventId:string,userId: string) =>
     include: {
       payment: true, // Assumes relation "payment" exists in Participant model
       event: { select: { id: true, title: true, date: true, venue: true } },
+    },
+    orderBy: {
+      joinedAt: "desc",
+    },
+  });
+  return participants;
+};
+
+const ParticipantOwnRequestEventService = async (userId: string,page:number,limit:number,skip:number,query:any) => {
+  // Returns all the events where this user is a participant (requested/approved) -- own requests
+  const andConditions: any[] = [];
+
+  if (query.status) {
+    andConditions.push({
+      status: query.status,
+    });
+  }
+  if (query.joinedAt) {
+    const dateRange = parseDateForPrisma(query.joinedAt);
+    andConditions.push({ joinedAt:dateRange });
+  }
+
+  if (query.paymentStatus) {
+    andConditions.push({
+      paymentStatus: query.paymentStatus,
+    });
+  }
+
+  const where = andConditions.length > 0 ? { AND: andConditions } : {};
+  const participants = await prisma.participant.findMany({
+    where: {
+      userId,
+      ...where
+    },
+    include: {
+      event: {
+        select: {
+          id: true,
+          title: true,
+          date: true,
+          venue: true,
+          image: true,
+          status: true,
+        },
+      },
+      user:true
+      // include other relations if needed
     },
     orderBy: {
       joinedAt: "desc",
@@ -293,40 +349,35 @@ const deleteParticipantService = async (id: string) => {
 
 
 const createParticipantPayLater=async( userId: string,
-  eventId: string,
-  data: ICreateParticipantInput,)=>{
+  eventId: string)=>{
 
-    const { status, paymentStatus } = data;
-  //   check exist participant user
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId },
   });
+  if(existing?.status==="PENDING"){
+    throw new AppError(400, "User already requested to join and is pending approval");
+  }
+  if(existing?.status==="APPROVED"){
+    throw new AppError(400, `User already joined and approved for this event`);
+  }
+
+  if(existing?.status==="BANNED"){
+    throw new AppError(400, "User is banned from joining this event");
+  }
+
 
   if (existing) {
-    return { message: "User already joined", participant: existing };
+    return { message: "User already requested join", participant: existing };
   }
 
-  // Step 2: Validate status & paymentStatus combination
-  const finalStatus = status || "PENDING";
-  const finalPayment = paymentStatus || "UNPAID";
-
-  if (finalStatus === "APPROVED" && finalPayment === "UNPAID") {
-    throw new AppError(
-      400,
-      "Cannot approve participant before payment is completed",
-    );
-  }
-  if (finalStatus === "REJECTED" && finalPayment === "PAID") {
-    throw new AppError(400, "Rejected participant cannot have SUCCESS payment");
-  }
 
    const result = await prisma.$transaction(async (tx) => {
      const participantData = await prisma.participant.create({
       data: {
         userId,
         eventId,
-        status: finalStatus,
-        paymentStatus: finalPayment,
+        status: "PENDING",
+        paymentStatus: "UNPAID",
       },
       include: {
         user: { select: { id: true, name: true, email: true } },
@@ -344,16 +395,25 @@ const createParticipantPayLater=async( userId: string,
 }
 
 
-const initiatePayment = async (participantId: string, user : IRequestUser) => {
+const initiatePayment = async (eventId: string, user : IRequestUser) => {
     const userdata = await prisma.user.findUniqueOrThrow({
         where: {
             email: user.email,
         }
     });
-
+    // Check that the event exists, is active and is accepting participants
+    const event = await prisma.event.findUnique({
+        where: {
+            id: eventId,
+        },
+    });
+    if (!event) {
+        throw new AppError(status.NOT_FOUND, "Event not found");
+    }
+    
     const participantData = await prisma.participant.findUniqueOrThrow({
         where: {
-            id: participantId,
+            id: eventId,
             userId: userdata.id,
         },
         include: {
@@ -399,10 +459,8 @@ const initiatePayment = async (participantId: string, user : IRequestUser) => {
             paymentId: participantData.payment.id,
         },
 
-        success_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-success?appointment_id=${participantData.id}&payment_id=${participantData.payment.id}`,
-
-        // cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
-        cancel_url: `${envVars.FRONTEND_URL}/dashboard/appointments?error=payment_cancelled`,
+        success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
+        cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`,
     })
 
     return {
@@ -418,5 +476,6 @@ export const ParticipantService = {
   deleteParticipantService,
   createParticipantPayLater,
   initiatePayment,
-  getOwnPaymentParticipantService
+  getOwnPaymentParticipantService,
+  ParticipantOwnRequestEventService
 };

@@ -186,7 +186,7 @@ const getReviewsByRole = async (
       total,
       page,
       limit,
-      totalpage: Math.ceil(total / (limit || 1)),
+      totalpage: Math.ceil(total / (limit)) || 1,
     },
   };
 };
