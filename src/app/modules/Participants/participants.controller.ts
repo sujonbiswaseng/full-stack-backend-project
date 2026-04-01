@@ -92,6 +92,19 @@ const ParticipantCreateWithPayLater = catchAsync(async (req: Request, res: Respo
     });
 });
 
+const deleteEventRequestJoinData = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await ParticipantService.deleteEventRequestJoinData(id as string);
+
+    sendResponse(res, {
+        httpStatusCode: status.OK,
+        success: true,
+        message: "Deleted event request participant successfully",
+        data: result,
+    });
+});
+
+
 const ParticipantOwnRequestEvent = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user.userId;
     const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
@@ -118,4 +131,4 @@ const initiatePayment = catchAsync(async (req: Request, res: Response) => {
         data: paymentInfo
     });
 });
-export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant,ParticipantCreateWithPayLater,initiatePayment,getOwnPayment,ParticipantOwnRequestEvent}
+export const ParticipantControllers={createParticipantController,getAllParticipants,getSingleParticipant,updateParticipant,deleteParticipant,ParticipantCreateWithPayLater,initiatePayment,getOwnPayment,ParticipantOwnRequestEvent,deleteEventRequestJoinData}

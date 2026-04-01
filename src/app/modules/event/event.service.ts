@@ -24,6 +24,7 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
     categories,
     image,
   } = payload;
+
   const event = await prisma.event.create({
     data: {
       title,

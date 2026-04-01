@@ -7,6 +7,7 @@ import { Role } from "../../../generated/prisma/enums";
 const router = express.Router();
 router.get("/participant/event/:id/own-payment", auth([Role.USER]), ParticipantControllers.getOwnPayment);
 router.get("/participant/request/event", auth([Role.USER]), ParticipantControllers.ParticipantOwnRequestEvent);
+router.delete("/participant/request/event/:id", auth([Role.USER]), ParticipantControllers.deleteEventRequestJoinData);
 
 router.post("/participant/event/:id",auth([Role.ADMIN,Role.USER]), ParticipantControllers.createParticipantController);
 router.get("/participants",auth([Role.ADMIN,Role.USER]), ParticipantControllers.getAllParticipants);

@@ -43,6 +43,10 @@ const createParticipantService = async (
     throw new AppError(404, "Event not found");
   }
 
+  if (event.fee < 60) {
+    throw new AppError(400, "Minimum amount must be at least 60 BDT");
+  }
+
   const isFree = Number(event.fee) === 0;
 
   const finalStatus = isFree ? "APPROVED" : "PENDING";
@@ -268,6 +272,7 @@ const ParticipantOwnRequestEventService = async (userId: string,page:number,limi
           venue: true,
           image: true,
           status: true,
+          fee:true
         },
       },
       user:true
@@ -347,6 +352,25 @@ const deleteParticipantService = async (id: string) => {
 };
 
 
+const deleteEventRequestJoinData = async (id: string) => {
+  // Find the participant first
+  const participant = await prisma.participant.findUnique({
+    where: { id },
+  });
+
+  if (!participant) {
+    throw new AppError(404, "participant not found");
+  }
+
+  if (participant.status !== "PENDING") {
+    throw new AppError(400, "Only event request participants with status 'PENDING' can be deleted");
+  }
+
+  return await prisma.participant.delete({
+    where: { id },
+  });
+};
+
 
 const createParticipantPayLater=async( userId: string,
   eventId: string)=>{
@@ -407,13 +431,19 @@ const initiatePayment = async (eventId: string, user : IRequestUser) => {
             id: eventId,
         },
     });
+
+
+    
     if (!event) {
         throw new AppError(status.NOT_FOUND, "Event not found");
     }
+    if (event.fee < 60) {
+      throw new AppError(400, "Minimum amount must be at least 60 BDT");
+    }
     
-    const participantData = await prisma.participant.findUniqueOrThrow({
+    const participantData = await prisma.participant.findFirst({
         where: {
-            id: eventId,
+            eventId: event.id,
             userId: userdata.id,
         },
         include: {
@@ -422,50 +452,69 @@ const initiatePayment = async (eventId: string, user : IRequestUser) => {
             payment:true,
         }
     });
-
-    if(!participantData){
-        throw new AppError(status.NOT_FOUND, "ParticipantData not found");
+    if (!participantData) {
+        throw new AppError(status.NOT_FOUND, "Participant not found for payment initiation");
     }
+    if (participantData.payment) {
+      throw new AppError(status.BAD_REQUEST, "Payment has already been initiated for this participant. Please proceed with the existing payment or contact support for assistance.");
+  }
+    if(participantData.status === ParticipantStatus.REJECTED){
+      throw new AppError(status.BAD_REQUEST, "participant is REJECTED");
+  }
+    const result = await prisma.$transaction(async (tx) => {
+      // 🔴 PAID EVENT → Create payment
+      const transactionId = String(uuidv6());
+  
+      const paymentData = await tx.payment.create({
+        data: {
+          participantId: participantData.id,
+          amount: event.fee,
+          transactionId,
+          eventId,
+          userId:user.userId,
+        },
+      });
 
-    if(!participantData.payment){
+      if(!paymentData){
         throw new AppError(status.NOT_FOUND, "Payment data not found for this participant");
     }
-
-    if(participantData.payment.status === PaymentStatus.PAID){
-        throw new AppError(status.BAD_REQUEST, "Payment already completed for this appointment");
-    };
-
-    if(participantData.status === ParticipantStatus.REJECTED){
-        throw new AppError(status.BAD_REQUEST, "participant is REJECTED");
-    }
-
-    const session = await stripe.checkout.sessions.create({
+      // 💳 Stripe session
+      const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        mode: 'payment',
+        mode: "payment",
         line_items: [
-            {
-                price_data: {
-                    currency: "bdt",
-                    product_data: {
-                        name: `participant with ${participantData.event.title}`,
-                    },
-                    unit_amount: participantData.event.fee* 120,
-                },
-                quantity: 1,
-            }
+          {
+            price_data: {
+              currency: "bdt",
+              product_data: {
+                name: `Ticket for ${event.title}`,
+              },
+              unit_amount: event.fee * 100,
+            },
+            quantity: 1,
+          },
         ],
         metadata: {
-            appointmentId: participantData.id,
-            paymentId: participantData.payment.id,
+          participantId: participantData.id,
+          paymentId: paymentData.id,
         },
-
         success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
         cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`,
-    })
+      });
+  
+      return {
+        participantData,
+        paymentData,
+        paymentUrl: session.url,
+      };
+    });
 
     return {
-        paymentUrl: session.url,
-    }
+      participant: result.participantData,
+      payment: result.paymentData,
+      paymentUrl: result.paymentUrl,
+    };
+
 }
 
 export const ParticipantService = {
@@ -477,5 +526,6 @@ export const ParticipantService = {
   createParticipantPayLater,
   initiatePayment,
   getOwnPaymentParticipantService,
-  ParticipantOwnRequestEventService
+  ParticipantOwnRequestEventService,
+  deleteEventRequestJoinData
 };
