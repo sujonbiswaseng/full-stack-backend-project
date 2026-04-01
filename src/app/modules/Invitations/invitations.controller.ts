@@ -6,7 +6,6 @@ import status from "http-status";
 import paginationSortingHelper from "../../helpers/paginationHelping";
 
 const CreateInvitation = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.user,'user')
   const user = req.user;
   const result = await invitationsServices.createInvitationService(user.userId,req.body);
 
@@ -71,7 +70,7 @@ const deleteInvitation= catchAsync(async (req: Request, res: Response) => {
 
   const updateInvitation= catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = await invitationsServices.updateInvitationService(id as string, req.body,req.user.role);
+    const result = await invitationsServices.updateInvitationService(id as string, req.body);
     sendResponse(res, { httpStatusCode: status.OK, success: true, message: "Invitation updated", data: result });
   })
 

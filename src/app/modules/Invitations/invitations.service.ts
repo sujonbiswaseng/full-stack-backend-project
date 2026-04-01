@@ -148,7 +148,29 @@ const getUserInvitationsService = async (
     }),
   ]);
 
-  return { receivedInvitations, sentInvitations };
+  const receivedInvitationsCount = await prisma.invitation.count({
+    where: { inviteeId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
+  });
+  const sentInvitationsCount = await prisma.invitation.count({
+    where: { inviterId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
+  });
+
+  return {
+    receivedInvitations,
+    sentInvitations,
+    receivedPagination: {
+      total: receivedInvitationsCount,
+      page: page ?? 1,
+      limit: limit ?? 10,
+      totalPages: Math.ceil(receivedInvitationsCount / (limit ?? 10)),
+    },
+    sentPagination: {
+      total: sentInvitationsCount,
+      page: page ?? 1,
+      limit: limit ?? 10,
+      totalPages: Math.ceil(sentInvitationsCount / (limit ?? 10)),
+    },
+  };
 };
 
 
@@ -170,35 +192,28 @@ const getUserInvitationsService = async (
 const updateInvitationService = async (
   id: string,
   data: IUpdateInvitationInput,
-  userRole: "ADMIN" | string
 ) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);
-
-  let updateData: any = {};
-
-  if (userRole === "ADMIN") {
-    updateData = data;
-  } else {
-    if (!Object.prototype.hasOwnProperty.call(data, "status")) {
-      throw new Error("Users are allowed to update status only.");
-    }
-    updateData.status = data.status;
-  }
-
-  const updated = await prisma.invitation.update({
+ const updateInv= await prisma.invitation.update({
     where: { id },
-    data: updateData,
-    include: {
-      event: { select: { id: true, title: true, date: true, venue: true } },
-      inviter: { select: { id: true, name: true, email: true } },
-      invitee: { select: { id: true, name: true, email: true } },
+    data,
+    select:{
+      notifications:{
+        select:{
+          id:true
+        }
+      }
+    }
+  });
+  await prisma.notification.deleteMany({
+    where: {
+      invitationId: id,
+      userId: invitation.inviteeId, 
     },
   });
 
-  await prisma.notification.deleteMany({ where: { invitationId: id } });
-
-  return updated;
+  return updateInv;
 };
 
 
