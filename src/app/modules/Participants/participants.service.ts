@@ -7,6 +7,7 @@ import { envVars } from "../../config/env";
 import { IRequestUser } from "../../interface/requestUser.interface";
 import status from "http-status";
 import { ParticipantStatus, PaymentStatus } from "../../../generated/prisma/enums";
+import { parseDateForPrisma } from '../../utils/parseDate';
 
 const createParticipantService = async (
   userId: string,
@@ -122,41 +123,86 @@ const createParticipantService = async (
   };
 };
 
-const getAllParticipantsService = async (userId:string) => {
+const getAllParticipantsService = async (userId:string,page:number,limit:number,skip:number,sortBy:string,sortOrder:string,query:any) => {
   const user = await prisma.user.findUnique({
     where: { id: userId }
   });
-  console.log(user,'su')
   if (!user) {
     throw new AppError(404, "User not found");
   }
+  const andConditions: any[] = [];
+
+  if (query.status) {
+    andConditions.push({
+      status: query.status,
+    });
+  }
+  if (query.joinedAt) {
+    const dateRange = parseDateForPrisma(query.joinedAt);
+    andConditions.push({ joinedAt:dateRange });
+  }
+
+  if (query.paymentStatus) {
+    andConditions.push({
+      paymentStatus: query.paymentStatus,
+    });
+  }
+
+  const where = andConditions.length > 0 ? { AND: andConditions } : {};
 
   if(user.role === "ADMIN"){
 
     const result = await prisma.participant.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: {
+        "joinedAt":"desc"
+      },
       include: {
         user: { select: { id: true, name: true, email: true, image: true } },
         event: { select: { id: true, title: true, date: true, venue: true } },
       },
-      orderBy: {
-        joinedAt: "desc",
-      },
     })
-    result
+    const total = await prisma.participant.count();
+    const totalPages = Math.ceil(total / limit);
+    return {
+      participants: result,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    }
 
  } else if(user.role === "USER"){
 
-    const result = await prisma.participant.findMany({
-        where: { userId: userId },
+    const result = await prisma.participant.findMany({      
+      skip,
+      take: limit,
+        orderBy: {
+          "joinedAt":"desc"
+        },
+        where: { ...where, userId: userId },
         include: {
           user: { select: { id: true, name: true, email: true, image: true } },
           event: { select: { id: true, title: true, date: true, venue: true } },
         },
-        orderBy: {
-          joinedAt: "desc",
-        },
     })
-    return result
+    const total = await prisma.participant.count({
+      where: { userId: userId },
+    });
+    const totalPages = Math.ceil(total / limit);
+    return {
+       result,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    }
  }
 };
 

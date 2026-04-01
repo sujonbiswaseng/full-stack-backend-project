@@ -3,6 +3,7 @@ import { catchAsync } from "../../shared/catchAsync";
 import { ParticipantService } from "./participants.service";
 import status from "http-status";
 import { sendResponse } from "../../shared/sendResponse";
+import paginationSortingHelper from "../../helpers/paginationHelping";
 
 const createParticipantController = catchAsync(async (req: Request, res: Response) => {
     const id=req.params.id
@@ -18,8 +19,8 @@ const createParticipantController = catchAsync(async (req: Request, res: Respons
 
 
 const getAllParticipants= catchAsync(async (req: Request, res: Response) => {
-  console.log('lsjfsjdklfj')
-    const participants = await ParticipantService.getAllParticipantsService(req.user.userId);
+  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
+    const participants = await ParticipantService.getAllParticipantsService(req.user.userId,page as number,limit as number,skip as number,sortBy as string,sortOrder as string,req.query);
     sendResponse(res, {
       httpStatusCode: status.OK,
       success: true,

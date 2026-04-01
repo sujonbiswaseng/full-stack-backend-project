@@ -6,7 +6,6 @@ import { prisma } from "../../lib/prisma";
 
 const getDashboardStatsData = async (user : IRequestUser) => {
     let statsData;
-
     switch(user.role){
         case Role.ADMIN:
             statsData = getAdminDashboardStats();
@@ -172,7 +171,6 @@ export const getUserDashboardStats = async (userId: string) => {
         cancelled: cancelledEvents,
       },
       pieChartData,
-      barChartData,
     };
   } catch (error) {
     console.error("Failed to fetch user dashboard stats:", error);
