@@ -103,10 +103,24 @@ const DeleteUserProfile = catchAsync(
   },
 );
 
+const GetSingleUser = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.GetSingleUser(req.params.id as string);
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "Single user fetched successfully",
+      data: result,
+    });
+  },
+);
+
+
   export const UserController={
     UpdateUserProfile,
     OwnProfileDelete,
     GetAllUsers,
     UpdateUser,
+    GetSingleUser,
     DeleteUserProfile
   }

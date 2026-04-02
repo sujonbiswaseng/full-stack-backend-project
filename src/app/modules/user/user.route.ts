@@ -8,6 +8,10 @@ import { UpdateUserCommonData, UpdateuserProfileData } from "./user.validation";
 const router=Router()
 router.get("/admin/users",auth([Role.ADMIN]),UserController.GetAllUsers)
 router.delete("/profile/own",auth([Role.USER]),UserController.OwnProfileDelete)
+router.get(
+  "/profile/:id",
+  UserController.GetSingleUser
+);
 
 
 
