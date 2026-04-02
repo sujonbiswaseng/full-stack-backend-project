@@ -11,6 +11,12 @@ router.patch(
   auth([Role.ADMIN]),
   PaymentController.updatePaymentStatus
 );
+router.delete(
+  "/payments/:paymentId",
+  auth([Role.ADMIN]),
+  PaymentController.deletePayment
+);
+
 
 
 export const PaymentRoutes=router

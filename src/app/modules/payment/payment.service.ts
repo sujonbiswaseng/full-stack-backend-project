@@ -185,6 +185,36 @@ const updatePaymentStatusWithParticipantCheck = async (
   };
 };
 
+const deletePayment = async (paymentId: string) => {
+  // Find the payment
+  const payment = await prisma.payment.findUnique({
+    where: { id: paymentId },
+    include: { participant: true }
+  });
+  if (!payment) {
+    throw new Error("Payment not found");
+  }
+
+  // Check if participant is associated
+  if (!payment.participant) {
+    throw new Error("Associated participant not found");
+  }
+
+  const [deletedPayment, updatedParticipant] = await prisma.$transaction([
+    prisma.payment.delete({
+      where: { id: paymentId }
+    }),
+    prisma.participant.update({
+      where: { id: payment.participant.id },
+      data: { paymentStatus: "UNPAID"}
+    })
+  ]);
+
+  return {
+    payment: deletedPayment,
+    participant: updatedParticipant
+  };
+};
 
 
 
@@ -192,5 +222,6 @@ const updatePaymentStatusWithParticipantCheck = async (
 export const PaymentService = {
     handlerStripeWebhookEvent,
     getAllPaymentsService,
-    updatePaymentStatusWithParticipantCheck
+    updatePaymentStatusWithParticipantCheck,
+    deletePayment
 }
