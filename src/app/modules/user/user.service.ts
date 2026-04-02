@@ -1,6 +1,8 @@
-import { User } from "../../../generated/prisma/client";
+import { Role, User, UserStatus } from "../../../generated/prisma/client";
+import { UserWhereInput } from "../../../generated/prisma/models";
 import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
+import { UserQueryOptions } from "./user.interface";
 
 const UpdateUserProfile = async (
   data: Partial<User>,
@@ -39,6 +41,87 @@ const UpdateUserProfile = async (
   return updatedUser;
 };
 
+const GetAllUsers = async (
+  data:any,
+  page?: number,
+  limit?: number | undefined,
+  skip?: number,
+  sortBy?: string | undefined,
+  sortOrder?: string | undefined,
+  isemailVerified?:any
+ ) => {
+   const andCondition: UserWhereInput[] = [];
+   if (typeof data.email == "string") {
+     andCondition.push({
+       email: data?.email,
+     });
+   }
+   if (typeof data?.phone == "string") {
+     andCondition.push({
+       phone: data?.phone,
+     });
+     
+   }
+   if (typeof data?.name == "string") {
+    andCondition.push({
+      name: data?.name,
+    });
+    
+  }
+   if (typeof data?.role == "string") {
+     andCondition.push({ role: data?.role as Role });
+   }
+   if (typeof data?.status == "string") {
+     andCondition.push({ status: data?.status as UserStatus });
+   }
+ 
+   if (typeof data.isactivequery == "boolean") {
+     andCondition.push({ isActive: data.isactivequery });
+   }
+ 
+   let result: any = {};
+  
+    const users = await prisma.user.findMany({
+      take: limit,
+      skip,
+      where: { AND: andCondition,emailVerified:isemailVerified },
+      include: {
+        reviews: {
+          where: { rating: { gt: 0 } },
+        },
+       events:true
+      },
+      orderBy: {
+        [sortBy!]:sortOrder
+      },
+    });
+
+    result = users.map((user) => {
+      const totalReviews = user.reviews.length;
+      const avgRating =
+        totalReviews > 0
+          ? user.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+          : 0;
+
+      return { ...user, avgRating, totalReviews };
+    })
+  const totalusers = await prisma.user.count({
+     where: {
+       AND: andCondition,
+     },
+   });
+   return {
+     data: result,
+     pagination: {
+       totalusers,
+       page:data.page,
+       limit:data.limit,
+       totalpage: Math.ceil(totalusers / data.limit!) || 1,
+     },
+   };
+ };
+ 
+
 const OwnProfileDelete = async (userid: string) => {
   console.log(userid);
   const userData = await prisma.user.findUnique({
@@ -55,5 +138,6 @@ const OwnProfileDelete = async (userid: string) => {
 
 export const UserService = {
   UpdateUserProfile,
-  OwnProfileDelete
+  OwnProfileDelete,
+  GetAllUsers
 };

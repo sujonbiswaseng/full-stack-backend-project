@@ -5,6 +5,7 @@ import { catchAsync } from "../../shared/catchAsync";
 import { UserService } from "./user.service";
 import { sendResponse } from "../../shared/sendResponse";
 import status from "http-status";
+import paginationSortingHelper from "../../helpers/paginationHelping";
 
 const UpdateUserProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
@@ -21,6 +22,28 @@ const UpdateUserProfile = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: "User profile updated successfully.",
     data: result
+  });
+});
+
+
+const GetAllUsers = catchAsync(async (req: Request, res: Response) => {
+  const { emailVerified } = req.query;
+  const isemailVerified = emailVerified
+    ? req.query.emailVerified === "true"
+      ? true
+      : req.query.emailVerified === "false"
+        ? false
+        : undefined
+    : undefined;
+  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(
+    req.query,
+  );
+  const result = await UserService.GetAllUsers(req.query,page, limit, skip, sortBy, sortOrder,isemailVerified);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "retrieve all users has been successfully",
+    data: result,
   });
 });
 
@@ -43,5 +66,6 @@ const OwnProfileDelete = catchAsync(async (req: Request, res: Response) => {
 
   export const UserController={
     UpdateUserProfile,
-    OwnProfileDelete
+    OwnProfileDelete,
+    GetAllUsers
   }
