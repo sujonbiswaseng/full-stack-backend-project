@@ -80,21 +80,18 @@ export const getAdminDashboardStats = async () => {
 
     return {
       counts: {
-        events: eventCount,
-        users: userCount,
-        participants: participantCount,
+        participatedEvents: participantCount,
         invitations: invitationCount,
         payments: paymentCount,
       },
       totalRevenue,
-      monthlyRevenue: barChartData, // Monthly dynamic revenue
+      monthlyRevenue: barChartData,
       eventStatus: {
         upcoming: upcomingEvents,
         completed: completedEvents,
         cancelled: cancelledEvents,
       },
       pieChartData,
-      barChartData,
     };
   } catch (error) {
     console.error("Failed to fetch admin dashboard stats:", error);

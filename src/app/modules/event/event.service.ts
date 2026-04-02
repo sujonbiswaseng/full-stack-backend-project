@@ -167,7 +167,7 @@ const getAllEvents = async (
     const events = await prisma.event.findMany({
       take: limit,
       skip,
-      where: { status, AND: andConditions },
+      where: { status, AND: andConditions,is_featured:is_featureddata },
       include: {
         reviews: {
           where: { rating: { gt: 0 } },
