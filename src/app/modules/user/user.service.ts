@@ -136,8 +136,35 @@ const OwnProfileDelete = async (userid: string) => {
   return result;
 };
 
+
+const UpdateUser = async (id: string, data: Partial<User>) => {
+  const userData = await prisma.user.findUnique({ where: { id } });
+  if (!userData) {
+    throw new AppError(404,"your user data didn't found");
+  }
+  if (userData.role == data.role) {
+    throw new AppError(409,`your status(${data.role}) already up to date`);
+  }
+  if (userData.status === data.status) {
+    throw new AppError(409, `your status(${data.status}) already up to date`);
+  }
+  const result = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      role: data.role,
+      status: data.status,
+      email: data.email,
+    },
+  });
+  return result
+};
+
+
 export const UserService = {
   UpdateUserProfile,
   OwnProfileDelete,
-  GetAllUsers
+  GetAllUsers,
+  UpdateUser
 };

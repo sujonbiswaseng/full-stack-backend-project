@@ -11,3 +11,11 @@ export const UpdateuserProfileData = z
       isActive: z.boolean().optional(),
     })
     .strict();
+
+    export const UpdateUserCommonData = z
+    .object({
+      role: z.enum(["ADMIN", "USER"]).optional(),
+      status: z.enum(["ACTIVE", "INACTIVE", "BLOCKED", "DELETED"]).optional(),
+      email: z.string().optional(),
+    })
+    .strict();

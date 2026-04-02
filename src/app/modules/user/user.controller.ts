@@ -64,8 +64,30 @@ const OwnProfileDelete = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const UpdateUser = catchAsync(
+  async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "you are unauthorized" });
+    }
+    const result = await UserService.UpdateUser(
+      req.params.id as string,
+      req.body,
+    );
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: `user change successfully`,
+      data: result,
+    });
+  },
+);
+
   export const UserController={
     UpdateUserProfile,
     OwnProfileDelete,
-    GetAllUsers
+    GetAllUsers,
+    UpdateUser
   }

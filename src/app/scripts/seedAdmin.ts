@@ -9,7 +9,7 @@ export const seedAdmin = async () => {
    const result= await auth.api.signUpEmail({
     body: {
       name: "admin12",
-      email: "admin12@gmail.com", 
+      email: "admin123@gmail.com", 
       password: "Admin12!@",
       emailVerified:true,
       image: "https://images.pexels.com/users/avatars/2159489466/sujon-biswas-288.jpg?auto=compress&fit=crop&h=140&w=140&dpr=1",
