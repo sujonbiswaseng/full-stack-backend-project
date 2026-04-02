@@ -14,6 +14,7 @@ router.post(
   validateRequest(CreateEventSchema),
   EventController.createEvent
 )
+router.get("/event/isfeatured", EventController.IsFeautured);
 router.get("/events", EventController.getAllEvents);
 router.get("/my-events",auth([Role.USER,Role.ADMIN]), EventController.getEventsByRoleController);
 router.get("/events/paidandfree", EventController.getPaidAndFreeEvent);

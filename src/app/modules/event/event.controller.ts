@@ -23,7 +23,15 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
 
 const getAllEvents = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
-  const events = await EventServices.getAllEvents(req.query,page, limit, skip, sortBy, sortOrder);
+  const {is_featured}=req.query
+  const is_featureddata = is_featured
+    ? req.query.is_featured === "true"
+      ? true
+      : req.query.is_featured === "false"
+        ? false
+        : undefined
+    : undefined;
+  const events = await EventServices.getAllEvents(req.query,page, limit, skip, sortBy, sortOrder,is_featureddata);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
@@ -106,4 +114,16 @@ const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent,getPaidAndFreeEvent,getEventsByRoleController}
+const IsFeautured = catchAsync(async (req: Request, res: Response) => {
+  const featuredEvents = await EventServices.IsFeautured();
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Featured events fetched successfully",
+    data: featuredEvents,
+  });
+});
+
+
+export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent,getPaidAndFreeEvent,getEventsByRoleController,IsFeautured}

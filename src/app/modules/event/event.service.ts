@@ -51,6 +51,7 @@ const getAllEvents = async (
   skip?: number,
   sortBy?: string | undefined,
   sortOrder?: string | undefined,
+  is_featureddata?:any
 ) => {
   const statuses = [
     "DRAFT",
@@ -143,9 +144,9 @@ const getAllEvents = async (
       priceType: data.priceType,
     });
   }
-  if (data.is_featured) {
+  if (is_featureddata) {
     andConditions.push({
-      is_featured: data.is_featured,
+      is_featured: is_featureddata,
     });
   }
 
@@ -503,6 +504,20 @@ const DeleteEvent = async (user: IRequestUser, eventId: string) => {
   return Deletedevent;
 };
 
+const IsFeautured = async () => {
+  const featuredEvents = await prisma.event.findMany({
+    where: {
+      is_featured: true,
+    },
+    orderBy: {
+      date: 'asc',
+    },
+  });
+
+  return featuredEvents;
+};
+
+
 export const EventServices = {
   createEvent,
   getAllEvents,
@@ -510,5 +525,6 @@ export const EventServices = {
   updateEvent,
   DeleteEvent,
   GetPaidAndFreeEvent,
-  getEventsByRole
+  getEventsByRole,
+  IsFeautured
 };
