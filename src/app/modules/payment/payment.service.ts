@@ -3,6 +3,7 @@
 import Stripe from "stripe";
 import { prisma } from "../../lib/prisma";
 import { PaymentStatus } from "../../../generated/prisma/enums";
+import { parseDateForPrisma } from "../../utils/parseDate";
 
 const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
   const existingPayment = await prisma.payment.findFirst({
@@ -91,6 +92,62 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
   return {message : `Webhook Event ${event.id} processed successfully`}
 };
 
+const getAllPaymentsService = async (
+  userId: string,
+  page: number,
+  limit: number,
+  skip: number,
+  sortBy: string,
+  sortOrder: string,
+  query: any
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("User not found");
+  if (user.role !== "ADMIN") {
+    throw new Error("Unauthorized: Only admin can access all payments");
+  }
+  const filters: any[] = [];
+  if (query.status) filters.push({ status: query.status });
+  if (query.amount) filters.push({ amount: Number(query.amount) });
+  if (query.paymentStatus) filters.push({ status: query.paymentStatus });
+  if (query.createdAt) {
+    const dateRange = parseDateForPrisma(query.createdAt);
+    filters.push({ createdAt: dateRange });
+  }
+  if (query.userId) filters.push({ userId: query.userId });
+  if (query.eventId) filters.push({ eventId: query.eventId });
+
+  const whereOptions = filters.length ? { AND: filters } : {};;
+
+
+  // Only admin can view all payments
+  const payments = await prisma.payment.findMany({
+    where: whereOptions,
+    skip,
+    take: limit,
+    orderBy: {"createdAt":"desc" },
+    include:{
+      event:true,
+      participant:true,
+      user:true
+    },
+  });
+  const total = await prisma.payment.count({ where: whereOptions });
+  return {
+    payments,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+
+
+
 export const PaymentService = {
-    handlerStripeWebhookEvent
+    handlerStripeWebhookEvent,
+    getAllPaymentsService
 }

@@ -5,7 +5,7 @@ import status from "http-status";
 import { stripe } from "../../config/stripe.config";
 import { PaymentService } from "./payment.service";
 import { sendResponse } from "../../shared/sendResponse";
-
+import paginationSortingHelper from "../../helpers/paginationHelping";
 // controller for payment module
 const handleStripeWebhookEvent = catchAsync(async (req : Request, res : Response) => {
     const signature = req.headers['stripe-signature'] as string
@@ -41,6 +41,19 @@ const handleStripeWebhookEvent = catchAsync(async (req : Request, res : Response
     }
 })
 
+
+const getAllPayment= catchAsync(async (req: Request, res: Response) => {
+    const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
+      const payments = await PaymentService.getAllPaymentsService(req.user.userId,page as number,limit as number,skip as number,sortBy as string,sortOrder as string,req.query);
+      sendResponse(res, {
+        httpStatusCode: status.OK,
+        success: true,
+        message: "All payment fetched",
+        data: payments,
+      });
+    })
+
 export const PaymentController = {
-    handleStripeWebhookEvent
+    handleStripeWebhookEvent,
+    getAllPayment
 }

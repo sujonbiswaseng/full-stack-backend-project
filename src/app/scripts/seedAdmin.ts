@@ -4,7 +4,6 @@ import { auth } from "../lib/auth";
 import AppError from "../errorHelper/AppError";
 
 export const seedAdmin = async () => {
-
   try {
    const result= await auth.api.signUpEmail({
     body: {
@@ -18,12 +17,14 @@ export const seedAdmin = async () => {
     },
   });
   if(!result){
-    throw new AppError(400,'user created fail')
+    // throw new AppError(400,'user created fail')
+    console.log('fail create user')
   }
   return {success:true,message:"user created successfully",data:result}
 
   } catch (error) {
-     throw new AppError(500,'something went wrong ,please try again')
+    console.log(error,'errror')
+    //  throw new AppError(500,'something went wrong ,please try again')
   }
 };
 
