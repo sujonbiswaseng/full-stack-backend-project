@@ -53,7 +53,30 @@ const getAllPayment= catchAsync(async (req: Request, res: Response) => {
       });
     })
 
+const updatePaymentStatus = catchAsync(async (req: Request, res: Response) => {
+    const { paymentId } = req.params;
+    const { status: newStatus } = req.body;
+
+    try {
+        const result = await PaymentService.updatePaymentStatusWithParticipantCheck(paymentId as string,newStatus)
+        return sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "Payment status updated successfully",
+            data: result
+        });
+    } catch (error) {
+        console.error("Error updating payment status:", error);
+        return sendResponse(res, {
+            httpStatusCode: status.INTERNAL_SERVER_ERROR,
+            success: false,
+            message: "Error updating payment status"
+        });
+    }
+});
+
 export const PaymentController = {
     handleStripeWebhookEvent,
-    getAllPayment
+    getAllPayment,
+    updatePaymentStatus
 }

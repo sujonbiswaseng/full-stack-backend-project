@@ -145,9 +145,52 @@ const getAllPaymentsService = async (
 };
 
 
+const updatePaymentStatusWithParticipantCheck = async (
+  paymentId: string,
+  newStatus: string
+) => {
+  // Find the payment
+  const payment = await prisma.payment.findUnique({
+    where: { id: paymentId },
+    include: { participant: true }
+  });
+  if (!payment) {
+    throw new Error("Payment not found");
+  }
+
+  // Check the participant and payment status logic
+  if (!payment.participant) {
+    throw new Error("Associated participant not found");
+  }
+
+
+
+  // Update the payment status
+  // Update payment and associated participant status in a single transaction
+  const [updatedPayment, updatedParticipant] = await prisma.$transaction([
+    prisma.payment.update({
+      where: { id: paymentId },
+      data: { status: newStatus as any }
+    }),
+    prisma.participant.update({
+      where: { id: payment.participant.id },
+      data: { paymentStatus: newStatus as any }
+    })
+  ]);
+
+
+  return {
+    payment: updatedPayment,
+    participant: updatedParticipant
+  };
+};
+
+
+
 
 
 export const PaymentService = {
     handlerStripeWebhookEvent,
-    getAllPaymentsService
+    getAllPaymentsService,
+    updatePaymentStatusWithParticipantCheck
 }

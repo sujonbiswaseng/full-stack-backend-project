@@ -6,5 +6,11 @@ import { PaymentController } from "./payment.controller";
 
 const router = express.Router();
 router.get("/payments", auth([Role.ADMIN]), PaymentController.getAllPayment);
+router.patch(
+  "/payments/:paymentId/status",
+  auth([Role.ADMIN]),
+  PaymentController.updatePaymentStatus
+);
+
 
 export const PaymentRoutes=router
