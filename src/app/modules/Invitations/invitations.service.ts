@@ -212,8 +212,13 @@ const getInvitationsService = async (
 const updateInvitationService = async (
   id: string,
   data: IUpdateInvitationInput,
+  userId:string
 ) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const userexist=await prisma.user.findUnique({where:{id:userId}})
+  if(invitation?.inviterId !==userId && userexist?.role!=="ADMIN" ){
+    throw new AppError(400,"you are not valid user for invitation, can update invitation just owner and admin")
+  }
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);
  const updateInv= await prisma.invitation.update({
     where: { id },
@@ -237,9 +242,12 @@ const updateInvitationService = async (
 };
 
 
-const deleteInvitationService = async (id: string) => {
-  // Check existence
+const deleteInvitationService = async (id: string,userId:string) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const userexist=await prisma.user.findUnique({where:{id:userId}})
+  if(invitation?.inviterId !==userId && userexist?.role!=="ADMIN" ){
+    throw new AppError(400,"you are not valid user for invitation, can delete invitation just owner and admin")
+  }
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);
 
   return await prisma.invitation.delete({ where: { id } });

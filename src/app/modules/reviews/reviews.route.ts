@@ -20,5 +20,5 @@ router.post("/event/:id/review",validateRequest(createReviewsData),auth([Role.US
 router.put("/review/:reviewid", auth([Role.USER]),validateRequest(updateReviewsData), ReviewsControllers.updateReview)
 router.delete("/review/:reviewid", auth([Role.ADMIN,Role.USER]), ReviewsControllers.deleteReview)
 
-router.patch("/review/:reviewid/moderate",auth([Role.ADMIN]),validateRequest(moderateData), ReviewsControllers.moderateReview)
+router.put("/review/:reviewid/moderate",auth([Role.ADMIN]),ReviewsControllers.moderateReview)
 export const ReviewsRouters=router

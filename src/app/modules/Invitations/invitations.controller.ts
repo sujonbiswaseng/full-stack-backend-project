@@ -51,14 +51,14 @@ const GetSingleInvitationController = catchAsync(async (req: Request, res: Respo
 
 const deleteInvitation= catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = await invitationsServices.deleteInvitationService(id as string);
+    const result = await invitationsServices.deleteInvitationService(id as string,req.user.userId);
     sendResponse(res, { httpStatusCode: status.OK, success: true, message: "Invitation deleted", data: result });
   })
 
 
   const updateInvitation= catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = await invitationsServices.updateInvitationService(id as string, req.body);
+    const result = await invitationsServices.updateInvitationService(id as string, req.body,req.user.userId);
     sendResponse(res, { httpStatusCode: status.OK, success: true, message: "Invitation updated", data: result });
   })
 
