@@ -45,13 +45,14 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
 };
 
 const getAllEvents = async (
-  data: IEventQuery,
+  query?: Record<string, any>,
   page?: number,
   limit?: number | undefined,
   skip?: number,
   sortBy?: string | undefined,
   sortOrder?: string | undefined,
-  is_featureddata?:any
+  is_featureddata?:any,
+  search?:any
 ) => {
   const statuses = [
     "DRAFT",
@@ -62,60 +63,60 @@ const getAllEvents = async (
   ] as const;
   const andConditions: EventWhereInput[] | EventWhereInput = [];
 
-  if (data) {
+  if (query) {
     const orConditions: any[] = [];
-    if (data.title) {
+    if (query.title) {
       orConditions.push({
         title: {
-          contains: data.title,
+          contains: query.title,
           mode: "insensitive",
         },
       });
     }
 
-    if (data.search) {
+    if (query.createdAt) {
+      const dateRange = parseDateForPrisma(query.createdAt);
+      andConditions.push({ createdAt: dateRange.gte });
+    }
+    if (query.date) {
+      const dateRange = parseDateForPrisma(query.date);
+      andConditions.push({date: dateRange});
+    }
+
+    if (search) {
       orConditions.push(
         {
           title: {
-            contains: data.search,
+            contains: query.search,
             mode: "insensitive",
           },
         },
         {
           description: {
-            contains: data.search,
-            mode: "insensitive",
-          },
-        },
-        {
-          categories: {
-            contains: data.search,
+            contains: query.search,
             mode: "insensitive",
           },
         },
         {
           venue: {
-            contains: data.search,
+            contains: query.search,
             mode: "insensitive",
           },
         }
       );
     }
 
-    if (data.description) {
+    if (query.description) {
       orConditions.push({
         description: {
-          contains: data.description,
+          contains: query.description,
           mode: "insensitive",
         },
       });
     }
-    if (data.categories) {
+    if (query.categories) {
       orConditions.push({
-        categories: {
-          contains: data.categories,
-          mode: "insensitive",
-        },
+        categories: query.categories,
       });
     }
     if (orConditions.length > 0) {
@@ -124,24 +125,24 @@ const getAllEvents = async (
   }
 
 
-  if (data.fee) {
+  if (query?.fee) {
     andConditions.push({
       fee: {
         gte: 1,
-        lte: Number(data.fee),
+        lte: Number(query.fee),
       },
     });
   }
 
-  if (data.visibility) {
+  if (query?.visibility) {
     andConditions.push({
-      visibility: data.visibility as EventType,
+      visibility: query.visibility as EventType,
     });
   }
 
-  if (data.priceType) {
+  if (query?.priceType) {
     andConditions.push({
-      priceType: data.priceType,
+      priceType: query.priceType,
     });
   }
   if (is_featureddata) {
@@ -150,15 +151,10 @@ const getAllEvents = async (
     });
   }
 
-  if (data.status) {
-    andConditions.push({
-      status: data.status,
-    });
-  }
 
-  if (data.date) {
+  if (query?.status) {
     andConditions.push({
-      date: data.date,
+      status: query.status,
     });
   }
 
@@ -167,7 +163,7 @@ const getAllEvents = async (
     const events = await prisma.event.findMany({
       take: limit,
       skip,
-      where: { status, AND: andConditions,is_featured:is_featureddata },
+      where: { status, AND: andConditions,is_featured:is_featureddata},
       include: {
         reviews: {
           where: { rating: { gt: 0 } },
@@ -243,7 +239,7 @@ const getAllEvents = async (
   }
   if (data.date) {
     const dateRange = parseDateForPrisma(data.date);
-    andConditions.push({ date: dateRange });
+    andConditions.push({ date: {gte:dateRange.gte} });
   } if (data.createdAt) {
     const dateRange = parseDateForPrisma(data.createdAt);
     andConditions.push({ createdAt:dateRange });
@@ -264,10 +260,11 @@ const getAllEvents = async (
     andConditions.push({ organizerId: userId });
   } 
   const result: any = {};
+  const dateRange = parseDateForPrisma(data.createdAt as any);
 
   for (const status of statuses) {
     const events = await prisma.event.findMany({
-      where: { status, AND: andConditions },
+      where: { status, AND: andConditions ,createdAt:{gte:dateRange.gte}},
       take: limit,
       skip,
       include: {

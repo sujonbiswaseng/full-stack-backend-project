@@ -23,6 +23,7 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
 
 const getAllEvents = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
+  const {search}=req.query
   const {is_featured}=req.query
   const is_featureddata = is_featured
     ? req.query.is_featured === "true"
@@ -31,7 +32,7 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
         ? false
         : undefined
     : undefined;
-  const events = await EventServices.getAllEvents(req.query,page, limit, skip, sortBy, sortOrder,is_featureddata);
+  const events = await EventServices.getAllEvents(req.query,page, limit, skip, sortBy, sortOrder,is_featureddata,search);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,

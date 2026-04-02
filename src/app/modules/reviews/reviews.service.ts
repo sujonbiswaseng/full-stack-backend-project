@@ -197,6 +197,7 @@ const getReviewsByRole = async (
 
 const moderateReview = async (id: string, data: { status: ReviewStatus }) => {
     const {status}=data
+    console.log(status,'s')
 
     const reviewData = await prisma.review.findUnique({
         where: {
