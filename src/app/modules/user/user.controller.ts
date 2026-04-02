@@ -85,9 +85,28 @@ const UpdateUser = catchAsync(
   },
 );
 
+const DeleteUserProfile = catchAsync(
+  async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "you are unauthorized" });
+    }
+    const result = await UserService.DeleteUserProfile(req.params.id as string);
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "user account delete successfully",
+      data: result,
+    });
+  },
+);
+
   export const UserController={
     UpdateUserProfile,
     OwnProfileDelete,
     GetAllUsers,
-    UpdateUser
+    UpdateUser,
+    DeleteUserProfile
   }

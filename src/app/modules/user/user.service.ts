@@ -161,10 +161,21 @@ const UpdateUser = async (id: string, data: Partial<User>) => {
   return result
 };
 
+const DeleteUserProfile = async (id: string) => {
+  const userData = await prisma.user.findUnique({ where: { id } });
+  if (!userData) {
+    throw new AppError(404,"your user data didn't found");
+  }
+  const result = await prisma.user.delete({
+    where: { id },
+  });
+  return result
+};
 
 export const UserService = {
   UpdateUserProfile,
   OwnProfileDelete,
   GetAllUsers,
-  UpdateUser
+  UpdateUser,
+  DeleteUserProfile
 };

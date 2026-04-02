@@ -22,5 +22,5 @@ router.put("/admin/profile/:id",auth([Role.ADMIN]),validateRequest(UpdateUserCom
 
 router.delete("/profile/own/delete",auth([Role.USER,Role.ADMIN]),UserController.OwnProfileDelete)
 
-
+router.delete("/admin/profile/:id",auth([Role.ADMIN]),UserController.DeleteUserProfile)
 export const UsersRoutes = router;
