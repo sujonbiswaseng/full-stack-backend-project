@@ -16,21 +16,9 @@ const CreateInvitation = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
-const GetAllInvitationsController = catchAsync(async (req: Request, res: Response) => {
-  const result = await invitationsServices.getAllInvitationsService();
-
-  sendResponse(res, {
-    httpStatusCode: status.OK,
-    success: true,
-    message: "All invitations fetched successfully",
-    data: result,
-  });
-});
-
-const GetUserInvitationsController = catchAsync(async (req: Request, res: Response) => {
+const getInvitationsService = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
-  const result = await invitationsServices.getUserInvitationsService(
+  const result = await invitationsServices.getInvitationsService(
     req.user.userId as string,
     page,
     limit,
@@ -78,8 +66,7 @@ const deleteInvitation= catchAsync(async (req: Request, res: Response) => {
 
 export const InvitationController={
 CreateInvitation,
-GetAllInvitationsController,
-GetUserInvitationsController,
+getInvitationsService,
 GetSingleInvitationController,
 deleteInvitation,
 updateInvitation

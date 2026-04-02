@@ -79,32 +79,23 @@ export const createInvitationService = async (
   return { invitations, notifications };
 };
 
-const getAllInvitationsService = async () => {
-  return await prisma.invitation.findMany({
-    include: {
-      event: true,
-      inviter: true,
-      invitee: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
-};
 
-const getUserInvitationsService = async (
+const getInvitationsService = async (
   userId: string,
   page?: number,
   limit?: number,
   skip?: number,
   sortBy?: string,
   sortOrder?: string,
-  query?: Record<string, any>
+  query?: Record<string, any>,
+  role?: string // optionally pass the user role if available
 ) => {
-  const userExist = await prisma.user.findUnique({ where: { id: userId } });
-  if (!userExist) {
-    throw new AppError(404, 'user not found');
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    throw new AppError(404, 'User not found');
   }
-  const andConditions: any[] = [];
 
+  const andConditions: any[] = [];
   if (query) {
     if (query.eventId) {
       andConditions.push({ eventId: query.eventId });
@@ -120,11 +111,38 @@ const getUserInvitationsService = async (
     }
     if (query.createdAt) {
       const dateRange = parseDateForPrisma(query.createdAt);
-      andConditions.push({ createdAt:dateRange });
+      andConditions.push({ createdAt: dateRange });
     }
   }
 
+  // ADMIN: Can view/manage every invitation.
+  if (user.role === 'ADMIN') {
+    const allInvitations = await prisma.invitation.findMany({
+      where: andConditions.length > 0 ? { AND: andConditions } : {},
+      include: {
+        event: true,
+        inviter: true,
+        invitee: true
+      },
+      orderBy: { [sortBy || "createdAt"]: sortOrder === "asc" ? "asc" : "desc" },
+      skip: skip ?? 0,
+      take: limit ?? 10,
+    });
 
+    const total = await prisma.invitation.count({
+      where: andConditions.length > 0 ? { AND: andConditions } : {},
+    });
+
+    return {
+      invitations: allInvitations,
+      pagination: {
+        total,
+        page: page ?? 1,
+        limit: limit ?? 10,
+        totalPages: Math.ceil(total / (limit ?? 10)),
+      }
+    };
+  }
   const [receivedInvitations, sentInvitations] = await Promise.all([
     prisma.invitation.findMany({
       where: { inviteeId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
@@ -148,12 +166,14 @@ const getUserInvitationsService = async (
     }),
   ]);
 
-  const receivedInvitationsCount = await prisma.invitation.count({
-    where: { inviteeId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
-  });
-  const sentInvitationsCount = await prisma.invitation.count({
-    where: { inviterId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
-  });
+  const [receivedInvitationsCount, sentInvitationsCount] = await Promise.all([
+    prisma.invitation.count({
+      where: { inviteeId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
+    }),
+    prisma.invitation.count({
+      where: { inviterId: userId, ...(andConditions.length > 0 ? { AND: andConditions } : {}) },
+    }),
+  ]);
 
   return {
     receivedInvitations,
@@ -226,5 +246,5 @@ const deleteInvitationService = async (id: string) => {
 };
 
 export const invitationsServices = {
-  createInvitationService,getAllInvitationsService,getUserInvitationsService,getSingleInvitationService,deleteInvitationService,updateInvitationService
+  createInvitationService,getInvitationsService,getSingleInvitationService,deleteInvitationService,updateInvitationService
 };
