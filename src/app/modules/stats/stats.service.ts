@@ -44,11 +44,23 @@ export const getAdminDashboardStats = async () => {
     const totalRevenue = revenueResult._sum.amount ?? 0;
 
     // 🔹 Event Status Counts
-    const [upcomingEvents, completedEvents, cancelledEvents] = await Promise.all([
+    const [upcomingEvents, completedEvents, cancelledEvents,draftEvetn,ongoingEvent] = await Promise.all([
       prisma.event.count({ where: { status: "UPCOMING" } }),
       prisma.event.count({ where: { status: "COMPLETED" } }),
       prisma.event.count({ where: { status: "CANCELLED" } }),
+      prisma.event.count({ where: { status: "DRAFT" } }),
+      prisma.event.count({ where: { status: "ONGOING" } }),
     ]);
+    const [privateEvent, publicEvent] = await Promise.all([
+      prisma.event.count({ where: { visibility:"PRIVATE" } }),
+      prisma.event.count({ where: { visibility:"PUBLIC" } })
+    ]);
+
+    const [freeEvent,paidEvent] = await Promise.all([
+      prisma.event.count({ where: { priceType:"FREE" } }),
+      prisma.event.count({ where: { priceType:"PAID"} })
+    ]);
+
 
     // 🔹 Dynamic Monthly Revenue
     const payments = await prisma.payment.findMany({
@@ -76,6 +88,8 @@ export const getAdminDashboardStats = async () => {
       { label: "Upcoming", value: upcomingEvents },
       { label: "Completed", value: completedEvents },
       { label: "Cancelled", value: cancelledEvents },
+      { label: "draft", value: draftEvetn },
+      { label: "ongoing", value: ongoingEvent },
     ];
 
     return {
@@ -83,6 +97,15 @@ export const getAdminDashboardStats = async () => {
         participatedEvents: participantCount,
         invitations: invitationCount,
         payments: paymentCount,
+        user:userCount,
+      },
+      eventVisivillity:{
+        public:publicEvent,
+        private:privateEvent
+      },
+      priceType:{
+        free:freeEvent,
+        paid:paidEvent
       },
       totalRevenue,
       monthlyRevenue: barChartData,
@@ -90,6 +113,8 @@ export const getAdminDashboardStats = async () => {
         upcoming: upcomingEvents,
         completed: completedEvents,
         cancelled: cancelledEvents,
+        draft:draftEvetn,
+        ongoing:ongoingEvent
       },
       pieChartData,
     };
@@ -122,10 +147,22 @@ export const getUserDashboardStats = async (userId: string) => {
     const totalRevenue = revenueResult._sum.amount ?? 0;
 
     // 🔹 Event Status Counts for user's participated events
-    const [upcomingEvents, completedEvents, cancelledEvents] = await Promise.all([
+    const [upcomingEvents, completedEvents, cancelledEvents,draftEvent,ongoingEvent] = await Promise.all([
       prisma.participant.count({ where: { userId, event: { status: "UPCOMING" } } }),
       prisma.participant.count({ where: { userId, event: { status: "COMPLETED" } } }),
       prisma.participant.count({ where: { userId, event: { status: "CANCELLED" } } }),
+      prisma.participant.count({ where: { userId, event: { status: "DRAFT"} } }),
+      prisma.participant.count({ where: { userId, event: { status:"ONGOING" } } }),
+    ]);
+
+    const [privateEvent, publicEvent] = await Promise.all([
+      prisma.event.count({ where: { organizerId:userId,visibility:"PRIVATE" } }),
+      prisma.event.count({ where: { organizerId:userId,visibility:"PUBLIC" } })
+    ]);
+
+    const [freeEvent,paidEvent] = await Promise.all([
+      prisma.event.count({ where: {organizerId:userId, priceType:"FREE" } }),
+      prisma.event.count({ where: {organizerId:userId, priceType:"PAID"} })
     ]);
 
     // 🔹 Dynamic monthly revenue from user's payments
@@ -152,6 +189,8 @@ export const getUserDashboardStats = async (userId: string) => {
       { label: "Upcoming", value: upcomingEvents },
       { label: "Completed", value: completedEvents },
       { label: "Cancelled", value: cancelledEvents },
+      { label: "Draft", value: draftEvent },
+      { label: "Ongoing", value: ongoingEvent },
     ];
 
     return {
@@ -160,12 +199,22 @@ export const getUserDashboardStats = async (userId: string) => {
         invitations: invitationsCount,
         payments: paymentsCount,
       },
+      eventVisivillity:{
+        public:publicEvent,
+        private:privateEvent
+      },
+      priceType:{
+        free:freeEvent,
+        paid:paidEvent
+      },
       totalRevenue,
       monthlyRevenue: barChartData,
       eventStatus: {
         upcoming: upcomingEvents,
         completed: completedEvents,
         cancelled: cancelledEvents,
+        draft:draftEvent,
+        ongoingEvent:ongoingEvent
       },
       pieChartData,
     };

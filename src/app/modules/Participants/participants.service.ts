@@ -43,10 +43,6 @@ const createParticipantService = async (
     throw new AppError(404, "Event not found");
   }
 
-  if (event.fee < 60) {
-    throw new AppError(400, "Minimum amount must be at least 60 BDT");
-  }
-
   const isFree = Number(event.fee) === 0;
 
   const finalStatus = isFree ? "APPROVED" : "PENDING";

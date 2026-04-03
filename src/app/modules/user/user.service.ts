@@ -89,7 +89,8 @@ const GetAllUsers = async (
         reviews: {
           where: { rating: { gt: 0 } },
         },
-       events:true
+       events:true,
+       accounts:{select:{password:true}}
       },
       orderBy: {
         [sortBy!]:sortOrder
