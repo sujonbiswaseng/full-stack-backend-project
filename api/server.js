@@ -5,7 +5,7 @@ var __export = (target, all) => {
 };
 
 // src/app.ts
-import express4 from "express";
+import express5 from "express";
 
 // src/app/middleware/notFound.ts
 import status from "http-status";
@@ -335,7 +335,7 @@ model Invitation {
   inviteeId     String
   notifications Notification[]
 
-  event   Event @relation(fields: [eventId], references: [id])
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   inviter User  @relation("Inviter", fields: [inviterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   invitee User  @relation("Invitee", fields: [inviteeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
@@ -1790,7 +1790,7 @@ var createEvent = async (user, payload) => {
   });
   return event;
 };
-var getAllEvents = async (data, page, limit, skip, sortBy, sortOrder, is_featureddata) => {
+var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featureddata, search) => {
   const statuses = [
     "DRAFT",
     "UPCOMING",
@@ -1799,80 +1799,79 @@ var getAllEvents = async (data, page, limit, skip, sortBy, sortOrder, is_feature
     "CANCELLED"
   ];
   const andConditions = [];
-  if (data) {
+  if (query) {
     const orConditions = [];
-    if (data.title) {
+    if (query.title) {
       orConditions.push({
         title: {
-          contains: data.title,
+          contains: query.title,
           mode: "insensitive"
         }
       });
     }
-    if (data.search) {
+    if (query.createdAt) {
+      const dateRange = parseDateForPrisma(query.createdAt);
+      andConditions.push({ createdAt: dateRange.gte });
+    }
+    if (query.date) {
+      const dateRange = parseDateForPrisma(query.date);
+      andConditions.push({ date: dateRange });
+    }
+    if (search) {
       orConditions.push(
         {
           title: {
-            contains: data.search,
+            contains: query.search,
             mode: "insensitive"
           }
         },
         {
           description: {
-            contains: data.search,
-            mode: "insensitive"
-          }
-        },
-        {
-          categories: {
-            contains: data.search,
+            contains: query.search,
             mode: "insensitive"
           }
         },
         {
           venue: {
-            contains: data.search,
+            contains: query.search,
             mode: "insensitive"
           }
         }
       );
     }
-    if (data.description) {
+    if (query.description) {
       orConditions.push({
         description: {
-          contains: data.description,
+          contains: query.description,
           mode: "insensitive"
         }
       });
     }
-    if (data.categories) {
+    if (query.categories) {
       orConditions.push({
-        categories: {
-          contains: data.categories,
-          mode: "insensitive"
-        }
+        categories: query.categories
       });
     }
     if (orConditions.length > 0) {
       andConditions.push({ OR: orConditions });
     }
   }
-  if (data.fee) {
+  if (query?.fee) {
     andConditions.push({
       fee: {
         gte: 1,
-        lte: Number(data.fee)
+        lte: Number(query.fee)
       }
     });
   }
-  if (data.visibility) {
+  if (query?.visibility) {
     andConditions.push({
-      visibility: data.visibility
+      visibility: query.visibility
     });
   }
-  if (data.priceType) {
+  if (query?.priceType) {
     andConditions.push({
-      priceType: data.priceType
+      priceType: query.priceType
     });
   }
   if (is_featureddata) {
@@ -1880,14 +1879,9 @@ var getAllEvents = async (data, page, limit, skip, sortBy, sortOrder, is_feature
       is_featured: is_featureddata
     });
   }
-  if (data.status) {
+  if (query?.status) {
     andConditions.push({
-      status: data.status
-    });
-  }
-  if (data.date) {
-    andConditions.push({
-      date: data.date
+      status: query.status
     });
   }
   const result = {};
@@ -1950,12 +1944,12 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
     andConditions.push({ createdAt: isoString });
   }
   if (data.date) {
-    const dateRange = parseDateForPrisma(data.date);
-    andConditions.push({ date: dateRange });
+    const dateRange2 = parseDateForPrisma(data.date);
+    andConditions.push({ date: { gte: dateRange2.gte } });
   }
   if (data.createdAt) {
-    const dateRange = parseDateForPrisma(data.createdAt);
-    andConditions.push({ createdAt: dateRange });
+    const dateRange2 = parseDateForPrisma(data.createdAt);
+    andConditions.push({ createdAt: dateRange2 });
   }
   if (data.fee) andConditions.push({ fee: { lte: Number(data.fee) } });
   if (data.visibility) andConditions.push({ visibility: data.visibility });
@@ -1971,9 +1965,10 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
     andConditions.push({ organizerId: userId });
   }
   const result = {};
+  const dateRange = parseDateForPrisma(data.createdAt);
   for (const status19 of statuses) {
     const events = await prisma.event.findMany({
-      where: { status: status19, AND: andConditions },
+      where: { status: status19, AND: andConditions, createdAt: { gte: dateRange.gte } },
       take: limit,
       skip,
       include: {
@@ -2224,9 +2219,10 @@ var createEvent2 = catchAsync(async (req, res) => {
 });
 var getAllEvents2 = catchAsync(async (req, res) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
+  const { search } = req.query;
   const { is_featured } = req.query;
   const is_featureddata = is_featured ? req.query.is_featured === "true" ? true : req.query.is_featured === "false" ? false : void 0 : void 0;
-  const events = await EventServices.getAllEvents(req.query, page, limit, skip, sortBy, sortOrder, is_featureddata);
+  const events = await EventServices.getAllEvents(req.query, page, limit, skip, sortBy, sortOrder, is_featureddata, search);
   sendResponse(res, {
     httpStatusCode: status9.OK,
     success: true,
@@ -2364,7 +2360,7 @@ var CreateEventSchema = z3.object({
   image: z3.string().url("Image URL is required"),
   visibility: z3.enum(EventType).default("PUBLIC"),
   priceType: z3.enum(PricingType).default("FREE"),
-  fee: z3.coerce.number().min(60, "Minimum amount must be at least 60 BDT").optional(),
+  fee: z3.coerce.number().optional(),
   status: EventStatusEnum.default("UPCOMING"),
   is_featured: z3.boolean().optional().default(false)
 });
@@ -2578,8 +2574,12 @@ var getSingleInvitationService = async (id) => {
   }
   return result;
 };
-var updateInvitationService = async (id, data) => {
+var updateInvitationService = async (id, data, userId) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const userexist = await prisma.user.findUnique({ where: { id: userId } });
+  if (invitation?.inviterId !== userId && userexist?.role !== "ADMIN") {
+    throw new AppError_default(400, "you are not valid user for invitation, can update invitation just owner and admin");
+  }
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);
   const updateInv = await prisma.invitation.update({
     where: { id },
@@ -2600,8 +2600,12 @@ var updateInvitationService = async (id, data) => {
   });
   return updateInv;
 };
-var deleteInvitationService = async (id) => {
+var deleteInvitationService = async (id, userId) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
+  const userexist = await prisma.user.findUnique({ where: { id: userId } });
+  if (invitation?.inviterId !== userId && userexist?.role !== "ADMIN") {
+    throw new AppError_default(400, "you are not valid user for invitation, can delete invitation just owner and admin");
+  }
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);
   return await prisma.invitation.delete({ where: { id } });
 };
@@ -2655,12 +2659,12 @@ var GetSingleInvitationController = catchAsync(async (req, res) => {
 });
 var deleteInvitation = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await invitationsServices.deleteInvitationService(id);
+  const result = await invitationsServices.deleteInvitationService(id, req.user.userId);
   sendResponse(res, { httpStatusCode: status10.OK, success: true, message: "Invitation deleted", data: result });
 });
 var updateInvitation = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await invitationsServices.updateInvitationService(id, req.body);
+  const result = await invitationsServices.updateInvitationService(id, req.body, req.user.userId);
   sendResponse(res, { httpStatusCode: status10.OK, success: true, message: "Invitation updated", data: result });
 });
 var InvitationController = {
@@ -2709,18 +2713,32 @@ var createParticipantService = async (userId, eventId, data) => {
       title: true,
       fee: true,
       date: true,
-      venue: true
+      venue: true,
+      visibility: true,
+      priceType: true
     }
   });
   if (!event) {
     throw new AppError_default(404, "Event not found");
   }
-  if (event.fee < 60) {
-    throw new AppError_default(400, "Minimum amount must be at least 60 BDT");
-  }
   const isFree = Number(event.fee) === 0;
   const finalStatus = isFree ? "APPROVED" : "PENDING";
   const finalPayment = isFree ? "PAID" : "UNPAID";
+  if (event.visibility === "PRIVATE" && event.priceType === "FREE") {
+    const participantData = await prisma.participant.create({
+      data: {
+        userId,
+        eventId,
+        status: "PENDING",
+        paymentStatus: finalPayment
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        event: true
+      }
+    });
+    return participantData;
+  }
   const result = await prisma.$transaction(async (tx) => {
     const participantData = await tx.participant.create({
       data: {
@@ -2773,6 +2791,19 @@ var createParticipantService = async (userId, eventId, data) => {
       success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
       cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`
     });
+    if (!session.url || !session || !session) {
+      await prisma.participant.delete({ where: { id: participantData.id } });
+    }
+    if (event.visibility === "PUBLIC" && event.priceType === "PAID") {
+      await prisma.participant.update({
+        where: {
+          id: participantData.id
+        },
+        data: {
+          status: "APPROVED"
+        }
+      });
+    }
     return {
       participantData,
       paymentData,
@@ -3236,7 +3267,7 @@ var router4 = express.Router();
 router4.get("/participant/event/:id/own-payment", Auth_default([Role.USER]), ParticipantControllers.getOwnPayment);
 router4.get("/participant/request/event", Auth_default([Role.USER]), ParticipantControllers.ParticipantOwnRequestEvent);
 router4.delete("/participant/request/event/:id", Auth_default([Role.USER]), ParticipantControllers.deleteEventRequestJoinData);
-router4.post("/participant/event/:id", Auth_default([Role.ADMIN, Role.USER]), ParticipantControllers.createParticipantController);
+router4.post("/participant/event/:id", Auth_default([Role.USER]), ParticipantControllers.createParticipantController);
 router4.get("/participants", Auth_default([Role.ADMIN, Role.USER]), ParticipantControllers.getAllParticipants);
 router4.get("/participant/:id", ParticipantControllers.getSingleParticipant);
 router4.put("/participant/:id", Auth_default([Role.ADMIN, Role.USER]), ParticipantControllers.updateParticipant);
@@ -3308,10 +3339,11 @@ var deleteReview = async (reviewid, userid) => {
       userId: true
     }
   });
+  const existUser = await prisma.user.findUnique({ where: { id: userid } });
   if (!review) {
     throw new AppError_default(404, "review not found");
   }
-  if (userid !== review.userId && userid !== "admin") {
+  if (userid !== review.userId && existUser?.role !== "ADMIN") {
     throw new AppError_default(403, "You are not authorized to delete this review");
   }
   const result = await prisma.review.delete({
@@ -3403,6 +3435,7 @@ var getReviewsByRole = async (role, userId, page = 1, limit = 10, skip = 0, data
 };
 var moderateReview = async (id, data) => {
   const { status: status19 } = data;
+  console.log(status19, "s");
   const reviewData = await prisma.review.findUnique({
     where: {
       id
@@ -3559,7 +3592,7 @@ router5.get(
 router5.post("/event/:id/review", validateRequest(createReviewsData), Auth_default([Role.USER]), ReviewsControllers.CreateReviews);
 router5.put("/review/:reviewid", Auth_default([Role.USER]), validateRequest(updateReviewsData), ReviewsControllers.updateReview);
 router5.delete("/review/:reviewid", Auth_default([Role.ADMIN, Role.USER]), ReviewsControllers.deleteReview);
-router5.patch("/review/:reviewid/moderate", Auth_default([Role.ADMIN]), validateRequest(moderateData), ReviewsControllers.moderateReview);
+router5.put("/review/:reviewid/moderate", Auth_default([Role.ADMIN]), ReviewsControllers.moderateReview);
 var ReviewsRouters = router5;
 
 // src/app/modules/stats/stats.route.ts
@@ -3613,10 +3646,20 @@ var getAdminDashboardStats = async () => {
       where: { status: PaymentStatus.PAID }
     });
     const totalRevenue = revenueResult._sum.amount ?? 0;
-    const [upcomingEvents, completedEvents, cancelledEvents] = await Promise.all([
+    const [upcomingEvents, completedEvents, cancelledEvents, draftEvetn, ongoingEvent] = await Promise.all([
       prisma.event.count({ where: { status: "UPCOMING" } }),
       prisma.event.count({ where: { status: "COMPLETED" } }),
-      prisma.event.count({ where: { status: "CANCELLED" } })
+      prisma.event.count({ where: { status: "CANCELLED" } }),
+      prisma.event.count({ where: { status: "DRAFT" } }),
+      prisma.event.count({ where: { status: "ONGOING" } })
+    ]);
+    const [privateEvent, publicEvent] = await Promise.all([
+      prisma.event.count({ where: { visibility: "PRIVATE" } }),
+      prisma.event.count({ where: { visibility: "PUBLIC" } })
+    ]);
+    const [freeEvent, paidEvent] = await Promise.all([
+      prisma.event.count({ where: { priceType: "FREE" } }),
+      prisma.event.count({ where: { priceType: "PAID" } })
     ]);
     const payments = await prisma.payment.findMany({
       where: { status: PaymentStatus.PAID },
@@ -3648,20 +3691,33 @@ var getAdminDashboardStats = async () => {
     const pieChartData = [
       { label: "Upcoming", value: upcomingEvents },
       { label: "Completed", value: completedEvents },
-      { label: "Cancelled", value: cancelledEvents }
+      { label: "Cancelled", value: cancelledEvents },
+      { label: "draft", value: draftEvetn },
+      { label: "ongoing", value: ongoingEvent }
     ];
     return {
       counts: {
         participatedEvents: participantCount,
         invitations: invitationCount,
-        payments: paymentCount
+        payments: paymentCount,
+        user: userCount
+      },
+      eventVisivillity: {
+        public: publicEvent,
+        private: privateEvent
+      },
+      priceType: {
+        free: freeEvent,
+        paid: paidEvent
       },
       totalRevenue,
       monthlyRevenue: barChartData,
       eventStatus: {
         upcoming: upcomingEvents,
         completed: completedEvents,
-        cancelled: cancelledEvents
+        cancelled: cancelledEvents,
+        draft: draftEvetn,
+        ongoing: ongoingEvent
       },
       pieChartData
     };
@@ -3682,10 +3738,20 @@ var getUserDashboardStats = async (userId) => {
       where: { userId, status: PaymentStatus.PAID }
     });
     const totalRevenue = revenueResult._sum.amount ?? 0;
-    const [upcomingEvents, completedEvents, cancelledEvents] = await Promise.all([
+    const [upcomingEvents, completedEvents, cancelledEvents, draftEvent, ongoingEvent] = await Promise.all([
       prisma.participant.count({ where: { userId, event: { status: "UPCOMING" } } }),
       prisma.participant.count({ where: { userId, event: { status: "COMPLETED" } } }),
-      prisma.participant.count({ where: { userId, event: { status: "CANCELLED" } } })
+      prisma.participant.count({ where: { userId, event: { status: "CANCELLED" } } }),
+      prisma.participant.count({ where: { userId, event: { status: "DRAFT" } } }),
+      prisma.participant.count({ where: { userId, event: { status: "ONGOING" } } })
+    ]);
+    const [privateEvent, publicEvent] = await Promise.all([
+      prisma.event.count({ where: { organizerId: userId, visibility: "PRIVATE" } }),
+      prisma.event.count({ where: { organizerId: userId, visibility: "PUBLIC" } })
+    ]);
+    const [freeEvent, paidEvent] = await Promise.all([
+      prisma.event.count({ where: { organizerId: userId, priceType: "FREE" } }),
+      prisma.event.count({ where: { organizerId: userId, priceType: "PAID" } })
     ]);
     const payments = await prisma.payment.findMany({
       where: { userId, status: PaymentStatus.PAID },
@@ -3704,7 +3770,9 @@ var getUserDashboardStats = async (userId) => {
     const pieChartData = [
       { label: "Upcoming", value: upcomingEvents },
       { label: "Completed", value: completedEvents },
-      { label: "Cancelled", value: cancelledEvents }
+      { label: "Cancelled", value: cancelledEvents },
+      { label: "Draft", value: draftEvent },
+      { label: "Ongoing", value: ongoingEvent }
     ];
     return {
       counts: {
@@ -3712,12 +3780,22 @@ var getUserDashboardStats = async (userId) => {
         invitations: invitationsCount,
         payments: paymentsCount
       },
+      eventVisivillity: {
+        public: publicEvent,
+        private: privateEvent
+      },
+      priceType: {
+        free: freeEvent,
+        paid: paidEvent
+      },
       totalRevenue,
       monthlyRevenue: barChartData,
       eventStatus: {
         upcoming: upcomingEvents,
         completed: completedEvents,
-        cancelled: cancelledEvents
+        cancelled: cancelledEvents,
+        draft: draftEvent,
+        ongoingEvent
       },
       pieChartData
     };
@@ -3817,7 +3895,8 @@ var GetAllUsers = async (data, page, limit, skip, sortBy, sortOrder, isemailVeri
       reviews: {
         where: { rating: { gt: 0 } }
       },
-      events: true
+      events: true,
+      accounts: { select: { password: true } }
     },
     orderBy: {
       [sortBy]: sortOrder
@@ -4075,17 +4154,8 @@ var router8 = express3.Router();
 router8.get("/notifications", Auth_default([Role.USER]), NotificationController.getUserNotificationsController);
 var NotificationRoutes = router8;
 
-// src/app/routes/index.ts
-var router9 = Router6();
-router9.use("/v1/auth", AuthRouters);
-router9.use("/v1", UsersRoutes);
-router9.use("/v1", EventRouters);
-router9.use("/v1", InvitationsRouters);
-router9.use("/v1", ParticipantRoutes);
-router9.use("/v1", ReviewsRouters);
-router9.use("/v1", StatsRoutes);
-router9.use("/v1", NotificationRoutes);
-var IndexRouter = router9;
+// src/app/modules/payment/payment.route.ts
+import express4 from "express";
 
 // src/app/modules/payment/payment.controller.ts
 import status18 from "http-status";
@@ -4165,8 +4235,102 @@ var handlerStripeWebhookEvent = async (event) => {
   }
   return { message: `Webhook Event ${event.id} processed successfully` };
 };
+var getAllPaymentsService = async (userId, page, limit, skip, sortBy, sortOrder, query) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("User not found");
+  if (user.role !== "ADMIN") {
+    throw new Error("Unauthorized: Only admin can access all payments");
+  }
+  const filters = [];
+  if (query.status) filters.push({ status: query.status });
+  if (query.amount) filters.push({ amount: Number(query.amount) });
+  if (query.paymentStatus) filters.push({ status: query.paymentStatus });
+  if (query.createdAt) {
+    const dateRange = parseDateForPrisma(query.createdAt);
+    filters.push({ createdAt: dateRange });
+  }
+  if (query.userId) filters.push({ userId: query.userId });
+  if (query.eventId) filters.push({ eventId: query.eventId });
+  const whereOptions = filters.length ? { AND: filters } : {};
+  ;
+  const payments = await prisma.payment.findMany({
+    where: whereOptions,
+    skip,
+    take: limit,
+    orderBy: { "createdAt": "desc" },
+    include: {
+      event: true,
+      participant: true,
+      user: true
+    }
+  });
+  const total = await prisma.payment.count({ where: whereOptions });
+  return {
+    payments,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+};
+var updatePaymentStatusWithParticipantCheck = async (paymentId, newStatus) => {
+  const payment = await prisma.payment.findUnique({
+    where: { id: paymentId },
+    include: { participant: true }
+  });
+  if (!payment) {
+    throw new Error("Payment not found");
+  }
+  if (!payment.participant) {
+    throw new Error("Associated participant not found");
+  }
+  const [updatedPayment, updatedParticipant] = await prisma.$transaction([
+    prisma.payment.update({
+      where: { id: paymentId },
+      data: { status: newStatus }
+    }),
+    prisma.participant.update({
+      where: { id: payment.participant.id },
+      data: { paymentStatus: newStatus }
+    })
+  ]);
+  return {
+    payment: updatedPayment,
+    participant: updatedParticipant
+  };
+};
+var deletePayment = async (paymentId) => {
+  const payment = await prisma.payment.findUnique({
+    where: { id: paymentId },
+    include: { participant: true }
+  });
+  if (!payment) {
+    throw new Error("Payment not found");
+  }
+  if (!payment.participant) {
+    throw new Error("Associated participant not found");
+  }
+  const [deletedPayment, updatedParticipant] = await prisma.$transaction([
+    prisma.payment.delete({
+      where: { id: paymentId }
+    }),
+    prisma.participant.update({
+      where: { id: payment.participant.id },
+      data: { paymentStatus: "UNPAID" }
+    })
+  ]);
+  return {
+    payment: deletedPayment,
+    participant: updatedParticipant
+  };
+};
 var PaymentService = {
-  handlerStripeWebhookEvent
+  handlerStripeWebhookEvent,
+  getAllPaymentsService,
+  updatePaymentStatusWithParticipantCheck,
+  deletePayment
 };
 
 // src/app/modules/payment/payment.controller.ts
@@ -4201,23 +4365,103 @@ var handleStripeWebhookEvent = catchAsync(async (req, res) => {
     });
   }
 });
+var getAllPayment = catchAsync(async (req, res) => {
+  const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
+  const payments = await PaymentService.getAllPaymentsService(req.user.userId, page, limit, skip, sortBy, sortOrder, req.query);
+  sendResponse(res, {
+    httpStatusCode: status18.OK,
+    success: true,
+    message: "All payment fetched",
+    data: payments
+  });
+});
+var updatePaymentStatus = catchAsync(async (req, res) => {
+  const { paymentId } = req.params;
+  const { status: newStatus } = req.body;
+  try {
+    const result = await PaymentService.updatePaymentStatusWithParticipantCheck(paymentId, newStatus);
+    return sendResponse(res, {
+      httpStatusCode: status18.OK,
+      success: true,
+      message: "Payment status updated successfully",
+      data: result
+    });
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    return sendResponse(res, {
+      httpStatusCode: status18.INTERNAL_SERVER_ERROR,
+      success: false,
+      message: "Error updating payment status"
+    });
+  }
+});
+var deletePayment2 = catchAsync(async (req, res) => {
+  const { paymentId } = req.params;
+  try {
+    const result = await PaymentService.deletePayment(paymentId);
+    return sendResponse(res, {
+      httpStatusCode: status18.OK,
+      success: true,
+      message: "Payment deleted successfully",
+      data: result
+    });
+  } catch (error) {
+    console.error("Error deleting payment:", error);
+    return sendResponse(res, {
+      httpStatusCode: status18.INTERNAL_SERVER_ERROR,
+      success: false,
+      message: "Error deleting payment"
+    });
+  }
+});
 var PaymentController = {
-  handleStripeWebhookEvent
+  handleStripeWebhookEvent,
+  getAllPayment,
+  updatePaymentStatus,
+  deletePayment: deletePayment2
 };
 
+// src/app/modules/payment/payment.route.ts
+var router9 = express4.Router();
+router9.get("/payments", Auth_default([Role.ADMIN]), PaymentController.getAllPayment);
+router9.patch(
+  "/payments/:paymentId/status",
+  Auth_default([Role.ADMIN]),
+  PaymentController.updatePaymentStatus
+);
+router9.delete(
+  "/payments/:paymentId",
+  Auth_default([Role.ADMIN]),
+  PaymentController.deletePayment
+);
+var PaymentRoutes = router9;
+
+// src/app/routes/index.ts
+var router10 = Router6();
+router10.use("/v1/auth", AuthRouters);
+router10.use("/v1", UsersRoutes);
+router10.use("/v1", EventRouters);
+router10.use("/v1", InvitationsRouters);
+router10.use("/v1", ParticipantRoutes);
+router10.use("/v1", ReviewsRouters);
+router10.use("/v1", StatsRoutes);
+router10.use("/v1", NotificationRoutes);
+router10.use("/v1", PaymentRoutes);
+var IndexRouter = router10;
+
 // src/app.ts
-var app = express4();
+var app = express5();
 app.set("view engine", "ejs");
 app.set("views", path3.resolve(process.cwd(), `src/app/templates`));
-app.post("/webhook", express4.raw({ type: "application/json" }), PaymentController.handleStripeWebhookEvent);
+app.post("/webhook", express5.raw({ type: "application/json" }), PaymentController.handleStripeWebhookEvent);
 app.use("/api/auth", toNodeHandler(auth));
 app.use(cookieParser());
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true
 }));
-app.use(express4.urlencoded({ extended: true }));
-app.use(express4.json());
+app.use(express5.urlencoded({ extended: true }));
+app.use(express5.json());
 app.use("/api", IndexRouter);
 app.use(globalErrorHandeller_default);
 app.use(notFound);

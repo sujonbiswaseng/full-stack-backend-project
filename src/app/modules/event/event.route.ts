@@ -11,6 +11,7 @@ const router=Router()
 router.post(
   "/event",
   auth([Role.ADMIN, Role.USER]), 
+  multerUpload.single("file"),
   validateRequest(CreateEventSchema),
   EventController.createEvent
 )

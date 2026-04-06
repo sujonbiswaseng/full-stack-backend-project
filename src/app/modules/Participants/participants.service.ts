@@ -36,6 +36,8 @@ const createParticipantService = async (
       fee: true,
       date: true,
       venue: true,
+      visibility:true,
+      priceType:true
     },
   });
 
@@ -48,6 +50,23 @@ const createParticipantService = async (
   const finalStatus = isFree ? "APPROVED" : "PENDING";
   const finalPayment = isFree ? "PAID" : "UNPAID";
 
+  if(event.visibility==="PRIVATE" && event.priceType==="FREE"){
+    const participantData = await prisma.participant.create({
+      data: {
+        userId,
+        eventId,
+        status: "PENDING",
+        paymentStatus: finalPayment,
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        event: true,
+      },
+    });
+    return participantData
+  }
+
+ 
   const result = await prisma.$transaction(async (tx) => {
     // ✅ Create participant
     const participantData = await tx.participant.create({
@@ -108,6 +127,18 @@ const createParticipantService = async (
       success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
       cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`,
     });
+    if(!session.url || !session || !session){
+      await prisma.participant.delete({where:{id:participantData.id}})
+    }
+    if(event.visibility==="PUBLIC" && event.priceType==="PAID"){
+      await prisma.participant.update({where:{
+        id:participantData.id
+      },
+      data:{
+        status:"APPROVED"
+      }
+    })
+    }
 
     return {
       participantData,

@@ -66,7 +66,7 @@ export const CreateEventSchema = z.object({
   .transform((val) => new Date(val).toISOString()),
   time: z.string().min(1, "Time is required"),
   venue: z.string().min(3, "Venue is required"),
-  image: z.string().url("Image URL is required"),
+  image:z.any(),
   visibility:z.enum(EventType).default("PUBLIC"),
   priceType:z.enum( PricingType).default("FREE"),
   fee: z.coerce.number().optional(),

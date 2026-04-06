@@ -1,11 +1,11 @@
-import { envVars } from './../config/env';
+import { envVars } from "./../config/env";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { Role, UserStatus } from "../../generated/prisma/enums";
 import { bearer, emailOTP } from "better-auth/plugins";
 import { sendEmail } from "../utils/email";
-import { Stats } from 'node:fs';
+import { Stats } from "node:fs";
 export const auth = betterAuth({
   baseURL: `${envVars.BETTER_AUTH_URL}/api/auth`,
   secret: envVars.BETTER_AUTH_SECRET,
@@ -57,6 +57,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    autoSignIn:true,
     requireEmailVerification: true,
   },
   plugins: [
@@ -116,51 +117,54 @@ export const auth = betterAuth({
       },
       expiresIn: 4 * 60, // 4 minutes in seconds
       otpLength: 6,
-      resendStrategy: "rotate"
+      resendStrategy: "rotate",
     }),
   ],
   socialProviders: {
-        google: { 
-            clientId: envVars.GOOGLE_CLIENT_ID as string, 
-            clientSecret: envVars.GOOGLE_CLIENT_SECRET as string, 
-            mapProfileToUser:()=>{
-              return{
-                role:Role.USER,
-                status:UserStatus.ACTIVE,
-                emailVerified:true,
-                isDeleted:false,
-                deletedAt:null
-              }
-            }
-        }, 
-        github: { 
-          clientId: process.env.GITHUB_CLIENT_ID as string, 
-          clientSecret: process.env.GITHUB_CLIENT_SECRET as string, 
-      }, 
+    google: {
+      clientId: envVars.GOOGLE_CLIENT_ID as string,
+      clientSecret: envVars.GOOGLE_CLIENT_SECRET as string,
+      accessType: "offline",
+      prompt: "select_account consent",
+      mapProfileToUser: () => {
+        return {
+          role: Role.USER,
+          status: UserStatus.ACTIVE,
+          emailVerified: true,
+          isDeleted: false,
+          deletedAt: null,
+        };
+      },
     },
-    advanced: {
-        // disableCSRFCheck: true,
-        useSecureCookies : false,
-        cookies:{
-            state:{
-                attributes:{
-                    sameSite: "none",
-                    secure: true,
-                    httpOnly: true,
-                    path: "/",
-                }
-            },
-            sessionToken:{
-                attributes:{
-                    sameSite: "none",
-                    secure: true,
-                    httpOnly: true,
-                    path: "/",
-                }
-            }
-        }},
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+  advanced: {
+    // disableCSRFCheck: true,
+    useSecureCookies: false,
+    cookies: {
+      state: {
+        attributes: {
+          sameSite: "none",
+          secure: true,
+          httpOnly: true,
+          path: "/",
+        },
+      },
+      sessionToken: {
+        attributes: {
+          sameSite: "none",
+          secure: true,
+          httpOnly: true,
+          path: "/",
+        },
+      },
+    },
+  },
 
-      redirectURLs:{
-        signin:`${envVars.BETTER_AUTH_URL}`
-    },
+  redirectURLs: {
+    signin: `${envVars.BETTER_AUTH_URL}`,
+  },
 });
