@@ -221,7 +221,7 @@ export type UserGroupByOutputType = {
   _max: UserMaxAggregateOutputType | null
 }
 
-type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+export type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserGroupByOutputType, T['by']> &
       {
@@ -367,7 +367,7 @@ export type UserCreateInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -393,7 +393,7 @@ export type UserUncheckedCreateInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -471,7 +471,7 @@ export type UserCreateManyInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -732,7 +732,7 @@ export type UserCreateWithoutSessionsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -757,7 +757,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -848,7 +848,7 @@ export type UserCreateWithoutAccountsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -873,7 +873,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -964,7 +964,7 @@ export type UserCreateWithoutEventsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -989,7 +989,7 @@ export type UserUncheckedCreateWithoutEventsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1080,7 +1080,7 @@ export type UserCreateWithoutInvitationsSentInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1105,7 +1105,7 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1135,7 +1135,7 @@ export type UserCreateWithoutInvitationsReceivedInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1160,7 +1160,7 @@ export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1312,7 +1312,7 @@ export type UserCreateWithoutNotificationsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1337,7 +1337,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1428,7 +1428,7 @@ export type UserCreateWithoutParticipantsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1453,7 +1453,7 @@ export type UserUncheckedCreateWithoutParticipantsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1544,7 +1544,7 @@ export type UserCreateWithoutPaymentsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1569,7 +1569,7 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1660,7 +1660,7 @@ export type UserCreateWithoutReviewsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null
@@ -1685,7 +1685,7 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   role?: $Enums.Role
   status?: $Enums.UserStatus
   phone?: string | null
-  image?: string
+  image: string
   isDeleted?: boolean
   deletedAt?: Date | string | null
   bgimage?: string | null

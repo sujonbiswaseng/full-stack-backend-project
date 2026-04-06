@@ -6,6 +6,7 @@ import { TErrorSources } from "../interface/error.interface";
 import { sendResponse } from "../shared/sendResponse";
 import { handleZodError } from "../errorHelper/handleerror";
 import z from "zod";
+import { deleteFileFromCloudinary } from "../config/cloudinary.config";
 
 function errorHandler (err: any, req: Request, res: Response, next: NextFunction) {
     let statusCode: number = status.INTERNAL_SERVER_ERROR; // Default 500
@@ -31,6 +32,11 @@ function errorHandler (err: any, req: Request, res: Response, next: NextFunction
         errorSources = [...simplifiedError.errorSources]
         stack = err.stack;
 
+    }
+    if (req.file && req.file.path) {
+            if (req.file?.path) {
+                deleteFileFromCloudinary(req.file.path);
+            }
     }
     sendResponse(res,{
         success:false,

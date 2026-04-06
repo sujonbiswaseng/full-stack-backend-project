@@ -7,10 +7,12 @@ import { AuthService } from "./auth.service";
 import { CookieUtils } from "../../utils/cookie";
 import { envVars } from "../../config/env";
 import { auth } from "../../lib/auth";
-import { CLIENT_RENEG_LIMIT } from "node:tls";
 
 const UserRegister = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
+  const payload = {
+    ...req.body,
+    image:req.file?.path || req.body.image
+};
   const result = await AuthService.UserRegister(payload);
 
   const { accessToken, refreshToken, token } = result;

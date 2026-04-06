@@ -127,19 +127,6 @@ const createParticipantService = async (
       success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
       cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`,
     });
-    if(!session.url || !session || !session){
-      await prisma.participant.delete({where:{id:participantData.id}})
-    }
-    if(event.visibility==="PUBLIC" && event.priceType==="PAID"){
-      await prisma.participant.update({where:{
-        id:participantData.id
-      },
-      data:{
-        status:"APPROVED"
-      }
-    })
-    }
-
     return {
       participantData,
       paymentData,

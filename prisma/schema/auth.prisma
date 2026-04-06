@@ -6,7 +6,7 @@ model User {
   role          Role      @default(USER)
   status        UserStatus @default(ACTIVE)
   phone         String?   
-  image         String    @default("https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg")
+  image         String  
   isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
   bgimage        String?

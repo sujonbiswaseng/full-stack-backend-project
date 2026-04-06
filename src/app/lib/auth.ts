@@ -42,12 +42,6 @@ export const auth = betterAuth({
         required: false,
         defaultValue: "",
       },
-      image: {
-        type: "string",
-        required: true,
-        defaultValue:
-          "https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg",
-      },
       deletedAt: {
         type: "date",
         required: false,
@@ -57,8 +51,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    autoSignIn:true,
-    requireEmailVerification: true,
+    autoSignIn:true
   },
   plugins: [
     bearer(),

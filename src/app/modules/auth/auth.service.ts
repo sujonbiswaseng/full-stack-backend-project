@@ -15,6 +15,9 @@ const UserRegister = async (payload: UserCreateInput) => {
   const userExist = await prisma.user.findUnique({
     where: { email: email },
   });
+  if(!image){
+    throw new AppError(status.BAD_REQUEST, "Image is required to register a user.");
+  }
   if (userExist) {
     throw new AppError(409, "user already exist,please try another email");
   }
@@ -27,6 +30,7 @@ const UserRegister = async (payload: UserCreateInput) => {
       image,
     },
   });
+  console.log(data,'data')
   if (!data.user) {
     throw new AppError(400, "User register failed");
   }
@@ -227,11 +231,6 @@ const forgetPassword = async (email: string) => {
   if (!isUserExist) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
-
-  if (!isUserExist.emailVerified) {
-    throw new AppError(status.BAD_REQUEST, "Email not verified");
-  }
-
   if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
@@ -259,9 +258,6 @@ const resetPassword = async (
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
-  if (!isUserExist.emailVerified) {
-    throw new AppError(status.BAD_REQUEST, "Email not verified");
-  }
 
   if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
     throw new AppError(status.NOT_FOUND, "User not found");
@@ -344,9 +340,11 @@ const googleLoginSuccess = async (session: Record<string, any>) => {
         id: session.user.id,
         name: session.user.name,
         email: session.user.email,
+        image:""
       },
     });
   }
+  
 
   const accessToken = tokenUtils.getAccessToken({
     userId: session.user.id,

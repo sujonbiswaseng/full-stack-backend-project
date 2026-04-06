@@ -5,5 +5,5 @@ export const createUserSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().optional(),
-  image: z.url().optional(),
-}).strict();
+  image: z.any(),
+});
