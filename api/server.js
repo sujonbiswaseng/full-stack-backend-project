@@ -128,7 +128,7 @@ var config = {
   role          Role       @default(USER)
   status        UserStatus @default(ACTIVE)
   phone         String?
-  image         String     @default("https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg")
+  image         String
   isDeleted     Boolean    @default(false)
   deletedAt     DateTime?
   bgimage       String?
@@ -793,11 +793,6 @@ var auth = betterAuth({
         required: false,
         defaultValue: ""
       },
-      image: {
-        type: "string",
-        required: true,
-        defaultValue: "https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg"
-      },
       deletedAt: {
         type: "date",
         required: false,
@@ -807,7 +802,7 @@ var auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true
+    autoSignIn: true
   },
   plugins: [
     bearer(),
@@ -872,6 +867,8 @@ var auth = betterAuth({
     google: {
       clientId: envVars.GOOGLE_CLIENT_ID,
       clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+      accessType: "offline",
+      prompt: "select_account consent",
       mapProfileToUser: () => {
         return {
           role: Role.USER,
@@ -919,7 +916,7 @@ import path3 from "path";
 import cors from "cors";
 
 // src/app/middleware/globalErrorHandeller.ts
-import status5 from "http-status";
+import status6 from "http-status";
 
 // src/app/shared/sendResponse.ts
 var sendResponse = (res, responseData) => {
@@ -932,9 +929,42 @@ var sendResponse = (res, responseData) => {
 };
 
 // src/app/errorHelper/handleerror.ts
+import status5 from "http-status";
+
+// src/app/config/cloudinary.config.ts
+import { v2 as cloudinary } from "cloudinary";
 import status4 from "http-status";
+cloudinary.config({
+  cloud_name: envVars.CLOUDINARY.CLOUDINARY_CLOUD_NAME,
+  api_key: envVars.CLOUDINARY.CLOUDINARY_API_KEY,
+  api_secret: envVars.CLOUDINARY.CLOUDINARY_API_SECRET,
+  secure: true,
+  timeout: 6e4
+});
+var deleteFileFromCloudinary = async (url) => {
+  try {
+    const regex = /\/v\d+\/(.+?)(?:\.[a-zA-Z0-9]+)+$/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      const publicId = match[1];
+      await cloudinary.uploader.destroy(
+        publicId,
+        {
+          resource_type: "image"
+        }
+      );
+      console.log(`File ${publicId} deleted from cloudinary`);
+    }
+  } catch (error) {
+    console.error("Error deleting file from Cloudinary:", error);
+    throw new AppError_default(status4.INTERNAL_SERVER_ERROR, "Failed to delete file from Cloudinary");
+  }
+};
+var cloudinaryUpload = cloudinary;
+
+// src/app/errorHelper/handleerror.ts
 var handleZodError = (err) => {
-  const statusCode = status4.BAD_REQUEST;
+  const statusCode = status5.BAD_REQUEST;
   const message = "Zod Validation Error";
   const errorSources = [];
   err.issues.forEach((issue) => {
@@ -942,6 +972,16 @@ var handleZodError = (err) => {
       message: issue.message
     });
   });
+  for (const issue of err.issues) {
+    if (issue.path && issue.path.includes("image")) {
+      const urlMatch = typeof issue.message === "string" ? issue.message.match(/https?:\/\/[^\s'"]+/) : null;
+      if (urlMatch && urlMatch[0]) {
+        const imageUrl = urlMatch[0];
+        deleteFileFromCloudinary(imageUrl).catch(() => {
+        });
+      }
+    }
+  }
   return {
     success: false,
     message,
@@ -953,16 +993,16 @@ var handleZodError = (err) => {
 // src/app/middleware/globalErrorHandeller.ts
 import z from "zod";
 function errorHandler(err, req, res, next) {
-  let statusCode = status5.INTERNAL_SERVER_ERROR;
+  let statusCode = status6.INTERNAL_SERVER_ERROR;
   let message = "Internal Server Error";
   let errorSources = [];
   let stack = void 0;
   if (err instanceof prismaNamespace_exports.PrismaClientValidationError) {
-    statusCode = status5.BAD_REQUEST;
+    statusCode = status6.BAD_REQUEST;
     message = "Validation Error";
     errorSources.push({ message: err.message });
   } else if (err instanceof AppError_default) {
-    statusCode = err.statusCode || status5.BAD_REQUEST;
+    statusCode = err.statusCode || status6.BAD_REQUEST;
     message = err.message;
     errorSources.push({ message: err.message });
   } else if (err instanceof z.ZodError) {
@@ -971,6 +1011,11 @@ function errorHandler(err, req, res, next) {
     message = simplifiedError.message;
     errorSources = [...simplifiedError.errorSources];
     stack = err.stack;
+  }
+  if (req.file && req.file.path) {
+    if (req.file?.path) {
+      deleteFileFromCloudinary(req.file.path);
+    }
   }
   sendResponse(res, {
     success: false,
@@ -1004,7 +1049,7 @@ var catchAsync = (fn) => {
 };
 
 // src/app/modules/auth/auth.controller.ts
-import status7 from "http-status";
+import status8 from "http-status";
 
 // src/app/utils/cookie.ts
 var setCookie = (res, key, value, options) => {
@@ -1109,12 +1154,15 @@ var tokenUtils = {
 };
 
 // src/app/modules/auth/auth.service.ts
-import status6 from "http-status";
+import status7 from "http-status";
 var UserRegister = async (payload) => {
   const { name, email, password, phone, image } = payload;
   const userExist = await prisma.user.findUnique({
     where: { email }
   });
+  if (!image) {
+    throw new AppError_default(status7.BAD_REQUEST, "Image is required to register a user.");
+  }
   if (userExist) {
     throw new AppError_default(409, "user already exist,please try another email");
   }
@@ -1127,6 +1175,7 @@ var UserRegister = async (payload) => {
       image
     }
   });
+  console.log(data, "data");
   if (!data.user) {
     throw new AppError_default(400, "User register failed");
   }
@@ -1164,10 +1213,10 @@ var loginUser = async (payload) => {
     }
   });
   if (data.user.status === UserStatus.BLOCKED) {
-    throw new AppError_default(status6.FORBIDDEN, "User is blocked");
+    throw new AppError_default(status7.FORBIDDEN, "User is blocked");
   }
   if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
-    throw new AppError_default(status6.NOT_FOUND, "User is deleted");
+    throw new AppError_default(status7.NOT_FOUND, "User is deleted");
   }
   const accessToken = tokenUtils.getAccessToken({
     userId: data.user.id,
@@ -1207,7 +1256,7 @@ var getMe = async (user) => {
     }
   });
   if (!isUserExists) {
-    throw new AppError_default(status6.NOT_FOUND, "User not found");
+    throw new AppError_default(status7.NOT_FOUND, "User not found");
   }
   const userid = isUserExists.id;
   const ratings = await prisma.review.groupBy({
@@ -1244,7 +1293,7 @@ var changePassword = async (payload, sessionToken) => {
     })
   });
   if (!session) {
-    throw new AppError_default(status6.UNAUTHORIZED, "Invalid session token");
+    throw new AppError_default(status7.UNAUTHORIZED, "Invalid session token");
   }
   const { currentPassword, newPassword } = payload;
   const result = await auth.api.changePassword({
@@ -1299,13 +1348,10 @@ var forgetPassword = async (email) => {
     }
   });
   if (!isUserExist) {
-    throw new AppError_default(status6.NOT_FOUND, "User not found");
-  }
-  if (!isUserExist.emailVerified) {
-    throw new AppError_default(status6.BAD_REQUEST, "Email not verified");
+    throw new AppError_default(status7.NOT_FOUND, "User not found");
   }
   if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
-    throw new AppError_default(status6.NOT_FOUND, "User not found");
+    throw new AppError_default(status7.NOT_FOUND, "User not found");
   }
   await auth.api.requestPasswordResetEmailOTP({
     body: {
@@ -1321,13 +1367,10 @@ var resetPassword = async (email, otp, newPassword) => {
     }
   });
   if (!isUserExist) {
-    throw new AppError_default(status6.NOT_FOUND, "User not found");
-  }
-  if (!isUserExist.emailVerified) {
-    throw new AppError_default(status6.BAD_REQUEST, "Email not verified");
+    throw new AppError_default(status7.NOT_FOUND, "User not found");
   }
   if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
-    throw new AppError_default(status6.NOT_FOUND, "User not found");
+    throw new AppError_default(status7.NOT_FOUND, "User not found");
   }
   await auth.api.resetPasswordEmailOTP({
     body: {
@@ -1367,13 +1410,13 @@ var sendOtp = async (email) => {
     }
   });
   if (!user) {
-    throw new AppError_default(status6.NOT_FOUND, "User not found");
+    throw new AppError_default(status7.NOT_FOUND, "User not found");
   }
   if (user.isDeleted || user.status === UserStatus.DELETED) {
-    throw new AppError_default(status6.NOT_FOUND, "User not found");
+    throw new AppError_default(status7.NOT_FOUND, "User not found");
   }
   if (user.emailVerified) {
-    throw new AppError_default(status6.BAD_REQUEST, "Email already verified");
+    throw new AppError_default(status7.BAD_REQUEST, "Email already verified");
   }
   const result = await auth.api.sendVerificationOTP({
     body: {
@@ -1396,7 +1439,8 @@ var googleLoginSuccess = async (session) => {
       data: {
         id: session.user.id,
         name: session.user.name,
-        email: session.user.email
+        email: session.user.email,
+        image: ""
       }
     });
   }
@@ -1430,14 +1474,17 @@ var AuthService = {
 
 // src/app/modules/auth/auth.controller.ts
 var UserRegister2 = catchAsync(async (req, res) => {
-  const payload = req.body;
+  const payload = {
+    ...req.body,
+    image: req.file?.path || req.body.image
+  };
   const result = await AuthService.UserRegister(payload);
   const { accessToken, refreshToken, token } = result;
   tokenUtils.setAccessTokenCookie(res, accessToken);
   tokenUtils.setRefreshTokenCookie(res, refreshToken);
   tokenUtils.setBetterAuthSessionCookie(res, token);
   sendResponse(res, {
-    httpStatusCode: status7.CREATED,
+    httpStatusCode: status8.CREATED,
     success: true,
     message: "user registered successfully",
     data: result
@@ -1451,7 +1498,7 @@ var loginUser2 = catchAsync(async (req, res) => {
   tokenUtils.setRefreshTokenCookie(res, refreshToken);
   tokenUtils.setBetterAuthSessionCookie(res, token);
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "User logged in successfully",
     data: result
@@ -1460,7 +1507,7 @@ var loginUser2 = catchAsync(async (req, res) => {
 var getMe2 = catchAsync(async (req, res) => {
   const data = await AuthService.getMe(req.user);
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "User data retrieved successfully",
     data
@@ -1478,7 +1525,7 @@ var changePassword2 = catchAsync(async (req, res) => {
   tokenUtils.setRefreshTokenCookie(res, refreshToken);
   tokenUtils.setBetterAuthSessionCookie(res, token);
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "Password changed successfully",
     data: result
@@ -1503,7 +1550,7 @@ var logoutUser2 = catchAsync(async (req, res) => {
     sameSite: "none"
   });
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "User logged out successfully",
     data: result
@@ -1513,7 +1560,7 @@ var forgetPassword2 = catchAsync(async (req, res) => {
   const { email } = req.body;
   await AuthService.forgetPassword(email);
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "Password reset OTP sent to email successfully"
   });
@@ -1522,7 +1569,7 @@ var resetPassword2 = catchAsync(async (req, res) => {
   const { email, otp, newPassword } = req.body;
   await AuthService.resetPassword(email, otp, newPassword);
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "Password reset successfully"
   });
@@ -1531,7 +1578,7 @@ var verifyEmail2 = catchAsync(async (req, res) => {
   const { email, otp } = req.body;
   await AuthService.verifyEmail(email, otp);
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "Email verified successfully"
   });
@@ -1540,7 +1587,7 @@ var sendOtp2 = catchAsync(async (req, res) => {
   const { email } = req.body;
   await AuthService.sendOtp(email);
   sendResponse(res, {
-    httpStatusCode: status7.OK,
+    httpStatusCode: status8.OK,
     success: true,
     message: "OTP sent to email successfully"
   });
@@ -1623,11 +1670,11 @@ var createUserSchema = z2.object({
   email: z2.string().email("Invalid email address"),
   password: z2.string().min(8, "Password must be at least 8 characters"),
   phone: z2.string().optional(),
-  image: z2.url().optional()
-}).strict();
+  image: z2.any()
+});
 
 // src/app/middleware/Auth.ts
-import status8 from "http-status";
+import status9 from "http-status";
 var auth2 = (roles) => {
   return async (req, res, next) => {
     try {
@@ -1637,7 +1684,7 @@ var auth2 = (roles) => {
       );
       if (!sessionToken) {
         throw new AppError_default(
-          status8.UNAUTHORIZED,
+          status9.UNAUTHORIZED,
           "Unauthorized access! No session token provided."
         );
       }
@@ -1669,13 +1716,13 @@ var auth2 = (roles) => {
           }
           if (user.status === "BLOCKED" || user.status == "DELETED") {
             throw new AppError_default(
-              status8.UNAUTHORIZED,
+              status9.UNAUTHORIZED,
               "Unauthorized access! User is not active."
             );
           }
           if (roles.length > 0 && !roles.includes(user.role)) {
             throw new AppError_default(
-              status8.FORBIDDEN,
+              status9.FORBIDDEN,
               "Forbidden access! You do not have permission to access this resource."
             );
           }
@@ -1688,7 +1735,7 @@ var auth2 = (roles) => {
         const accessToken2 = CookieUtils.getCookie(req, "accessToken");
         if (!accessToken2) {
           throw new AppError_default(
-            status8.UNAUTHORIZED,
+            status9.UNAUTHORIZED,
             "Unauthorized access! No access token provided."
           );
         }
@@ -1696,7 +1743,7 @@ var auth2 = (roles) => {
       const accessToken = CookieUtils.getCookie(req, "accessToken");
       if (!accessToken) {
         throw new AppError_default(
-          status8.UNAUTHORIZED,
+          status9.UNAUTHORIZED,
           "Unauthorized access! No access token provided."
         );
       }
@@ -1706,27 +1753,52 @@ var auth2 = (roles) => {
       );
       if (!verifiedToken.success) {
         throw new AppError_default(
-          status8.UNAUTHORIZED,
+          status9.UNAUTHORIZED,
           "Unauthorized access! Invalid access token."
         );
       }
       if (roles.length > 0 && !roles.includes(verifiedToken.data.role)) {
         throw new AppError_default(
-          status8.FORBIDDEN,
+          status9.FORBIDDEN,
           "Forbidden access! You do not have permission to access this resource."
         );
       }
       next();
     } catch (error) {
-      throw new AppError_default(status8.BAD_REQUEST, error.message);
+      throw new AppError_default(status9.BAD_REQUEST, error.message);
     }
   };
 };
 var Auth_default = auth2;
 
+// src/app/config/multer.config.ts
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+var storage = new CloudinaryStorage({
+  cloudinary: cloudinaryUpload,
+  params: async (req, file) => {
+    const originalName = file.originalname;
+    const extension = originalName.split(".").pop()?.toLocaleLowerCase();
+    const fileNameWithoutExtension = originalName.split(".").slice(0, -1).join(".").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
+    const uniqueName = Math.random().toString(36).substring(2) + "-" + Date.now() + "-" + fileNameWithoutExtension;
+    const folder = extension === "pdf" ? "pdfs" : "images";
+    console.log({
+      folder: `planora/${folder}`,
+      public_id: uniqueName,
+      resource_type: "auto"
+    });
+    return {
+      folder: `planora/${folder}`,
+      public_id: uniqueName,
+      resource_type: "auto"
+    };
+  }
+});
+var multerUpload = multer({ storage });
+
 // src/app/modules/auth/auth.route.ts
 var router = Router();
-router.post("/register", validateRequest(createUserSchema), AuthController.UserRegister);
+router.post("/register", multerUpload.single("file"), validateRequest(createUserSchema), AuthController.UserRegister);
 router.post("/login", AuthController.loginUser);
 router.get("/me", Auth_default([Role.ADMIN, Role.USER]), AuthController.getMe);
 router.post("/change-password", Auth_default([Role.ADMIN, Role.USER]), AuthController.changePassword);
@@ -1744,7 +1816,10 @@ var AuthRouters = router;
 import { Router as Router2 } from "express";
 
 // src/app/modules/event/event.controller.ts
-import status9 from "http-status";
+import status11 from "http-status";
+
+// src/app/modules/event/event.service.ts
+import status10 from "http-status";
 
 // src/app/utils/parseDate.ts
 function parseDateForPrisma(dateStr) {
@@ -1773,6 +1848,9 @@ var createEvent = async (user, payload) => {
     categories,
     image
   } = payload;
+  if (!image) {
+    throw new AppError_default(status10.BAD_REQUEST, "Image is required to create an event.");
+  }
   const event = await prisma.event.create({
     data: {
       title,
@@ -1885,11 +1963,11 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
     });
   }
   const result = {};
-  for (const status19 of statuses) {
+  for (const status21 of statuses) {
     const events = await prisma.event.findMany({
       take: limit,
       skip,
-      where: { status: status19, AND: andConditions, is_featured: is_featureddata },
+      where: { status: status21, AND: andConditions, is_featured: is_featureddata },
       include: {
         reviews: {
           where: { rating: { gt: 0 } }
@@ -1907,7 +1985,7 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
         [sortBy]: sortOrder
       }
     });
-    result[status19] = events.map((event) => {
+    result[status21] = events.map((event) => {
       const totalReviews = event.reviews.length;
       const avgRating = totalReviews > 0 ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews : 0;
       return { ...event, avgRating, totalReviews };
@@ -1966,9 +2044,9 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
   }
   const result = {};
   const dateRange = parseDateForPrisma(data.createdAt);
-  for (const status19 of statuses) {
+  for (const status21 of statuses) {
     const events = await prisma.event.findMany({
-      where: { status: status19, AND: andConditions, createdAt: { gte: dateRange.gte } },
+      where: { status: status21, AND: andConditions, createdAt: { gte: dateRange.gte } },
       take: limit,
       skip,
       include: {
@@ -1977,7 +2055,7 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
       },
       orderBy: sortBy ? { [sortBy]: sortOrder } : { date: "desc" }
     });
-    result[status19] = events.map((event) => {
+    result[status21] = events.map((event) => {
       const totalReviews = event.reviews.length;
       const avgRating = totalReviews > 0 ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews : 0;
       return { ...event, avgRating, totalReviews };
@@ -2211,7 +2289,7 @@ var createEvent2 = catchAsync(async (req, res) => {
   const user = req.user;
   const result = await EventServices.createEvent(user, payload);
   sendResponse(res, {
-    httpStatusCode: status9.CREATED,
+    httpStatusCode: status11.CREATED,
     success: true,
     message: "Event created successfully",
     data: result
@@ -2224,7 +2302,7 @@ var getAllEvents2 = catchAsync(async (req, res) => {
   const is_featureddata = is_featured ? req.query.is_featured === "true" ? true : req.query.is_featured === "false" ? false : void 0 : void 0;
   const events = await EventServices.getAllEvents(req.query, page, limit, skip, sortBy, sortOrder, is_featureddata, search);
   sendResponse(res, {
-    httpStatusCode: status9.OK,
+    httpStatusCode: status11.OK,
     success: true,
     message: "All events fetched successfully",
     data: events
@@ -2247,7 +2325,7 @@ var getEventsByRoleController = catchAsync(async (req, res) => {
     search
   );
   sendResponse(res, {
-    httpStatusCode: status9.OK,
+    httpStatusCode: status11.OK,
     success: true,
     message: "Events fetched based on role successfully",
     data: events
@@ -2257,7 +2335,7 @@ var getSingleEvent2 = catchAsync(async (req, res) => {
   const eventId = req.params.id;
   const event = await EventServices.getSingleEvent(eventId);
   sendResponse(res, {
-    httpStatusCode: status9.OK,
+    httpStatusCode: status11.OK,
     success: true,
     message: "single Event fetched successfully",
     data: event
@@ -2267,7 +2345,7 @@ var getPaidAndFreeEvent = catchAsync(async (req, res) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
   const events = await EventServices.GetPaidAndFreeEvent(page, limit, skip, sortBy, sortOrder);
   sendResponse(res, {
-    httpStatusCode: status9.OK,
+    httpStatusCode: status11.OK,
     success: true,
     message: "Paid and Free events fetched successfully",
     data: events
@@ -2278,7 +2356,7 @@ var updateEvent2 = catchAsync(async (req, res) => {
   const user = req.user;
   const updatedEvent = await EventServices.updateEvent(eventId, req.body, user.email);
   sendResponse(res, {
-    httpStatusCode: status9.OK,
+    httpStatusCode: status11.OK,
     success: true,
     message: "Event updated successfully",
     data: updatedEvent
@@ -2288,7 +2366,7 @@ var DeletedEvent = catchAsync(async (req, res) => {
   const eventId = req.params.id;
   const deletedEvent = await EventServices.DeleteEvent(req.user, eventId);
   sendResponse(res, {
-    httpStatusCode: status9.OK,
+    httpStatusCode: status11.OK,
     success: true,
     message: "Event deleted successfully"
   });
@@ -2296,7 +2374,7 @@ var DeletedEvent = catchAsync(async (req, res) => {
 var IsFeautured2 = catchAsync(async (req, res) => {
   const featuredEvents = await EventServices.IsFeautured();
   sendResponse(res, {
-    httpStatusCode: status9.OK,
+    httpStatusCode: status11.OK,
     success: true,
     message: "Featured events fetched successfully",
     data: featuredEvents
@@ -2357,7 +2435,7 @@ var CreateEventSchema = z3.object({
   }).transform((val) => new Date(val).toISOString()),
   time: z3.string().min(1, "Time is required"),
   venue: z3.string().min(3, "Venue is required"),
-  image: z3.string().url("Image URL is required"),
+  image: z3.any(),
   visibility: z3.enum(EventType).default("PUBLIC"),
   priceType: z3.enum(PricingType).default("FREE"),
   fee: z3.coerce.number().optional(),
@@ -2371,6 +2449,7 @@ var router2 = Router2();
 router2.post(
   "/event",
   Auth_default([Role.ADMIN, Role.USER]),
+  multerUpload.single("file"),
   validateRequest(CreateEventSchema),
   EventController.createEvent
 );
@@ -2618,12 +2697,12 @@ var invitationsServices = {
 };
 
 // src/app/modules/Invitations/invitations.controller.ts
-import status10 from "http-status";
+import status12 from "http-status";
 var CreateInvitation = catchAsync(async (req, res) => {
   const user = req.user;
   const result = await invitationsServices.createInvitationService(user.userId, req.body);
   sendResponse(res, {
-    httpStatusCode: status10.CREATED,
+    httpStatusCode: status12.CREATED,
     success: true,
     message: "invitations created successfully",
     data: result
@@ -2641,7 +2720,7 @@ var getInvitationsService2 = catchAsync(async (req, res) => {
     req.query
   );
   sendResponse(res, {
-    httpStatusCode: status10.OK,
+    httpStatusCode: status12.OK,
     success: true,
     message: `Invitations for user ${req.user.userId} fetched successfully`,
     data: result
@@ -2651,7 +2730,7 @@ var GetSingleInvitationController = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await invitationsServices.getSingleInvitationService(id);
   sendResponse(res, {
-    httpStatusCode: status10.OK,
+    httpStatusCode: status12.OK,
     success: true,
     message: "single Invitation fetched successfully",
     data: result
@@ -2660,12 +2739,12 @@ var GetSingleInvitationController = catchAsync(async (req, res) => {
 var deleteInvitation = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await invitationsServices.deleteInvitationService(id, req.user.userId);
-  sendResponse(res, { httpStatusCode: status10.OK, success: true, message: "Invitation deleted", data: result });
+  sendResponse(res, { httpStatusCode: status12.OK, success: true, message: "Invitation deleted", data: result });
 });
 var updateInvitation = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await invitationsServices.updateInvitationService(id, req.body, req.user.userId);
-  sendResponse(res, { httpStatusCode: status10.OK, success: true, message: "Invitation updated", data: result });
+  sendResponse(res, { httpStatusCode: status12.OK, success: true, message: "Invitation updated", data: result });
 });
 var InvitationController = {
   CreateInvitation,
@@ -2695,13 +2774,13 @@ import Stripe from "stripe";
 var stripe = new Stripe(envVars.STRIPE.STRIPE_SECRET_KEY);
 
 // src/app/modules/Participants/participants.service.ts
-import status11 from "http-status";
+import status13 from "http-status";
 var createParticipantService = async (userId, eventId, data) => {
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId }
   });
   if (existing?.status === "BANNED") {
-    throw new AppError_default(status11.FORBIDDEN, "You have been banned from participating in this event.");
+    throw new AppError_default(status13.FORBIDDEN, "You have been banned from participating in this event.");
   }
   if (existing) {
     throw new AppError_default(409, "User already joined");
@@ -2788,22 +2867,9 @@ var createParticipantService = async (userId, eventId, data) => {
         participantId: participantData.id,
         paymentId: paymentData.id
       },
-      success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
-      cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`
+      success_url: `${envVars.FRONTEND_URL}/dashboard/payment-success/${eventId}`,
+      cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment-failed`
     });
-    if (!session.url || !session || !session) {
-      await prisma.participant.delete({ where: { id: participantData.id } });
-    }
-    if (event.visibility === "PUBLIC" && event.priceType === "PAID") {
-      await prisma.participant.update({
-        where: {
-          id: participantData.id
-        },
-        data: {
-          status: "APPROVED"
-        }
-      });
-    }
     return {
       participantData,
       paymentData,
@@ -3068,7 +3134,7 @@ var initiatePayment = async (eventId, user) => {
     }
   });
   if (!event) {
-    throw new AppError_default(status11.NOT_FOUND, "Event not found");
+    throw new AppError_default(status13.NOT_FOUND, "Event not found");
   }
   if (event.fee < 60) {
     throw new AppError_default(400, "Minimum amount must be at least 60 BDT");
@@ -3085,13 +3151,13 @@ var initiatePayment = async (eventId, user) => {
     }
   });
   if (!participantData) {
-    throw new AppError_default(status11.NOT_FOUND, "Participant not found for payment initiation");
+    throw new AppError_default(status13.NOT_FOUND, "Participant not found for payment initiation");
   }
   if (participantData.payment) {
-    throw new AppError_default(status11.BAD_REQUEST, "Payment has already been initiated for this participant. Please proceed with the existing payment or contact support for assistance.");
+    throw new AppError_default(status13.BAD_REQUEST, "Payment has already been initiated for this participant. Please proceed with the existing payment or contact support for assistance.");
   }
   if (participantData.status === ParticipantStatus.REJECTED) {
-    throw new AppError_default(status11.BAD_REQUEST, "participant is REJECTED");
+    throw new AppError_default(status13.BAD_REQUEST, "participant is REJECTED");
   }
   const result = await prisma.$transaction(async (tx) => {
     const transactionId = String(uuidv6());
@@ -3105,7 +3171,7 @@ var initiatePayment = async (eventId, user) => {
       }
     });
     if (!paymentData) {
-      throw new AppError_default(status11.NOT_FOUND, "Payment data not found for this participant");
+      throw new AppError_default(status13.NOT_FOUND, "Payment data not found for this participant");
     }
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -3155,13 +3221,13 @@ var ParticipantService = {
 };
 
 // src/app/modules/Participants/participants.controller.ts
-import status12 from "http-status";
+import status14 from "http-status";
 var createParticipantController = catchAsync(async (req, res) => {
   const id = req.params.id;
   const user = req.user;
   const result = await ParticipantService.createParticipantService(user.userId, id, req.body);
   sendResponse(res, {
-    httpStatusCode: status12.CREATED,
+    httpStatusCode: status14.CREATED,
     success: true,
     message: "Participant created successfully",
     data: result
@@ -3171,7 +3237,7 @@ var getAllParticipants = catchAsync(async (req, res) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
   const participants = await ParticipantService.getAllParticipantsService(req.user.userId, page, limit, skip, sortBy, sortOrder, req.query);
   sendResponse(res, {
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     success: true,
     message: "All participants fetched",
     data: participants
@@ -3181,7 +3247,7 @@ var getSingleParticipant = catchAsync(async (req, res) => {
   const { id } = req.params;
   const participant = await ParticipantService.getSingleParticipantService(id);
   sendResponse(res, {
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     success: true,
     message: "single Participant fetched successfully",
     data: participant
@@ -3191,7 +3257,7 @@ var updateParticipant = catchAsync(async (req, res) => {
   const { id } = req.params;
   const participant = await ParticipantService.UpdateParticipantService(id, req.body, req.user.userId);
   sendResponse(res, {
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     success: true,
     message: "Participant updated successfully",
     data: participant
@@ -3201,7 +3267,7 @@ var getOwnPayment = catchAsync(async (req, res) => {
   const userId = req.user.userId;
   const result = await ParticipantService.getOwnPaymentParticipantService(req.params.id, userId);
   sendResponse(res, {
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     success: true,
     message: "Fetched own payment participants successfully",
     data: result
@@ -3211,7 +3277,7 @@ var deleteParticipant = catchAsync(async (req, res) => {
   const { id } = req.params;
   const participant = await ParticipantService.deleteParticipantService(id);
   sendResponse(res, {
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     success: true,
     message: "Participant deleted successfully",
     data: participant
@@ -3223,7 +3289,7 @@ var ParticipantCreateWithPayLater = catchAsync(async (req, res) => {
   const appointment = await ParticipantService.createParticipantPayLater(user.userId, id);
   sendResponse(res, {
     success: true,
-    httpStatusCode: status12.CREATED,
+    httpStatusCode: status14.CREATED,
     message: "participant create with pay later successfully",
     data: appointment
   });
@@ -3232,7 +3298,7 @@ var deleteEventRequestJoinData2 = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await ParticipantService.deleteEventRequestJoinData(id);
   sendResponse(res, {
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     success: true,
     message: "Deleted event request participant successfully",
     data: result
@@ -3244,7 +3310,7 @@ var ParticipantOwnRequestEvent = catchAsync(async (req, res) => {
   const result = await ParticipantService.ParticipantOwnRequestEventService(userId, page, limit, skip, req.query);
   sendResponse(res, {
     success: true,
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     message: "Fetched own participant event requests successfully",
     data: result
   });
@@ -3255,7 +3321,7 @@ var initiatePayment2 = catchAsync(async (req, res) => {
   const paymentInfo = await ParticipantService.initiatePayment(eventId, user);
   sendResponse(res, {
     success: true,
-    httpStatusCode: status12.OK,
+    httpStatusCode: status14.OK,
     message: "Payment initiated successfully",
     data: paymentInfo
   });
@@ -3434,8 +3500,8 @@ var getReviewsByRole = async (role, userId, page = 1, limit = 10, skip = 0, data
   };
 };
 var moderateReview = async (id, data) => {
-  const { status: status19 } = data;
-  console.log(status19, "s");
+  const { status: status21 } = data;
+  console.log(status21, "s");
   const reviewData = await prisma.review.findUnique({
     where: {
       id
@@ -3456,7 +3522,7 @@ var moderateReview = async (id, data) => {
       id
     },
     data: {
-      status: status19
+      status: status21
     }
   });
   return result;
@@ -3471,7 +3537,7 @@ var ReviewsServices = {
 };
 
 // src/app/modules/reviews/reviews.controller.ts
-import status13 from "http-status";
+import status15 from "http-status";
 var CreateReviews2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
@@ -3479,7 +3545,7 @@ var CreateReviews2 = catchAsync(async (req, res) => {
   }
   const result = await ReviewsServices.CreateReviews(user.userId, req.params.id, req.body);
   sendResponse(res, {
-    httpStatusCode: status13.CREATED,
+    httpStatusCode: status15.CREATED,
     success: true,
     message: "your review has been created successfully",
     data: result
@@ -3493,7 +3559,7 @@ var updateReview2 = catchAsync(async (req, res) => {
   const { reviewid } = req.params;
   const result = await ReviewsServices.updateReview(reviewid, req.body, user.userId);
   sendResponse(res, {
-    httpStatusCode: status13.OK,
+    httpStatusCode: status15.OK,
     success: true,
     message: "review update successfully",
     data: result
@@ -3508,7 +3574,7 @@ var deleteReview2 = catchAsync(
     const { reviewid } = req.params;
     const result = await ReviewsServices.deleteReview(reviewid, user.userId);
     sendResponse(res, {
-      httpStatusCode: status13.OK,
+      httpStatusCode: status15.OK,
       success: true,
       message: "review delete successfully",
       data: result
@@ -3519,7 +3585,7 @@ var getAllreviews2 = catchAsync(
   async (req, res) => {
     const result = await ReviewsServices.getAllreviews();
     sendResponse(res, {
-      httpStatusCode: status13.OK,
+      httpStatusCode: status15.OK,
       success: true,
       message: "retrieve all reviews successfully",
       data: result
@@ -3541,7 +3607,7 @@ var getReviewsByRole2 = catchAsync(async (req, res) => {
     req.query
   );
   sendResponse(res, {
-    httpStatusCode: status13.OK,
+    httpStatusCode: status15.OK,
     success: true,
     message: "retrieve reviews by role successfully",
     data: result
@@ -3551,7 +3617,7 @@ var moderateReview2 = catchAsync(async (req, res) => {
   const { reviewid } = req.params;
   const result = await ReviewsServices.moderateReview(reviewid, req.body);
   sendResponse(res, {
-    httpStatusCode: status13.OK,
+    httpStatusCode: status15.OK,
     success: true,
     message: "review moderate successfully",
     data: result
@@ -3613,10 +3679,10 @@ var TransactionIsolationLevel2 = runtime3.makeStrictEnum({
 });
 
 // src/app/modules/stats/stats.controller.ts
-import status15 from "http-status";
+import status17 from "http-status";
 
 // src/app/modules/stats/stats.service.ts
-import status14 from "http-status";
+import status16 from "http-status";
 var getDashboardStatsData = async (user) => {
   let statsData;
   switch (user.role) {
@@ -3627,7 +3693,7 @@ var getDashboardStatsData = async (user) => {
       statsData = getUserDashboardStats(user.userId);
       break;
     default:
-      throw new AppError_default(status14.BAD_REQUEST, "Invalid user role");
+      throw new AppError_default(status16.BAD_REQUEST, "Invalid user role");
   }
   return statsData;
 };
@@ -3811,7 +3877,7 @@ var getDashboardStatsData2 = catchAsync(async (req, res) => {
   const user = req.user;
   const result = await statsService.getDashboardStatsData(user);
   sendResponse(res, {
-    httpStatusCode: status15.OK,
+    httpStatusCode: status17.OK,
     success: true,
     message: "Stats data retrieved successfully!",
     data: result
@@ -3987,7 +4053,7 @@ var UserService = {
 };
 
 // src/app/modules/user/user.controller.ts
-import status16 from "http-status";
+import status18 from "http-status";
 var UpdateUserProfile2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
@@ -3995,7 +4061,7 @@ var UpdateUserProfile2 = catchAsync(async (req, res) => {
   }
   const result = await UserService.UpdateUserProfile(req.body, user.userId);
   sendResponse(res, {
-    httpStatusCode: status16.OK,
+    httpStatusCode: status18.OK,
     success: true,
     message: "User profile updated successfully.",
     data: result
@@ -4009,7 +4075,7 @@ var GetAllUsers2 = catchAsync(async (req, res) => {
   );
   const result = await UserService.GetAllUsers(req.query, page, limit, skip, sortBy, sortOrder, isemailVerified);
   sendResponse(res, {
-    httpStatusCode: status16.OK,
+    httpStatusCode: status18.OK,
     success: true,
     message: "retrieve all users has been successfully",
     data: result
@@ -4022,7 +4088,7 @@ var OwnProfileDelete2 = catchAsync(async (req, res) => {
   }
   const result = await UserService.OwnProfileDelete(user.userId);
   sendResponse(res, {
-    httpStatusCode: status16.OK,
+    httpStatusCode: status18.OK,
     success: true,
     message: "user own account delete successfully",
     data: result
@@ -4039,7 +4105,7 @@ var UpdateUser2 = catchAsync(
       req.body
     );
     sendResponse(res, {
-      httpStatusCode: status16.OK,
+      httpStatusCode: status18.OK,
       success: true,
       message: `user change successfully`,
       data: result
@@ -4054,7 +4120,7 @@ var DeleteUserProfile2 = catchAsync(
     }
     const result = await UserService.DeleteUserProfile(req.params.id);
     sendResponse(res, {
-      httpStatusCode: status16.OK,
+      httpStatusCode: status18.OK,
       success: true,
       message: "user account delete successfully",
       data: result
@@ -4065,7 +4131,7 @@ var GetSingleUser2 = catchAsync(
   async (req, res) => {
     const result = await UserService.GetSingleUser(req.params.id);
     sendResponse(res, {
-      httpStatusCode: status16.OK,
+      httpStatusCode: status18.OK,
       success: true,
       message: "Single user fetched successfully",
       data: result
@@ -4121,7 +4187,7 @@ var UsersRoutes = router7;
 import express3 from "express";
 
 // src/app/modules/notification/notification.controller.ts
-import status17 from "http-status";
+import status19 from "http-status";
 
 // src/app/modules/notification/notification.service.ts
 var getUserNotificationsService = async (userId) => {
@@ -4139,7 +4205,7 @@ var getUserNotificationsService = async (userId) => {
 var getUserNotificationsController = catchAsync(async (req, res) => {
   const result = await getUserNotificationsService(req.user.userId);
   sendResponse(res, {
-    httpStatusCode: status17.OK,
+    httpStatusCode: status19.OK,
     success: true,
     message: `Notifications for user ${req.user.userId} fetched successfully`,
     data: result
@@ -4158,7 +4224,7 @@ var NotificationRoutes = router8;
 import express4 from "express";
 
 // src/app/modules/payment/payment.controller.ts
-import status18 from "http-status";
+import status20 from "http-status";
 
 // src/app/modules/payment/payment.service.ts
 var handlerStripeWebhookEvent = async (event) => {
@@ -4339,19 +4405,19 @@ var handleStripeWebhookEvent = catchAsync(async (req, res) => {
   const webhookSecret = envVars.STRIPE.STRIPE_WEBHOOK_SECRET;
   if (!signature || !webhookSecret) {
     console.error("Missing Stripe signature or webhook secret");
-    return res.status(status18.BAD_REQUEST).json({ message: "Missing Stripe signature or webhook secret" });
+    return res.status(status20.BAD_REQUEST).json({ message: "Missing Stripe signature or webhook secret" });
   }
   let event;
   try {
     event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
   } catch (error) {
     console.error("Error processing Stripe webhook:", error);
-    return res.status(status18.BAD_REQUEST).json({ message: "Error processing Stripe webhook" });
+    return res.status(status20.BAD_REQUEST).json({ message: "Error processing Stripe webhook" });
   }
   try {
     const result = await PaymentService.handlerStripeWebhookEvent(event);
     sendResponse(res, {
-      httpStatusCode: status18.OK,
+      httpStatusCode: status20.OK,
       success: true,
       message: "Stripe webhook event processed successfully",
       data: result
@@ -4359,7 +4425,7 @@ var handleStripeWebhookEvent = catchAsync(async (req, res) => {
   } catch (error) {
     console.error("Error handling Stripe webhook event:", error);
     sendResponse(res, {
-      httpStatusCode: status18.INTERNAL_SERVER_ERROR,
+      httpStatusCode: status20.INTERNAL_SERVER_ERROR,
       success: false,
       message: "Error handling Stripe webhook event"
     });
@@ -4369,7 +4435,7 @@ var getAllPayment = catchAsync(async (req, res) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
   const payments = await PaymentService.getAllPaymentsService(req.user.userId, page, limit, skip, sortBy, sortOrder, req.query);
   sendResponse(res, {
-    httpStatusCode: status18.OK,
+    httpStatusCode: status20.OK,
     success: true,
     message: "All payment fetched",
     data: payments
@@ -4381,7 +4447,7 @@ var updatePaymentStatus = catchAsync(async (req, res) => {
   try {
     const result = await PaymentService.updatePaymentStatusWithParticipantCheck(paymentId, newStatus);
     return sendResponse(res, {
-      httpStatusCode: status18.OK,
+      httpStatusCode: status20.OK,
       success: true,
       message: "Payment status updated successfully",
       data: result
@@ -4389,7 +4455,7 @@ var updatePaymentStatus = catchAsync(async (req, res) => {
   } catch (error) {
     console.error("Error updating payment status:", error);
     return sendResponse(res, {
-      httpStatusCode: status18.INTERNAL_SERVER_ERROR,
+      httpStatusCode: status20.INTERNAL_SERVER_ERROR,
       success: false,
       message: "Error updating payment status"
     });
@@ -4400,7 +4466,7 @@ var deletePayment2 = catchAsync(async (req, res) => {
   try {
     const result = await PaymentService.deletePayment(paymentId);
     return sendResponse(res, {
-      httpStatusCode: status18.OK,
+      httpStatusCode: status20.OK,
       success: true,
       message: "Payment deleted successfully",
       data: result
@@ -4408,7 +4474,7 @@ var deletePayment2 = catchAsync(async (req, res) => {
   } catch (error) {
     console.error("Error deleting payment:", error);
     return sendResponse(res, {
-      httpStatusCode: status18.INTERNAL_SERVER_ERROR,
+      httpStatusCode: status20.INTERNAL_SERVER_ERROR,
       success: false,
       message: "Error deleting payment"
     });
@@ -4451,10 +4517,10 @@ var IndexRouter = router10;
 
 // src/app.ts
 var app = express5();
+app.use("/api/auth", toNodeHandler(auth));
 app.set("view engine", "ejs");
 app.set("views", path3.resolve(process.cwd(), `src/app/templates`));
 app.post("/webhook", express5.raw({ type: "application/json" }), PaymentController.handleStripeWebhookEvent);
-app.use("/api/auth", toNodeHandler(auth));
 app.use(cookieParser());
 app.use(cors({
   origin: "http://localhost:3000",

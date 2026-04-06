@@ -235,16 +235,13 @@ const getAllEvents = async (
   if (data.categories) {
     andConditions.push({ categories: data.categories });
   }
-  if (data.createdAt) {
-    const isoString = new Date(data.createdAt).toISOString();
-    andConditions.push({ createdAt: isoString });
-  }
   if (data.date) {
     const dateRange = parseDateForPrisma(data.date);
-    andConditions.push({ date: {gte:dateRange.gte} });
-  } if (data.createdAt) {
-    const dateRange = parseDateForPrisma(data.createdAt);
-    andConditions.push({ createdAt:dateRange });
+    andConditions.push({ date: dateRange });
+  }
+  if (data.createdAt) {
+    const createdAtRange = parseDateForPrisma(data.createdAt);
+    andConditions.push({ createdAt: createdAtRange });
   }
   if (data.fee) andConditions.push({ fee: { lte: Number(data.fee) } });
   if (data.visibility) andConditions.push({ visibility: data.visibility as EventType });
@@ -262,11 +259,10 @@ const getAllEvents = async (
     andConditions.push({ organizerId: userId });
   } 
   const result: any = {};
-  const dateRange = parseDateForPrisma(data.createdAt as any);
 
   for (const status of statuses) {
     const events = await prisma.event.findMany({
-      where: { status, AND: andConditions ,createdAt:{gte:dateRange.gte}},
+      where: { status, AND: andConditions },
       take: limit,
       skip,
       include: {

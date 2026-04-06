@@ -5,7 +5,11 @@ export const getUserNotificationsService = async (userId: string) => {
     where: { userId },
     include:{
       user:true,
-      invitation:true
+      invitation:{
+        include:{
+          event:true
+        }
+      }
     },
     orderBy: { createdAt: "desc" },
   });

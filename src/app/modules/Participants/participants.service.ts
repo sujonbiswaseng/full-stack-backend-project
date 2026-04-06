@@ -122,10 +122,10 @@ const createParticipantService = async (
       ],
       metadata: {
         participantId: participantData.id,
-        paymentId: paymentData.id,
+        paymentId: paymentData.id
       },
-      success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
-      cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`,
+      success_url: `${envVars.FRONTEND_URL}/dashboard/payment-success/${eventId}`,
+      cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment-failed`,
     });
     return {
       participantData,

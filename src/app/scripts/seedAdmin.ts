@@ -1,7 +1,5 @@
 import "dotenv/config";
-import { prisma } from "../lib/prisma";
 import { auth } from "../lib/auth";
-import AppError from "../errorHelper/AppError";
 
 export const seedAdmin = async () => {
   try {
@@ -17,14 +15,12 @@ export const seedAdmin = async () => {
     },
   });
   if(!result){
-    // throw new AppError(400,'user created fail')
     console.log('fail create user')
   }
   return {success:true,message:"user created successfully",data:result}
 
   } catch (error) {
     console.log(error,'errror')
-    //  throw new AppError(500,'something went wrong ,please try again')
   }
 };
 
