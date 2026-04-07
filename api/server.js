@@ -5,7 +5,7 @@ var __export = (target, all) => {
 };
 
 // src/app.ts
-import express5 from "express";
+import express6, { Response } from "express";
 
 // src/app/middleware/notFound.ts
 import status from "http-status";
@@ -2017,17 +2017,13 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
   if (data.categories) {
     andConditions.push({ categories: data.categories });
   }
-  if (data.createdAt) {
-    const isoString = new Date(data.createdAt).toISOString();
-    andConditions.push({ createdAt: isoString });
-  }
   if (data.date) {
-    const dateRange2 = parseDateForPrisma(data.date);
-    andConditions.push({ date: { gte: dateRange2.gte } });
+    const dateRange = parseDateForPrisma(data.date);
+    andConditions.push({ date: dateRange });
   }
   if (data.createdAt) {
-    const dateRange2 = parseDateForPrisma(data.createdAt);
-    andConditions.push({ createdAt: dateRange2 });
+    const createdAtRange = parseDateForPrisma(data.createdAt);
+    andConditions.push({ createdAt: createdAtRange });
   }
   if (data.fee) andConditions.push({ fee: { lte: Number(data.fee) } });
   if (data.visibility) andConditions.push({ visibility: data.visibility });
@@ -2043,10 +2039,9 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
     andConditions.push({ organizerId: userId });
   }
   const result = {};
-  const dateRange = parseDateForPrisma(data.createdAt);
   for (const status21 of statuses) {
     const events = await prisma.event.findMany({
-      where: { status: status21, AND: andConditions, createdAt: { gte: dateRange.gte } },
+      where: { status: status21, AND: andConditions },
       take: limit,
       skip,
       include: {
@@ -2867,8 +2862,8 @@ var createParticipantService = async (userId, eventId, data) => {
         participantId: participantData.id,
         paymentId: paymentData.id
       },
-      success_url: `${envVars.FRONTEND_URL}/dashboard/payment-success/${eventId}`,
-      cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment-failed`
+      success_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-success/${eventId}`,
+      cancel_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-failed`
     });
     return {
       participantData,
@@ -2972,7 +2967,6 @@ var getOwnPaymentParticipantService = async (eventId, userId) => {
     },
     include: {
       payment: true,
-      // Assumes relation "payment" exists in Participant model
       event: { select: { id: true, title: true, date: true, venue: true } }
     },
     orderBy: {
@@ -4195,7 +4189,11 @@ var getUserNotificationsService = async (userId) => {
     where: { userId },
     include: {
       user: true,
-      invitation: true
+      invitation: {
+        include: {
+          event: true
+        }
+      }
     },
     orderBy: { createdAt: "desc" }
   });
@@ -4284,9 +4282,23 @@ var handlerStripeWebhookEvent = async (event) => {
     }
     case "checkout.session.expired": {
       const session = event.data.object;
-      console.log(
-        `Checkout session ${session.id} expired. Marking associated payment as failed.`
-      );
+      const participantId = session.metadata?.participantId;
+      const paymentId = session.metadata?.paymentId;
+      await prisma.$transaction(async (tx) => {
+        await tx.payment.update({
+          where: { id: paymentId },
+          data: {
+            status: "UNPAID"
+          }
+        });
+        await tx.participant.update({
+          where: { id: participantId },
+          data: {
+            paymentStatus: "UNPAID",
+            status: "REJECTED"
+          }
+        });
+      });
       break;
     }
     case "payment_intent.succeeded": {
@@ -4502,32 +4514,48 @@ router9.delete(
 );
 var PaymentRoutes = router9;
 
+// src/app/modules/cleanup/route.ts
+import express5 from "express";
+var router10 = express5.Router();
+router10.get("/cleanup", async (req, res) => {
+  try {
+    const deletedPayments = await prisma.payment.deleteMany({ where: { status: "UNPAID" } });
+    const deletedParticipants = await prisma.participant.deleteMany({ where: { paymentStatus: "UNPAID" } });
+    res.json({ deletedPayments, deletedParticipants });
+  } catch (err) {
+    console.error("Cleanup error:", err);
+    res.status(500).json({ error: "Cleanup failed", details: err });
+  }
+});
+var CleanRouter = router10;
+
 // src/app/routes/index.ts
-var router10 = Router6();
-router10.use("/v1/auth", AuthRouters);
-router10.use("/v1", UsersRoutes);
-router10.use("/v1", EventRouters);
-router10.use("/v1", InvitationsRouters);
-router10.use("/v1", ParticipantRoutes);
-router10.use("/v1", ReviewsRouters);
-router10.use("/v1", StatsRoutes);
-router10.use("/v1", NotificationRoutes);
-router10.use("/v1", PaymentRoutes);
-var IndexRouter = router10;
+var router11 = Router6();
+router11.use("/v1/auth", AuthRouters);
+router11.use("/v1", UsersRoutes);
+router11.use("/v1", EventRouters);
+router11.use("/v1", InvitationsRouters);
+router11.use("/v1", ParticipantRoutes);
+router11.use("/v1", ReviewsRouters);
+router11.use("/v1", StatsRoutes);
+router11.use("/v1", NotificationRoutes);
+router11.use("/v1", PaymentRoutes);
+router11.use("/v1", CleanRouter);
+var IndexRouter = router11;
 
 // src/app.ts
-var app = express5();
+var app = express6();
 app.use("/api/auth", toNodeHandler(auth));
 app.set("view engine", "ejs");
 app.set("views", path3.resolve(process.cwd(), `src/app/templates`));
-app.post("/webhook", express5.raw({ type: "application/json" }), PaymentController.handleStripeWebhookEvent);
+app.post("/webhook", express6.raw({ type: "application/json" }), PaymentController.handleStripeWebhookEvent);
 app.use(cookieParser());
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true
 }));
-app.use(express5.urlencoded({ extended: true }));
-app.use(express5.json());
+app.use(express6.urlencoded({ extended: true }));
+app.use(express6.json());
 app.use("/api", IndexRouter);
 app.use(globalErrorHandeller_default);
 app.use(notFound);
