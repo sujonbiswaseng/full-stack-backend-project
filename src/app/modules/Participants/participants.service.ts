@@ -124,8 +124,8 @@ const createParticipantService = async (
         participantId: participantData.id,
         paymentId: paymentData.id
       },
-      success_url: `${envVars.FRONTEND_URL}/dashboard/payment-success/${eventId}`,
-      cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment-failed`,
+      success_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-success/${eventId}`,
+      cancel_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-failed`,
     });
     return {
       participantData,
@@ -241,7 +241,7 @@ const getOwnPaymentParticipantService = async (eventId:string,userId: string) =>
       eventId:eventId
     },
     include: {
-      payment: true, // Assumes relation "payment" exists in Participant model
+      payment: true,
       event: { select: { id: true, title: true, date: true, venue: true } },
     },
     orderBy: {

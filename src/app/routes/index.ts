@@ -8,6 +8,7 @@ import { StatsRoutes } from "../modules/stats/stats.route";
 import { UsersRoutes } from "../modules/user/user.route";
 import { NotificationRoutes } from "../modules/notification/notification.route";
 import { PaymentRoutes } from "../modules/payment/payment.route";
+import { CleanRouter } from "../modules/cleanup/route";
 
 const router = Router()
 router.use("/v1/auth", AuthRouters);
@@ -28,5 +29,8 @@ router.use("/v1", StatsRoutes);
 
 router.use("/v1", NotificationRoutes);
 router.use("/v1", PaymentRoutes);
+
+router.use("/v1", CleanRouter);
+
 
 export const IndexRouter=router

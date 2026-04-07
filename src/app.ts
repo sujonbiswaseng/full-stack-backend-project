@@ -9,8 +9,16 @@ import cors from 'cors'
 import errorHandler from "./app/middleware/globalErrorHandeller";
 import { IndexRouter } from "./app/routes";
 import { PaymentController } from "./app/modules/payment/payment.controller";
-
+import cron  from "node-cron";
+import { prisma } from "./app/lib/prisma";
 const app: Application = express();
+
+
+export async function DeleteParticipantAndPayment() {
+  await prisma.payment.deleteMany({ where: { status: "UNPAID" } });
+  await prisma.participant.deleteMany({ where: { paymentStatus: "UNPAID" } });
+  return new Response(JSON.stringify({ message: "Cleanup done" }));
+}
 // Express has built-in body parsing, but here's an example use of body-parser middleware if required:
 app.use('/api/auth',toNodeHandler(auth))
 app.set("view engine", "ejs");
