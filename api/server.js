@@ -4285,20 +4285,13 @@ var handlerStripeWebhookEvent = async (event) => {
       const participantId = session.metadata?.participantId;
       const paymentId = session.metadata?.paymentId;
       await prisma.$transaction(async (tx) => {
-        await tx.payment.update({
-          where: { id: paymentId },
-          data: {
-            status: "UNPAID"
-          }
-        });
+        await tx.payment.update({ where: { id: paymentId }, data: { status: "UNPAID" } });
         await tx.participant.update({
           where: { id: participantId },
-          data: {
-            paymentStatus: "UNPAID",
-            status: "REJECTED"
-          }
+          data: { paymentStatus: "UNPAID", status: "REJECTED" }
         });
       });
+      await cleanupUnpaidPaymentsAndParticipants();
       break;
     }
     case "payment_intent.succeeded": {
@@ -4312,6 +4305,17 @@ var handlerStripeWebhookEvent = async (event) => {
       console.log(`Unhandled event type ${event.type}`);
   }
   return { message: `Webhook Event ${event.id} processed successfully` };
+};
+var cleanupUnpaidPaymentsAndParticipants = async () => {
+  const deletedPayments = await prisma.payment.deleteMany({
+    where: { status: "UNPAID" }
+  });
+  const deletedParticipants = await prisma.participant.deleteMany({
+    where: { paymentStatus: "UNPAID" }
+  });
+  console.log(
+    `Cleanup done: ${deletedPayments.count} payments and ${deletedParticipants.count} participants deleted`
+  );
 };
 var getAllPaymentsService = async (userId, page, limit, skip, sortBy, sortOrder, query) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });

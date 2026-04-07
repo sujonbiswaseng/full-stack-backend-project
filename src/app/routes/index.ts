@@ -30,7 +30,5 @@ router.use("/v1", StatsRoutes);
 router.use("/v1", NotificationRoutes);
 router.use("/v1", PaymentRoutes);
 
-router.use("/v1", CleanRouter);
-
 
 export const IndexRouter=router
