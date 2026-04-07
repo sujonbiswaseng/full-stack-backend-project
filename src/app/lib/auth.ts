@@ -3,15 +3,16 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { Role, UserStatus } from "../../generated/prisma/enums";
-import { bearer, emailOTP } from "better-auth/plugins";
+import { bearer, emailOTP, oAuthProxy } from "better-auth/plugins";
 import { sendEmail } from "../utils/email";
 import { Stats } from "node:fs";
 export const auth = betterAuth({
-  baseURL: `${envVars.BETTER_AUTH_URL}/api/auth`,
   secret: envVars.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  baseURL: `${envVars.FRONTEND_URL}`,
+  trustedOrigins:[envVars.FRONTEND_URL],
   appName: "Planora",
   user: {
     additionalFields: {
@@ -54,6 +55,7 @@ export const auth = betterAuth({
     autoSignIn:true
   },
   plugins: [
+    oAuthProxy(),
     bearer(),
     emailOTP({
       overrideDefaultEmailVerification: true,
@@ -108,7 +110,7 @@ export const auth = betterAuth({
           }
         }
       },
-      expiresIn: 4 * 60, // 4 minutes in seconds
+      expiresIn: 10 * 60,
       otpLength: 6,
       resendStrategy: "rotate",
     }),

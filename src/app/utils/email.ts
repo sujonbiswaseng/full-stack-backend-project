@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import ejs from "ejs";
 import status from "http-status";
 import nodemailer from "nodemailer";
-import path from "path";
 import { envVars } from "../config/env";
 import AppError from "../errorHelper/AppError";
+import { generateEmailTemplate } from "../templates/htmlEmail";
 
 const smtpPort = Number(envVars.EMAIL_SENDER.SMTP_PORT);
 const transporter = nodemailer.createTransport({
@@ -15,6 +13,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: envVars.EMAIL_SENDER.SMTP_USER,
         pass: envVars.EMAIL_SENDER.SMTP_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
     },
     connectionTimeout: 15_000,
     greetingTimeout: 15_000,
@@ -33,17 +34,14 @@ interface SendEmailOptions {
     }[]
 }
 
+
 export const sendEmail = async ({subject, templateData, templateName, to, attachments} : SendEmailOptions) => {
     try {
-        const templatePath = path.resolve(process.cwd(), `src/app/templates/${templateName}.ejs`);
-
-        const html = await ejs.renderFile(templatePath, templateData);
-
         const info = await transporter.sendMail({
             from: `Planora <${envVars.EMAIL_SENDER.SMTP_USER}>`,
             to : to,
             subject : subject,
-            html : html,
+            html : generateEmailTemplate(templateName,templateData),
             attachments: attachments?.map((attachment) => ({
                 filename: attachment.filename,
                 content: attachment.content,
