@@ -96,10 +96,23 @@ const deletePayment = catchAsync(async (req: Request, res: Response) => {
     }
 });
 
+const handleStripeCancelRedirect = catchAsync(async (req: Request, res: Response) => {
+    const participantId = req.query.participantId as string;
+    const paymentId = req.query.paymentId as string;
+
+    if (!participantId || !paymentId) {
+        return res.redirect(`${envVars.FRONTEND_URL}/payment/payment-failed`);
+    }
+
+    await PaymentService.deleteParticipantAndPaymentByIds(participantId, paymentId);
+    return res.redirect(`${envVars.FRONTEND_URL}/payment/payment-failed`);
+});
+
 
 export const PaymentController = {
     handleStripeWebhookEvent,
     getAllPayment,
     updatePaymentStatus,
-    deletePayment
+    deletePayment,
+    handleStripeCancelRedirect
 }

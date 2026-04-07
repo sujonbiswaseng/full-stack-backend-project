@@ -21,12 +21,25 @@ const createParticipantService = async (
   if(existing?.status==='BANNED'){
     throw new AppError(status.FORBIDDEN, "You have been banned from participating in this event.");
   }
-
-  if (existing) {
-    throw new AppError(409, "User already joined");
+  if (existing?.paymentStatus === PaymentStatus.UNPAID) {
+    await prisma.$transaction(async (tx) => {
+      await tx.payment.deleteMany({
+        where: { participantId: existing.id },
+      });
+      await tx.participant.delete({
+        where: { id: existing.id },
+      });
+    });
   }
 
-
+  if (existing) {
+    const refreshed = await prisma.participant.findFirst({
+      where: { userId, eventId },
+    });
+    if (refreshed) {
+      throw new AppError(409, "User already joined");
+    }
+  }
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -124,8 +137,14 @@ const createParticipantService = async (
         participantId: participantData.id,
         paymentId: paymentData.id
       },
-      success_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-success/${eventId}`,
-      cancel_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-failed`,
+      payment_intent_data: {
+        metadata: {
+          participantId: participantData.id,
+          paymentId: paymentData.id,
+        },
+      },
+      success_url: `${envVars.FRONTEND_URL}/payment/${eventId}?participantId=${participantData.id}&paymentId=${paymentData.id}`,
+      cancel_url: `${envVars.FRONTEND_URL}/payment/${eventId}?participantId=${participantData.id}&paymentId=${paymentData.id}`,
     });
     return {
       participantData,
@@ -241,8 +260,8 @@ const getOwnPaymentParticipantService = async (eventId:string,userId: string) =>
       eventId:eventId
     },
     include: {
-      payment: true,
-      event: { select: { id: true, title: true, date: true, venue: true } },
+      payment: {select:{id:true,amount:true,status:true,transactionId:true,user:true,eventId:true}},
+      event: { select: { id: true, title: true, date: true, venue: true ,priceType:true} },
     },
     orderBy: {
       joinedAt: "desc",
@@ -512,8 +531,14 @@ const initiatePayment = async (eventId: string, user : IRequestUser) => {
           participantId: participantData.id,
           paymentId: paymentData.id,
         },
-        success_url: `${envVars.FRONTEND_URL}/payment/payment-success/${eventId}`,
-        cancel_url: `${envVars.FRONTEND_URL}/payment/payment-failed`,
+        payment_intent_data: {
+          metadata: {
+            participantId: participantData.id,
+            paymentId: paymentData.id,
+          },
+        },
+        success_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-success/${eventId}`,
+        cancel_url: `${envVars.BETTER_AUTH_URL}/api/v1/payments/stripe-cancel?participantId=${participantData.id}&paymentId=${paymentData.id}`,
       });
   
       return {

@@ -4,6 +4,67 @@ import Stripe from "stripe";
 import { prisma } from "../../lib/prisma";
 import { PaymentStatus } from "../../../generated/prisma/enums";
 import { parseDateForPrisma } from "../../utils/parseDate";
+import AppError from "../../errorHelper/AppError";
+
+const deleteParticipantAndPayment = async (
+  participantId?: string,
+  paymentId?: string,
+) => {
+  if (!participantId || !paymentId) {
+    console.error("Missing participantId or paymentId in session metadata");
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.payment.deleteMany({
+      where: { id: paymentId },
+    });
+
+    await tx.participant.deleteMany({
+      where: { id: participantId },
+    });
+  });
+
+  console.log(
+    `Payment failed. Deleted participant ${participantId} and payment ${paymentId}`,
+  );
+};
+
+const deleteParticipantAndPaymentByIds = async (
+  participantId: string,
+  paymentId: string,
+) => {
+  await deleteParticipantAndPayment(participantId, paymentId);
+  return { message: "Payment canceled. Payment and participant deleted." };
+};
+
+const cleanupAllUnpaidPayments = async () => {
+  const unpaidPayments = await prisma.payment.findMany({
+    where: { status: PaymentStatus.UNPAID },
+    select: { id: true, participantId: true },
+  });
+
+  if (!unpaidPayments.length) {
+    return { deletedPayments: 0, deletedParticipants: 0 };
+  }
+
+  const paymentIds = unpaidPayments.map((p) => p.id);
+  const participantIds = unpaidPayments.map((p) => p.participantId);
+
+  const [deletedPayments, deletedParticipants] = await prisma.$transaction([
+    prisma.payment.deleteMany({
+      where: { id: { in: paymentIds } },
+    }),
+    prisma.participant.deleteMany({
+      where: { id: { in: participantIds } },
+    }),
+  ]);
+
+  return {
+    deletedPayments: deletedPayments.count,
+    deletedParticipants: deletedParticipants.count,
+  };
+};
 
 const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
   const existingPayment = await prisma.payment.findFirst({
@@ -38,16 +99,18 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
         return { message: `Appointment with id ${participantId} not found` };
       }
 
+      if (session.payment_status !== "paid") {
+        await deleteParticipantAndPayment(participantId, paymentId);
+        break;
+      }
+
       await prisma.$transaction(async (tx) => {
         await tx.participant.update({
           where: {
             id: participantId,
           },
           data: {
-            paymentStatus:
-              session.payment_status === "paid"
-                ? PaymentStatus.PAID
-                : PaymentStatus.UNPAID,
+            paymentStatus: PaymentStatus.PAID,
           },
         });
 
@@ -57,10 +120,7 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
           },
           data: {
             stripeEventId: event.id,
-            status:
-              session.payment_status === "paid"
-                ? PaymentStatus.PAID
-                : PaymentStatus.UNPAID,
+            status: PaymentStatus.PAID,
             paymentGatewayData: session as any,
           },
         });
@@ -75,22 +135,37 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
       const session = event.data.object;
       const participantId = session.metadata?.participantId;
       const paymentId = session.metadata?.paymentId;
-      await prisma.$transaction(async (tx) => {
-        await tx.payment.update({ where: { id: paymentId }, data: { status: "UNPAID" } });
-        await tx.participant.update({
-          where: { id: participantId },
-          data: { paymentStatus: "UNPAID", status: "REJECTED" },
-        });
-      })
-      await cleanupUnpaidPaymentsAndParticipants();
+      await deleteParticipantAndPayment(participantId, paymentId);
       break;
-  }
+    }
 
     case "payment_intent.succeeded": {
       const session = event.data.object;
       console.log(
-        `Payment intent ${session.id} failed. Marking associated payment as failed.`,
+        `Payment intent ${session.id} succeeded.`,
       );
+      break;
+    }
+    case "payment_intent.payment_failed": {
+      const session = event.data.object;
+      const participantId = session.metadata?.participantId;
+      const paymentId = session.metadata?.paymentId;
+      await deleteParticipantAndPayment(participantId, paymentId);
+      break;
+    }
+    case "checkout.session.async_payment_failed":{
+      const session = event.data.object;
+      const participantId = session.metadata?.participantId;
+      const paymentId = session.metadata?.paymentId;
+      await deleteParticipantAndPayment(participantId, paymentId);
+      break;
+    }
+    case "payment_intent.canceled":{
+      const session = event.data.object;
+      const participantId = session.metadata?.participantId;
+      const paymentId = session.metadata?.paymentId;
+
+      await deleteParticipantAndPayment(participantId, paymentId);
       break;
     }
     default:
@@ -98,25 +173,6 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
   }
   return {message : `Webhook Event ${event.id} processed successfully`}
 };
-
-
-
-const cleanupUnpaidPaymentsAndParticipants = async () => {
-  const deletedPayments = await prisma.payment.deleteMany({
-    where: { status: "UNPAID" },
-  });
-
-  const deletedParticipants = await prisma.participant.deleteMany({
-    where: { paymentStatus: "UNPAID" },
-  });
-
-  console.log(
-    `Cleanup done: ${deletedPayments.count} payments and ${deletedParticipants.count} participants deleted`
-  );
-};
-
-
-
 
 
 
@@ -129,6 +185,7 @@ const getAllPaymentsService = async (
   sortOrder: string,
   query: any
 ) => {
+  await cleanupAllUnpaidPayments();
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("User not found");
   if (user.role !== "ADMIN") {
@@ -183,18 +240,34 @@ const updatePaymentStatusWithParticipantCheck = async (
     include: { participant: true }
   });
   if (!payment) {
-    throw new Error("Payment not found");
+    throw new AppError(404,"Payment not found");
   }
 
   // Check the participant and payment status logic
   if (!payment.participant) {
-    throw new Error("Associated participant not found");
+    throw new AppError(404,"Associated participant not found");
+  }
+
+  // If status is UNPAID, remove both payment and participant.
+  if (newStatus.toUpperCase() === PaymentStatus.UNPAID) {
+    const [deletedPayment, deletedParticipant] = await prisma.$transaction([
+      prisma.payment.delete({
+        where: { id: paymentId },
+      }),
+      prisma.participant.delete({
+        where: { id: payment.participant.id },
+      }),
+    ]);
+
+    return {
+      payment: deletedPayment,
+      participant: deletedParticipant,
+      message: "Payment is UNPAID, so payment and participant were deleted",
+    };
   }
 
 
 
-  // Update the payment status
-  // Update payment and associated participant status in a single transaction
   const [updatedPayment, updatedParticipant] = await prisma.$transaction([
     prisma.payment.update({
       where: { id: paymentId },
@@ -228,19 +301,18 @@ const deletePayment = async (paymentId: string) => {
     throw new Error("Associated participant not found");
   }
 
-  const [deletedPayment, updatedParticipant] = await prisma.$transaction([
+  const [deletedPayment, deletedParticipant] = await prisma.$transaction([
     prisma.payment.delete({
       where: { id: paymentId }
     }),
-    prisma.participant.update({
+    prisma.participant.delete({
       where: { id: payment.participant.id },
-      data: { paymentStatus: "UNPAID"}
     })
   ]);
 
   return {
     payment: deletedPayment,
-    participant: updatedParticipant
+    participant: deletedParticipant
   };
 };
 
@@ -251,5 +323,6 @@ export const PaymentService = {
     handlerStripeWebhookEvent,
     getAllPaymentsService,
     updatePaymentStatusWithParticipantCheck,
-    deletePayment
+    deletePayment,
+    deleteParticipantAndPaymentByIds
 }
