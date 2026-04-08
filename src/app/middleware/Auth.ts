@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { auth as betterAuth } from "../lib/auth";
+import { auth as betterAuthInstance } from "../lib/auth"; 
 import status from "http-status";
 import AppError from "../errorHelper/AppError";
 import { CookieUtils } from "../utils/cookie";
@@ -10,111 +10,80 @@ import { jwtUtils } from "../utils/jwt";
 const auth = (roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const sessionToken = CookieUtils.getCookie(
-        req,
-        "better-auth.session_token",
-      );
-      if (!sessionToken) {
-        throw new AppError(
-          status.UNAUTHORIZED,
-          "Unauthorized access! No session token provided.",
-        );
+      const sessionToken = CookieUtils.getCookie(req, "better-auth.session_token");
+      const accessToken = CookieUtils.getCookie(req, "accessToken");
+      let isAuthenticated = false;
+      if (sessionToken) {
+        const betterSession = await betterAuthInstance.api.getSession({ headers: req.headers as HeadersInit});
+        
+        if (betterSession && betterSession.session) {
+          const sessionExists = await prisma.session.findFirst({
+            where: {
+              token: betterSession.session.token,
+              expiresAt: { gt: new Date() },
+            },
+            include: { user: true },
+          });
+
+          if (sessionExists && sessionExists.user) {
+            const user = sessionExists.user;
+            const now = new Date();
+            const expiresAt = new Date(sessionExists.expiresAt);
+            const createdAt = new Date(sessionExists.createdAt);
+            const sessionLifeTime = expiresAt.getTime() - createdAt.getTime();
+            const timeRemaining = expiresAt.getTime() - now.getTime();
+            const percentRemaining = (timeRemaining / sessionLifeTime) * 100;
+
+            if (percentRemaining < 20) {
+              res.setHeader("X-Session-Refresh", "true");
+              res.setHeader("X-Session-Expires-At", expiresAt.toISOString());
+            }
+
+            if (user.status === "BLOCKED" || user.status === "DELETED") {
+              throw new AppError(status.UNAUTHORIZED, "Unauthorized access! User is not active.");
+            }
+
+            if (roles.length > 0 && !roles.includes(user.role as Role)) {
+              throw new AppError(status.FORBIDDEN, "Forbidden access! No permission.");
+            }
+            req.user = { userId: user.id, role: user.role, email: user.email };
+            isAuthenticated = true;
+          }
+        }
       }
 
-      if (sessionToken) {
-        const sessionExists = await prisma.session.findFirst({
-          where: {
-            token: sessionToken,
-            expiresAt: {
-              gt: new Date(),
-            },
-          },
-          include: {
-            user: true,
-          },
-        });
+      if (!isAuthenticated && accessToken) {
+        const verifiedToken = jwtUtils.verifyToken(
+          accessToken,
+          process.env.ACCESS_TOKEN_SECRET as string,
+        );
 
-        if (sessionExists && sessionExists.user) {
-          const user = sessionExists.user;
+        if (verifiedToken.success && verifiedToken.data) {
+          const userData = verifiedToken.data;
 
-          const now = new Date();
-          const expiresAt = new Date(sessionExists.expiresAt);
-          const createdAt = new Date(sessionExists.createdAt);
-
-          const sessionLifeTime = expiresAt.getTime() - createdAt.getTime();
-          const timeRemaining = expiresAt.getTime() - now.getTime();
-          const percentRemaining = (timeRemaining / sessionLifeTime) * 100;
-
-          if (percentRemaining < 20) {
-            res.setHeader("X-Session-Refresh", "true");
-            res.setHeader("X-Session-Expires-At", expiresAt.toISOString());
-            res.setHeader("X-Time-Remaining", timeRemaining.toString());
-
-            console.log("Session Expiring Soon!!");
-          }
-
-          if (user.status === "BLOCKED" || user.status == "DELETED") {
-            throw new AppError(
-              status.UNAUTHORIZED,
-              "Unauthorized access! User is not active.",
-            );
-          }
-          if (roles.length > 0 && !roles.includes(user.role)) {
-            throw new AppError(
-              status.FORBIDDEN,
-              "Forbidden access! You do not have permission to access this resource.",
-            );
+          if (roles.length > 0 && !roles.includes(userData.role as Role)) {
+            throw new AppError(status.FORBIDDEN, "Forbidden access! No permission.");
           }
 
           req.user = {
-            userId: user.id,
-            role: user.role,
-            email: user.email,
+            userId: userData.userId,
+            role: userData.role,
+            email: userData.email,
           };
-        }
-
-        const accessToken = CookieUtils.getCookie(req, "accessToken");
-
-        if (!accessToken) {
-          throw new AppError(
-            status.UNAUTHORIZED,
-            "Unauthorized access! No access token provided.",
-          );
+          isAuthenticated = true;
         }
       }
-      const accessToken = CookieUtils.getCookie(req, "accessToken");
-      if (!accessToken) {
-        throw new AppError(
-          status.UNAUTHORIZED,
-          "Unauthorized access! No access token provided.",
-        );
-      }
 
-      const verifiedToken = jwtUtils.verifyToken(
-        accessToken,
-        process.env.ACCESS_TOKEN_SECRET as string,
-      );
-      if (!verifiedToken.success) {
-        throw new AppError(
-          status.UNAUTHORIZED,
-          "Unauthorized access! Invalid access token.",
-        );
-      }
-
-      if (
-        roles.length > 0 &&
-        !roles.includes(verifiedToken.data!.role as Role)
-      ) {
-        throw new AppError(
-          status.FORBIDDEN,
-          "Forbidden access! You do not have permission to access this resource.",
-        );
+      if (!isAuthenticated) {
+        throw new AppError(status.UNAUTHORIZED, "Unauthorized access! No valid session or token.");
       }
 
       next();
+
     } catch (error: any) {
-      throw new AppError(status.BAD_REQUEST, error.message);
+      throw new AppError(error.statusCode || status.BAD_REQUEST, error.message);
     }
   };
 };
+
 export default auth;

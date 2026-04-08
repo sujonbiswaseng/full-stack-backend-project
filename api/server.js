@@ -953,33 +953,31 @@ var auth = betterAuth({
       overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
         if (type === "email-verification") {
-          if (type === "email-verification") {
-            const user = await prisma.user.findUnique({
+          const user = await prisma.user.findUnique({
+            where: {
+              email
+            }
+          });
+          if (user?.role === "ADMIN") {
+            await prisma.user.update({
               where: {
                 email
+              },
+              data: {
+                emailVerified: true
               }
             });
-            if (user?.role === "ADMIN") {
-              await prisma.user.update({
-                where: {
-                  email
-                },
-                data: {
-                  emailVerified: true
-                }
-              });
-            }
-            if (user && !user.emailVerified) {
-              sendEmail({
-                to: email,
-                subject: "Verify your email",
-                templateName: "otp",
-                templateData: {
-                  name: user.name,
-                  otp
-                }
-              });
-            }
+          }
+          if (user && !user.emailVerified) {
+            await sendEmail({
+              to: user.email,
+              subject: "Verify your email address",
+              templateName: "otp",
+              templateData: {
+                name: user.name,
+                otp
+              }
+            });
           }
         } else if (type === "forget-password") {
           const user = await prisma.user.findUnique({
@@ -988,7 +986,7 @@ var auth = betterAuth({
             }
           });
           if (user) {
-            sendEmail({
+            await sendEmail({
               to: email,
               subject: "Password Reset OTP",
               templateName: "otp",
@@ -1011,6 +1009,7 @@ var auth = betterAuth({
       clientSecret: envVars.GOOGLE_CLIENT_SECRET,
       accessType: "offline",
       prompt: "select_account consent",
+      redirectURI: `${envVars.FRONTEND_URL}/api/auth/callback/google`,
       mapProfileToUser: () => {
         return {
           role: Role.USER,
@@ -1025,6 +1024,11 @@ var auth = betterAuth({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET
     }
+  },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
+    strategy: "jwt"
   },
   advanced: {
     // disableCSRFCheck: true,
@@ -1827,94 +1831,66 @@ init_prisma();
 var auth2 = (roles) => {
   return async (req, res, next) => {
     try {
-      const sessionToken = CookieUtils.getCookie(
-        req,
-        "better-auth.session_token"
-      );
-      if (!sessionToken) {
-        throw new AppError_default(
-          status9.UNAUTHORIZED,
-          "Unauthorized access! No session token provided."
-        );
-      }
+      const sessionToken = CookieUtils.getCookie(req, "better-auth.session_token");
+      const accessToken = CookieUtils.getCookie(req, "accessToken");
+      let isAuthenticated = false;
       if (sessionToken) {
-        const sessionExists = await prisma.session.findFirst({
-          where: {
-            token: sessionToken,
-            expiresAt: {
-              gt: /* @__PURE__ */ new Date()
+        const betterSession = await auth.api.getSession({ headers: req.headers });
+        if (betterSession && betterSession.session) {
+          const sessionExists = await prisma.session.findFirst({
+            where: {
+              token: betterSession.session.token,
+              expiresAt: { gt: /* @__PURE__ */ new Date() }
+            },
+            include: { user: true }
+          });
+          if (sessionExists && sessionExists.user) {
+            const user = sessionExists.user;
+            const now = /* @__PURE__ */ new Date();
+            const expiresAt = new Date(sessionExists.expiresAt);
+            const createdAt = new Date(sessionExists.createdAt);
+            const sessionLifeTime = expiresAt.getTime() - createdAt.getTime();
+            const timeRemaining = expiresAt.getTime() - now.getTime();
+            const percentRemaining = timeRemaining / sessionLifeTime * 100;
+            if (percentRemaining < 20) {
+              res.setHeader("X-Session-Refresh", "true");
+              res.setHeader("X-Session-Expires-At", expiresAt.toISOString());
             }
-          },
-          include: {
-            user: true
+            if (user.status === "BLOCKED" || user.status === "DELETED") {
+              throw new AppError_default(status9.UNAUTHORIZED, "Unauthorized access! User is not active.");
+            }
+            if (roles.length > 0 && !roles.includes(user.role)) {
+              throw new AppError_default(status9.FORBIDDEN, "Forbidden access! No permission.");
+            }
+            req.user = { userId: user.id, role: user.role, email: user.email };
+            isAuthenticated = true;
           }
-        });
-        if (sessionExists && sessionExists.user) {
-          const user = sessionExists.user;
-          const now = /* @__PURE__ */ new Date();
-          const expiresAt = new Date(sessionExists.expiresAt);
-          const createdAt = new Date(sessionExists.createdAt);
-          const sessionLifeTime = expiresAt.getTime() - createdAt.getTime();
-          const timeRemaining = expiresAt.getTime() - now.getTime();
-          const percentRemaining = timeRemaining / sessionLifeTime * 100;
-          if (percentRemaining < 20) {
-            res.setHeader("X-Session-Refresh", "true");
-            res.setHeader("X-Session-Expires-At", expiresAt.toISOString());
-            res.setHeader("X-Time-Remaining", timeRemaining.toString());
-            console.log("Session Expiring Soon!!");
-          }
-          if (user.status === "BLOCKED" || user.status == "DELETED") {
-            throw new AppError_default(
-              status9.UNAUTHORIZED,
-              "Unauthorized access! User is not active."
-            );
-          }
-          if (roles.length > 0 && !roles.includes(user.role)) {
-            throw new AppError_default(
-              status9.FORBIDDEN,
-              "Forbidden access! You do not have permission to access this resource."
-            );
+        }
+      }
+      if (!isAuthenticated && accessToken) {
+        const verifiedToken = jwtUtils.verifyToken(
+          accessToken,
+          process.env.ACCESS_TOKEN_SECRET
+        );
+        if (verifiedToken.success && verifiedToken.data) {
+          const userData = verifiedToken.data;
+          if (roles.length > 0 && !roles.includes(userData.role)) {
+            throw new AppError_default(status9.FORBIDDEN, "Forbidden access! No permission.");
           }
           req.user = {
-            userId: user.id,
-            role: user.role,
-            email: user.email
+            userId: userData.userId,
+            role: userData.role,
+            email: userData.email
           };
-        }
-        const accessToken2 = CookieUtils.getCookie(req, "accessToken");
-        if (!accessToken2) {
-          throw new AppError_default(
-            status9.UNAUTHORIZED,
-            "Unauthorized access! No access token provided."
-          );
+          isAuthenticated = true;
         }
       }
-      const accessToken = CookieUtils.getCookie(req, "accessToken");
-      if (!accessToken) {
-        throw new AppError_default(
-          status9.UNAUTHORIZED,
-          "Unauthorized access! No access token provided."
-        );
-      }
-      const verifiedToken = jwtUtils.verifyToken(
-        accessToken,
-        process.env.ACCESS_TOKEN_SECRET
-      );
-      if (!verifiedToken.success) {
-        throw new AppError_default(
-          status9.UNAUTHORIZED,
-          "Unauthorized access! Invalid access token."
-        );
-      }
-      if (roles.length > 0 && !roles.includes(verifiedToken.data.role)) {
-        throw new AppError_default(
-          status9.FORBIDDEN,
-          "Forbidden access! You do not have permission to access this resource."
-        );
+      if (!isAuthenticated) {
+        throw new AppError_default(status9.UNAUTHORIZED, "Unauthorized access! No valid session or token.");
       }
       next();
     } catch (error) {
-      throw new AppError_default(status9.BAD_REQUEST, error.message);
+      throw new AppError_default(error.statusCode || status9.BAD_REQUEST, error.message);
     }
   };
 };
@@ -2125,6 +2101,7 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
         },
         organizer: {
           select: {
+            id: true,
             name: true,
             email: true,
             phone: true,

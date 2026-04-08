@@ -172,6 +172,7 @@ const getAllEvents = async (
         },
         organizer:{
           select:{
+            id:true,
             name:true,
             email:true,
             phone:true,
