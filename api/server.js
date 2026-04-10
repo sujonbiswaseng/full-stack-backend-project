@@ -918,7 +918,7 @@ var auth = betterAuth({
       emailVerified: {
         type: "boolean",
         returned: true,
-        defaultValue: false
+        defaultValue: true
       },
       status: {
         type: "string",
@@ -3373,8 +3373,8 @@ var initiatePayment = async (eventId, user) => {
           paymentId: paymentData.id
         }
       },
-      success_url: `${envVars.FRONTEND_URL}/user/dashboard/payment-success/${eventId}`,
-      cancel_url: `${envVars.BETTER_AUTH_URL}/api/v1/payments/stripe-cancel?participantId=${participantData.id}&paymentId=${paymentData.id}`
+      success_url: `${envVars.FRONTEND_URL}/payment/${eventId}?participantId=${participantData.id}&paymentId=${paymentData.id}`,
+      cancel_url: `${envVars.FRONTEND_URL}/payment/${eventId}?participantId=${participantData.id}&paymentId=${paymentData.id}`
     });
     return {
       participantData,

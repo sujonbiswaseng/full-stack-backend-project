@@ -25,7 +25,7 @@ export const auth = betterAuth({
       emailVerified: {
         type: "boolean",
         returned: true,
-        defaultValue: false,
+        defaultValue: true,
       },
 
       status: {
