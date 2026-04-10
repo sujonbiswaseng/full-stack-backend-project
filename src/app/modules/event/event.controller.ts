@@ -4,8 +4,12 @@ import { sendResponse } from "../../shared/sendResponse";
 import status from "http-status";
 import { EventServices } from "./event.service";
 import paginationSortingHelper from "../../helpers/paginationHelping";
+import AppError from "../../errorHelper/AppError";
 
 const createEvent = catchAsync(async (req: Request, res: Response) => {
+        if (!req.user?.userId) {
+          throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+        }
         const payload = {
             ...req.body,
             image:req.file?.path || req.body.image
@@ -45,6 +49,9 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
  const getEventsByRoleController = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
 
+  if (!req.user?.userId || !req.user?.role) {
+    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const userId = req.user.userId;
   const role = req.user.role;
   const search=req.query?.search
@@ -93,6 +100,9 @@ const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
 
  const updateEvent = catchAsync(async (req: Request, res: Response) => {
   const eventId = req.params.id;
+  if (!req.user?.email) {
+    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const user=req.user
 
   const updatedEvent = await EventServices.updateEvent(eventId as string, req.body ,user.email);
@@ -107,6 +117,9 @@ const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
 
  const DeletedEvent = catchAsync(async (req: Request, res: Response) => {
   const eventId = req.params.id;
+  if (!req.user?.userId) {
+    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const deletedEvent = await EventServices.DeleteEvent(req.user,eventId as string);
   sendResponse(res, {
     httpStatusCode: status.OK,

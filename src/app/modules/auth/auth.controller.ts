@@ -7,6 +7,7 @@ import { AuthService } from "./auth.service";
 import { CookieUtils } from "../../utils/cookie";
 import { envVars } from "../../config/env";
 import { auth } from "../../lib/auth";
+import AppError from "../../errorHelper/AppError";
 
 const UserRegister = catchAsync(async (req: Request, res: Response) => {
   const payload = {
@@ -46,6 +47,9 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMe = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user?.userId) {
+    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const data = await AuthService.getMe(req.user);
   sendResponse(res, {
     httpStatusCode: status.OK,

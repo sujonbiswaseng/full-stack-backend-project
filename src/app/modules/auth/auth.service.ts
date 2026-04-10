@@ -18,6 +18,7 @@ const UserRegister = async (payload: UserCreateInput) => {
   if(!image){
     throw new AppError(status.BAD_REQUEST, "Image is required to register a user.");
   }
+  
   if (userExist) {
     throw new AppError(409, "user already exist,please try another email");
   }
@@ -107,6 +108,10 @@ const loginUser = async (payload: ILoginUser) => {
 };
 
 const getMe = async (user: IRequestUser) => {
+  if (!user?.userId) {
+    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
+
   const isUserExists = await prisma.user.findUnique({
     where: {
       id: user.userId,

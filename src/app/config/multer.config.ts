@@ -24,18 +24,13 @@ const storage = new CloudinaryStorage({
       fileNameWithoutExtension;
 
     const folder = extension === "pdf" ? "pdfs" : "images";
-    console.log({
+    return {
       folder: `planora/${folder}`,
       public_id:uniqueName,
       resource_type: "auto",
-    })
-    return {
-      folder: `planora/${folder}`,
-      public_id: uniqueName,
-      resource_type: "auto",
-    };
-
-    
+      format: extension === "pdf" ? "pdf" : "webp", // ইমেজ হলে অটোমেটিক webp হবে (ফাইল সাইজ কমায়)
+      transformation: extension !== "pdf" ? [{ quality: "auto", fetch_format: "auto" }] : undefined,
+    };    
   },
 
 
@@ -44,4 +39,6 @@ const storage = new CloudinaryStorage({
 
 });
 
-export const multerUpload = multer({storage});
+export const multerUpload = multer({storage,limits: {
+  fileSize: 1024 * 1024,
+},});

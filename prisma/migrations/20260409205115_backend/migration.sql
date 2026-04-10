@@ -39,7 +39,7 @@ CREATE TABLE "user" (
     "image" TEXT NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "deletedAt" TIMESTAMP(3),
-    "bgimage" TEXT,
+    "bgimage" TEXT DEFAULT 'https://images.pexels.com/photos/4303031/pexels-photo-4303031.jpeg',
     "isActive" BOOLEAN NOT NULL DEFAULT false,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

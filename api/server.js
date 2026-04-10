@@ -48,7 +48,7 @@ var init_class = __esm({
   image         String
   isDeleted     Boolean    @default(false)
   deletedAt     DateTime?
-  bgimage       String?
+  bgimage       String?    @default("https://images.pexels.com/photos/4303031/pexels-photo-4303031.jpeg")
   isActive      Boolean    @default(false)
   emailVerified Boolean    @default(false)
   createdAt     DateTime   @default(now())
@@ -1139,11 +1139,20 @@ var handleZodError = (err) => {
 
 // src/app/middleware/globalErrorHandeller.ts
 import z from "zod";
+import multer from "multer";
 function errorHandler(err, req, res, next) {
   let statusCode = status6.INTERNAL_SERVER_ERROR;
   let message = "Internal Server Error";
   let errorSources = [];
   let stack = void 0;
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      success: false,
+      message: err.code === "LIMIT_FILE_SIZE" ? "\u09AB\u09BE\u0987\u09B2\u099F\u09BF \u0985\u09A8\u09C7\u0995 \u09AC\u09DC! \u09E7 \u09AE\u09C7\u0997\u09BE\u09AC\u09BE\u0987\u099F\u09C7\u09B0 \u09AC\u09C7\u09B6\u09BF \u09AB\u09BE\u0987\u09B2 \u0986\u09AA\u09B2\u09CB\u09A1 \u0995\u09B0\u09BE \u09AF\u09BE\u09AC\u09C7 \u09A8\u09BE\u0964" : err.message,
+      httpStatusCode: 400,
+      data: { errorSources: [{ path: "file", message: err.message }] }
+    });
+  }
   if (err instanceof prismaNamespace_exports.PrismaClientValidationError) {
     statusCode = status6.BAD_REQUEST;
     message = "Validation Error";
@@ -1392,6 +1401,9 @@ var loginUser = async (payload) => {
   };
 };
 var getMe = async (user) => {
+  if (!user?.userId) {
+    throw new AppError_default(status7.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const isUserExists = await prisma.user.findUnique({
     where: {
       id: user.userId
@@ -1654,6 +1666,9 @@ var loginUser2 = catchAsync(async (req, res) => {
   });
 });
 var getMe2 = catchAsync(async (req, res) => {
+  if (!req.user?.userId) {
+    throw new AppError_default(status8.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const data = await AuthService.getMe(req.user);
   sendResponse(res, {
     httpStatusCode: status8.OK,
@@ -1897,7 +1912,7 @@ var auth2 = (roles) => {
 var Auth_default = auth2;
 
 // src/app/config/multer.config.ts
-import multer from "multer";
+import multer2 from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 var storage = new CloudinaryStorage({
   cloudinary: cloudinaryUpload,
@@ -1907,19 +1922,19 @@ var storage = new CloudinaryStorage({
     const fileNameWithoutExtension = originalName.split(".").slice(0, -1).join(".").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
     const uniqueName = Math.random().toString(36).substring(2) + "-" + Date.now() + "-" + fileNameWithoutExtension;
     const folder = extension === "pdf" ? "pdfs" : "images";
-    console.log({
-      folder: `planora/${folder}`,
-      public_id: uniqueName,
-      resource_type: "auto"
-    });
     return {
       folder: `planora/${folder}`,
       public_id: uniqueName,
-      resource_type: "auto"
+      resource_type: "auto",
+      format: extension === "pdf" ? "pdf" : "webp",
+      // ইমেজ হলে অটোমেটিক webp হবে (ফাইল সাইজ কমায়)
+      transformation: extension !== "pdf" ? [{ quality: "auto", fetch_format: "auto" }] : void 0
     };
   }
 });
-var multerUpload = multer({ storage });
+var multerUpload = multer2({ storage, limits: {
+  fileSize: 1024 * 1024
+} });
 
 // src/app/modules/auth/auth.route.ts
 var router = Router();
@@ -2405,6 +2420,9 @@ var paginationHelping_default = paginationSortingHelper;
 
 // src/app/modules/event/event.controller.ts
 var createEvent2 = catchAsync(async (req, res) => {
+  if (!req.user?.userId) {
+    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const payload = {
     ...req.body,
     image: req.file?.path || req.body.image
@@ -2433,6 +2451,9 @@ var getAllEvents2 = catchAsync(async (req, res) => {
 });
 var getEventsByRoleController = catchAsync(async (req, res) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
+  if (!req.user?.userId || !req.user?.role) {
+    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const userId = req.user.userId;
   const role = req.user.role;
   const search = req.query?.search;
@@ -2476,6 +2497,9 @@ var getPaidAndFreeEvent = catchAsync(async (req, res) => {
 });
 var updateEvent2 = catchAsync(async (req, res) => {
   const eventId = req.params.id;
+  if (!req.user?.email) {
+    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const user = req.user;
   const updatedEvent = await EventServices.updateEvent(eventId, req.body, user.email);
   sendResponse(res, {
@@ -2487,6 +2511,9 @@ var updateEvent2 = catchAsync(async (req, res) => {
 });
 var DeletedEvent = catchAsync(async (req, res) => {
   const eventId = req.params.id;
+  if (!req.user?.userId) {
+    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const deletedEvent = await EventServices.DeleteEvent(req.user, eventId);
   sendResponse(res, {
     httpStatusCode: status11.OK,
@@ -3510,7 +3537,23 @@ var CreateReviews = async (userId, eventId, data) => {
     }
   });
   if (!existingmeal) {
-    throw new AppError_default(404, "meal not found for this id");
+    throw new AppError_default(404, "Event not found for this id");
+  }
+  const participant = await prisma.participant.findFirst({
+    where: {
+      userId,
+      eventId,
+      status: "APPROVED"
+    },
+    select: {
+      id: true
+    }
+  });
+  if (!participant) {
+    throw new AppError_default(
+      403,
+      "You cannot submit a review because you have not joined this event yet."
+    );
   }
   if (data.rating >= 6) {
     throw new AppError_default(400, "rating must be between 1 and 5");
@@ -4373,6 +4416,9 @@ var getUserNotificationsService = async (userId) => {
 
 // src/app/modules/notification/notification.controller.ts
 var getUserNotificationsController = catchAsync(async (req, res) => {
+  if (!req.user?.userId) {
+    throw new AppError_default(status19.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
   const result = await getUserNotificationsService(req.user.userId);
   sendResponse(res, {
     httpStatusCode: status19.OK,

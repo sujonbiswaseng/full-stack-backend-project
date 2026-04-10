@@ -7,12 +7,21 @@ import { sendResponse } from "../shared/sendResponse";
 import { handleZodError } from "../errorHelper/handleerror";
 import z from "zod";
 import { deleteFileFromCloudinary } from "../config/cloudinary.config";
+import multer from "multer";
 
 function errorHandler (err: any, req: Request, res: Response, next: NextFunction) {
     let statusCode: number = status.INTERNAL_SERVER_ERROR; // Default 500
     let message: string = 'Internal Server Error';
     let errorSources: TErrorSources[] = [];
     let stack: string | undefined = undefined;
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({
+            success: false,
+            message: err.code === 'LIMIT_FILE_SIZE' ? "ফাইলটি অনেক বড়! ১ মেগাবাইটের বেশি ফাইল আপলোড করা যাবে না।" : err.message,
+            httpStatusCode: 400,
+            data: { errorSources: [{ path: 'file', message: err.message }] }
+        });
+    }
 
     // Prisma Validation Error
     if (err instanceof Prisma.PrismaClientValidationError) {

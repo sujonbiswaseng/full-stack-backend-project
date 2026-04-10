@@ -12,8 +12,26 @@ const CreateReviews = async (userId: string, eventId: string, data: ICreaterevie
             }
     })
     if(!existingmeal){
-        throw new AppError(404, "meal not found for this id")
+        throw new AppError(404, "Event not found for this id")
     }
+
+    const participant = await prisma.participant.findFirst({
+        where: {
+            userId,
+            eventId,
+            status: "APPROVED",
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (!participant) {
+        throw new AppError(
+            403,
+            "You cannot submit a review because you have not joined this event yet.",
+        );
+    }
+
     if (data.rating >= 6) {
       throw new AppError(400, "rating must be between 1 and 5")
     }
