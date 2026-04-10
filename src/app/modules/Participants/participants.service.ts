@@ -14,6 +14,16 @@ const createParticipantService = async (
   eventId: string,
   data: ICreateParticipantInput,
 ) => {
+  const existEvent=await prisma.event.findFirst({
+    where:{
+      id:eventId,
+      organizerId:userId
+    }
+  })
+  if(existEvent){
+    throw new AppError(400,'This is your own event. No further action is needed!')
+  }
+
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId },
   });
@@ -167,7 +177,6 @@ const getAllParticipantsService = async (userId:string,page:number,limit:number,
   const EventData=await prisma.event.findMany({where:{
     organizerId:user?.id
   }})
-
   const eventIds = EventData.map(event => event.id);
   
   if (!user) {
@@ -223,14 +232,13 @@ const getAllParticipantsService = async (userId:string,page:number,limit:number,
   if(!EventData){
     return null
   }
-
     const result = await prisma.participant.findMany({      
       skip,
       take: limit,
         orderBy: {
           "joinedAt":"desc"
         },
-        where: { ...where, userId: userId,eventId:{in:eventIds}},
+        where: { ...where,eventId:{in:eventIds}},
         include: {
           user: { select: { id: true, name: true, email: true, image: true } },
           event: { select: { id: true, title: true, date: true, venue: true } },
@@ -407,6 +415,16 @@ const deleteEventRequestJoinData = async (id: string) => {
 
 const createParticipantPayLater=async( userId: string,
   eventId: string)=>{
+
+    const existEvent=await prisma.event.findFirst({
+      where:{
+        id:eventId,
+        organizerId:userId
+      }
+    })
+    if(existEvent){
+      throw new AppError(400,'This is your own event. No further action is needed!')
+    }
 
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId },

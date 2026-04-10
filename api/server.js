@@ -2931,6 +2931,15 @@ var stripe = new Stripe(envVars.STRIPE.STRIPE_SECRET_KEY);
 init_enums();
 import status13 from "http-status";
 var createParticipantService = async (userId, eventId, data) => {
+  const existEvent = await prisma.event.findFirst({
+    where: {
+      id: eventId,
+      organizerId: userId
+    }
+  });
+  if (existEvent) {
+    throw new AppError_default(400, "This is your own event. No further action is needed!");
+  }
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId }
   });
@@ -3119,7 +3128,7 @@ var getAllParticipantsService = async (userId, page, limit, skip, sortBy, sortOr
       orderBy: {
         "joinedAt": "desc"
       },
-      where: { ...where, userId, eventId: { in: eventIds } },
+      where: { ...where, eventId: { in: eventIds } },
       include: {
         user: { select: { id: true, name: true, email: true, image: true } },
         event: { select: { id: true, title: true, date: true, venue: true } }
@@ -3263,6 +3272,15 @@ var deleteEventRequestJoinData = async (id) => {
   });
 };
 var createParticipantPayLater = async (userId, eventId) => {
+  const existEvent = await prisma.event.findFirst({
+    where: {
+      id: eventId,
+      organizerId: userId
+    }
+  });
+  if (existEvent) {
+    throw new AppError_default(400, "This is your own event. No further action is needed!");
+  }
   const existing = await prisma.participant.findFirst({
     where: { userId, eventId }
   });
