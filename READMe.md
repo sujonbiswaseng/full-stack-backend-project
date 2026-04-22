@@ -11,8 +11,6 @@
 - Frontend Live    : https://frontend-nextlevel-assignment-5.vercel.app
 - Backend Live     : https://nextlevel-backend-assignment-5.vercel.app
 
-- Demo Video       : https://drive.google.com/drive/folders/1alCRfioI3Xec_gc_LV402Vea1N0KgnA6?usp=sharing
-
 ### Key feature
 Authentication
 - User registration and login
