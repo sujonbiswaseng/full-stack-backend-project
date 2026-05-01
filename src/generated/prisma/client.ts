@@ -102,6 +102,11 @@ export type Participant = Prisma.ParticipantModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model DocumentEmbedding
+ * 
+ */
+export type DocumentEmbedding = Prisma.DocumentEmbeddingModel
+/**
  * Model Review
  * 
  */

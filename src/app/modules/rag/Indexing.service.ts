@@ -93,6 +93,7 @@ export class IndexingService {
         const blogsText = event.blogs
           .map(
             (blog) => `
+            
   Blog Title:
   ${blog.title}
   

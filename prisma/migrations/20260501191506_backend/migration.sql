@@ -1,5 +1,8 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "vector";
+
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER', 'MANAGER');
 
 -- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'BLOCKED', 'DELETED');
@@ -27,6 +30,12 @@ CREATE TYPE "InvitationStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED');
 
 -- CreateEnum
 CREATE TYPE "ReviewStatus" AS ENUM ('APPROVED', 'REJECTED');
+
+-- CreateEnum
+CREATE TYPE "BlogStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
+
+-- CreateEnum
+CREATE TYPE "BlogCategory" AS ENUM ('EVENT', 'NEWS', 'ARTICLE', 'REVIEW', 'GUIDE', 'TUTORIAL', 'HOW_TO', 'OPINION', 'COMMENTARY', 'FEATURE');
 
 -- CreateTable
 CREATE TABLE "user" (
@@ -94,14 +103,28 @@ CREATE TABLE "verification" (
 );
 
 -- CreateTable
+CREATE TABLE "Blog" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "images" TEXT[],
+    "authorId" TEXT NOT NULL,
+    "eventId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Blog_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Event" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "time" TEXT NOT NULL,
-    "venue" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
+    "location" TEXT NOT NULL,
+    "images" TEXT[],
     "visibility" "EventType" NOT NULL DEFAULT 'PUBLIC',
     "priceType" "PricingType" NOT NULL DEFAULT 'FREE',
     "status" "EventStatus" NOT NULL DEFAULT 'UPCOMING',
@@ -116,6 +139,19 @@ CREATE TABLE "Event" (
 );
 
 -- CreateTable
+CREATE TABLE "highlight" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "image" TEXT,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "highlight_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Invitation" (
     "id" TEXT NOT NULL,
     "eventId" TEXT NOT NULL,
@@ -125,6 +161,17 @@ CREATE TABLE "Invitation" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Invitation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "newsletter" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "newsletter_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -169,6 +216,24 @@ CREATE TABLE "Payment" (
 );
 
 -- CreateTable
+CREATE TABLE "document_embeddings" (
+    "id" TEXT NOT NULL,
+    "chunkKey" TEXT NOT NULL,
+    "sourceType" TEXT NOT NULL,
+    "sourceId" TEXT NOT NULL,
+    "sourceLabel" TEXT,
+    "content" TEXT NOT NULL,
+    "metadata" JSONB,
+    "embedding" vector(2048) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "document_embeddings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Review" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -180,6 +245,19 @@ CREATE TABLE "Review" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "service" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "icon" TEXT,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "service_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -198,6 +276,12 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "newsletter_email_key" ON "newsletter"("email");
+
+-- CreateIndex
+CREATE INDEX "newsletter_userId_idx" ON "newsletter"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Payment_stripeEventId_key" ON "Payment"("stripeEventId");
 
 -- CreateIndex
@@ -206,6 +290,18 @@ CREATE UNIQUE INDEX "Payment_transactionId_key" ON "Payment"("transactionId");
 -- CreateIndex
 CREATE UNIQUE INDEX "Payment_participantId_key" ON "Payment"("participantId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "document_embeddings_chunkKey_key" ON "document_embeddings"("chunkKey");
+
+-- CreateIndex
+CREATE INDEX "idx_document_embeddings_sourceType" ON "document_embeddings"("sourceType");
+
+-- CreateIndex
+CREATE INDEX "idx_document_embeddings_sourceId" ON "document_embeddings"("sourceId");
+
+-- CreateIndex
+CREATE INDEX "service_userId_idx" ON "service"("userId");
+
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -213,7 +309,16 @@ ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Blog" ADD CONSTRAINT "Blog_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Blog" ADD CONSTRAINT "Blog_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Event" ADD CONSTRAINT "Event_organizerId_fkey" FOREIGN KEY ("organizerId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "highlight" ADD CONSTRAINT "highlight_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -223,6 +328,9 @@ ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_inviterId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_inviteeId_fkey" FOREIGN KEY ("inviteeId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "newsletter" ADD CONSTRAINT "newsletter_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -253,3 +361,6 @@ ALTER TABLE "Review" ADD CONSTRAINT "Review_eventId_fkey" FOREIGN KEY ("eventId"
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "service" ADD CONSTRAINT "service_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -63,6 +63,7 @@ export const ModelName = {
   Notification: 'Notification',
   Participant: 'Participant',
   Payment: 'Payment',
+  DocumentEmbedding: 'DocumentEmbedding',
   Review: 'Review',
   Service: 'Service'
 } as const
@@ -259,6 +260,23 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const DocumentEmbeddingScalarFieldEnum = {
+  id: 'id',
+  chunkKey: 'chunkKey',
+  sourceType: 'sourceType',
+  sourceId: 'sourceId',
+  sourceLabel: 'sourceLabel',
+  content: 'content',
+  metadata: 'metadata',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentEmbeddingScalarFieldEnum = (typeof DocumentEmbeddingScalarFieldEnum)[keyof typeof DocumentEmbeddingScalarFieldEnum]
 
 
 export const ReviewScalarFieldEnum = {
