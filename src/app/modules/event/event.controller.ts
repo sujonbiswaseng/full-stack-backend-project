@@ -10,10 +10,13 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
         if (!req.user?.userId) {
           throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
         }
+        const files = req.files as Express.Multer.File[];
+
         const payload = {
-            ...req.body,
-            images:req.file?.path || req.body.images
+          ...req.body,
+          images: files?.length ? files.map((file) => file.path) : req.body.images,
         };
+
   const user = req.user;
   const result = await EventServices.createEvent(user, payload);
 

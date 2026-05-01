@@ -11,10 +11,11 @@ const router=Router()
 router.post(
   "/event",
   auth([Role.ADMIN, Role.USER, Role.MANAGER]), 
-  multerUpload.array("images", 10),
+  multerUpload.array("files"),
   validateRequest(CreateEventSchema),
   EventController.createEvent
 )
+
 router.get("/event/isfeatured", EventController.IsFeautured);
 router.get("/events", EventController.getAllEvents);
 router.get("/my-events",auth([Role.USER,Role.ADMIN]), EventController.getEventsByRoleController);

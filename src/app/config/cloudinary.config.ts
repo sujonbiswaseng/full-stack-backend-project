@@ -5,9 +5,9 @@ import status from "http-status";
 
 
 cloudinary.config({
-    cloud_name: envVars.CLOUDINARY.CLOUDINARY_CLOUD_NAME,
-    api_key: envVars.CLOUDINARY.CLOUDINARY_API_KEY,
-    api_secret: envVars.CLOUDINARY.CLOUDINARY_API_SECRET,
+    cloud_name: "dokqgr8fs",
+    api_key: "935915381385685",
+    api_secret: "R8e1RaC-ZiXpzNqbQOI7I-tzjz8",
     secure:true,
     timeout: 60000
 })
