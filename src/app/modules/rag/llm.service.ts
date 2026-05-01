@@ -7,7 +7,7 @@ export class LLMService {
   private model: string;
 
   constructor() {
-    this.apiKey = envVars.RAG.OPENROUTER_API_KEY || "";
+    this.apiKey = envVars.RAG.OPENROUTER_API_KEY;
     this.model =
       envVars.RAG.OPENROUTER_LLM_MODEL ;
 

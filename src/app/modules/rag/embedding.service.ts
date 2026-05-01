@@ -6,9 +6,9 @@ export class EmbeddingService {
   private embeddingModel: string;
 
   constructor() {
-    this.apikey = envVars.RAG.OPENROUTER_API_KEY || "";
+    this.apikey = envVars.RAG.OPENROUTER_API_KEY;
     this.embeddingModel =
-      envVars.RAG.OPENROUTER_EMBEDDING_MODEL || "";
+      envVars.RAG.OPENROUTER_EMBEDDING_MODEL ;
 
     if (!this.apikey) {
       throw new Error("OPENROUTER_API_KEY is not set in .env");

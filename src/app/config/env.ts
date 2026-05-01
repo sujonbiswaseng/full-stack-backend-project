@@ -33,6 +33,12 @@ interface EnvConfig {
     CLOUDINARY_API_KEY: string;
     CLOUDINARY_API_SECRET: string;
   };
+  RAG:{
+    OPENROUTER_API_KEY:string;
+    OPENROUTER_EMBEDDING_MODEL:string;
+    OPENROUTER_LLM_MODEL:string;
+},
+REDIS_URL:string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -54,6 +60,10 @@ const loadEnvVariables = (): EnvConfig => {
     "CLOUDINARY_API_SECRET",
     "GITHUB_CLIENT_ID",
     "GITHUB_CLIENT_SECRET",
+    "OPENROUTER_API_KEY",
+    "OPENROUTER_EMBEDDING_MODEL",
+    "OPENROUTER_LLM_MODEL",
+    "REDIS_URL"
   ];
   requireEnvVariable.forEach((variable) => {
     if (!process.env[variable]) {
@@ -93,6 +103,12 @@ const loadEnvVariables = (): EnvConfig => {
     },
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID as string,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET as string,
+    RAG:{
+      OPENROUTER_API_KEY:process.env.OPENROUTER_API_KEY as string,
+      OPENROUTER_EMBEDDING_MODEL:process.env.OPENROUTER_EMBEDDING_MODEL as string,
+      OPENROUTER_LLM_MODEL:process.env.OPENROUTER_LLM_MODEL as string,
+  },
+      REDIS_URL: process.env.REDIS_URL as string,
   };
 };
 
