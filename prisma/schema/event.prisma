@@ -4,8 +4,8 @@ model Event {
   description  String
   date         DateTime
   time         String
-  venue        String
-  image       String
+  location        String
+  images       String[]
   visibility         EventType @default(PUBLIC)
   priceType     PricingType @default(FREE)
   status EventStatus @default(UPCOMING)
@@ -20,6 +20,7 @@ model Event {
   invitations  Invitation[]
   reviews      Review[]
   payments     Payment[]
+  blogs        Blog[]
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

@@ -21,7 +21,8 @@ model User {
   participants Participant[]
   reviews      Review[]
   payments     Payment[]
-    notifications Notification[]
+  blogs        Blog[]
+  notifications Notification[]
   invitationsSent     Invitation[] @relation("Inviter")
   invitationsReceived Invitation[] @relation("Invitee")
 

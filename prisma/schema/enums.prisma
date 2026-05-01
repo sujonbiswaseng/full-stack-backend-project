@@ -95,3 +95,22 @@ enum ReviewStatus {
   APPROVED
   REJECTED
 }
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+} 
+
+enum BlogCategory {
+  EVENT
+  NEWS
+  ARTICLE
+  REVIEW
+  GUIDE
+  TUTORIAL
+  HOW_TO
+  OPINION
+  COMMENTARY
+  FEATURE
+}
