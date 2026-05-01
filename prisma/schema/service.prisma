@@ -1,0 +1,13 @@
+model Service {
+  id          String   @id @default(cuid())
+
+  title       String
+  description String
+  icon        String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("service")
+  @@index([userId])
+}

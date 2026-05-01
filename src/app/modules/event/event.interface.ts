@@ -4,12 +4,12 @@ export interface ICreateEvent {
   description: string;
   date: string;
   time: string;
-  venue: string;
+  location: string;
   visibility: EventType;
   categories:EventCategory;
   priceType?: "FREE" | "PAID";
   status:EventStatus;
-  image:string;
+  images:string[];
   fee?: number;
 }
 
@@ -19,8 +19,8 @@ export interface IUpdateEventInput {
   description?: string;
   date?: string;
   time?: string;
-  venue?: string;
-  image?: string;
+  location?: string;
+  images?: string[];
   categories?: EventCategory;
   priceType?: "FREE" | "PAID";
   status?: EventStatus;

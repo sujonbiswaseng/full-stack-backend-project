@@ -23,14 +23,14 @@ model User {
   payments     Payment[]
   blogs        Blog[]
   notifications Notification[]
+  newsletter Newsletter[]
   invitationsSent     Invitation[] @relation("Inviter")
   invitationsReceived Invitation[] @relation("Invitee")
-
+  services       Service[]
   sessions      Session[]
   accounts      Account[]
+  highlights    Highlight[]
   @@map("user")
-
-
 }
 
 model Session {

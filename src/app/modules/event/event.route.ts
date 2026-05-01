@@ -10,8 +10,8 @@ import { multerUpload } from "../../config/multer.config"
 const router=Router()
 router.post(
   "/event",
-  auth([Role.ADMIN, Role.USER]), 
-  multerUpload.single("file"),
+  auth([Role.ADMIN, Role.USER, Role.MANAGER]), 
+  multerUpload.array("images", 10),
   validateRequest(CreateEventSchema),
   EventController.createEvent
 )

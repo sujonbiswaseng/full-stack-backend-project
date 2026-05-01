@@ -19,12 +19,12 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
     title,
     visibility,
     priceType,
-    venue,
+    location,
     fee,
     categories,
-    image,
+    images,
   } = payload;
-  if(!image){
+  if(!images){
     throw new AppError(status.BAD_REQUEST, "Image is required to create an event.");
   }
   const event = await prisma.event.create({
@@ -35,8 +35,8 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
       time,
       priceType,
       categories,
-      venue,
-      image,
+      location,
+      images:images as unknown as string[],
       visibility,
       fee,
       organizerId: user.userId,
@@ -461,7 +461,8 @@ const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:str
       date: payload.date,
       fee: payload.fee,
       visibility: payload.visibility as EventType,
-      venue: payload.venue,
+      location: payload.location,
+      images: payload.images as unknown as string[],
       status: payload.status,
       priceType: payload.priceType,
       categories: payload.categories,

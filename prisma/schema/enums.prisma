@@ -1,6 +1,7 @@
 enum Role {
   ADMIN
   USER
+  MANAGER
 }
 enum UserStatus {
   ACTIVE

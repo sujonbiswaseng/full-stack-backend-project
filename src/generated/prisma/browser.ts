@@ -38,15 +38,30 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
+ * Model Blog
+ * 
+ */
+export type Blog = Prisma.BlogModel
+/**
  * Model Event
  * 
  */
 export type Event = Prisma.EventModel
 /**
+ * Model Highlight
+ * 
+ */
+export type Highlight = Prisma.HighlightModel
+/**
  * Model Invitation
  * 
  */
 export type Invitation = Prisma.InvitationModel
+/**
+ * Model Newsletter
+ * 
+ */
+export type Newsletter = Prisma.NewsletterModel
 /**
  * Model Notification
  * 
@@ -67,3 +82,8 @@ export type Payment = Prisma.PaymentModel
  * 
  */
 export type Review = Prisma.ReviewModel
+/**
+ * Model Service
+ * 
+ */
+export type Service = Prisma.ServiceModel

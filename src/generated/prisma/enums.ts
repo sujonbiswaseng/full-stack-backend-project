@@ -11,7 +11,8 @@
 
 export const Role = {
   ADMIN: 'ADMIN',
-  USER: 'USER'
+  USER: 'USER',
+  MANAGER: 'MANAGER'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -122,3 +123,28 @@ export const ReviewStatus = {
 } as const
 
 export type ReviewStatus = (typeof ReviewStatus)[keyof typeof ReviewStatus]
+
+
+export const BlogStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type BlogStatus = (typeof BlogStatus)[keyof typeof BlogStatus]
+
+
+export const BlogCategory = {
+  EVENT: 'EVENT',
+  NEWS: 'NEWS',
+  ARTICLE: 'ARTICLE',
+  REVIEW: 'REVIEW',
+  GUIDE: 'GUIDE',
+  TUTORIAL: 'TUTORIAL',
+  HOW_TO: 'HOW_TO',
+  OPINION: 'OPINION',
+  COMMENTARY: 'COMMENTARY',
+  FEATURE: 'FEATURE'
+} as const
+
+export type BlogCategory = (typeof BlogCategory)[keyof typeof BlogCategory]

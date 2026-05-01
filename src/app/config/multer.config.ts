@@ -25,7 +25,7 @@ const storage = new CloudinaryStorage({
 
     const folder = extension === "pdf" ? "pdfs" : "images";
     return {
-      folder: `planora/${folder}`,
+      folder: `lumen/${folder}`,
       public_id:uniqueName,
       resource_type: "auto",
       format: extension === "pdf" ? "pdf" : "webp", // ইমেজ হলে অটোমেটিক webp হবে (ফাইল সাইজ কমায়)

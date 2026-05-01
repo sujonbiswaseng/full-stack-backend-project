@@ -12,7 +12,7 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
         }
         const payload = {
             ...req.body,
-            image:req.file?.path || req.body.image
+            images:req.file?.path || req.body.images
         };
   const user = req.user;
   const result = await EventServices.createEvent(user, payload);
