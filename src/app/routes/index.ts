@@ -8,8 +8,11 @@ import { StatsRoutes } from "../modules/stats/stats.route";
 import { UsersRoutes } from "../modules/user/user.route";
 import { NotificationRoutes } from "../modules/notification/notification.route";
 import { PaymentRoutes } from "../modules/payment/payment.route";
+import { BlogRouters } from "../modules/blog/blog.route";
 
 const router = Router()
+router.use("/v1", BlogRouters);
+
 router.use("/v1/auth", AuthRouters);
 
 router.use("/v1", UsersRoutes);
