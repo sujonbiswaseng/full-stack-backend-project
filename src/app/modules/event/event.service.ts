@@ -483,7 +483,11 @@ const DeleteEvent = async (user: IRequestUser, eventId: string) => {
     throw new AppError(404, "Event not found");
   }
   //  User cannot delete others' events
-  if (user.role !== "ADMIN" && event.organizerId !== user.userId) {
+  if (
+    user.role !== "ADMIN" &&
+    user.role !== "MANAGER" &&
+    event.organizerId !== user.userId
+  ) {
     throw new AppError(400, "the event is not own event");
   }
 

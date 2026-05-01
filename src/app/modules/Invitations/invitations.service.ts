@@ -116,7 +116,7 @@ const getInvitationsService = async (
   }
 
   // ADMIN: Can view/manage every invitation.
-  if (user.role === 'ADMIN') {
+  if (user.role === 'ADMIN' || user.role ==="MANAGER") {
     const allInvitations = await prisma.invitation.findMany({
       where: andConditions.length > 0 ? { AND: andConditions } : {},
       include: {
@@ -198,7 +198,7 @@ const getInvitationsService = async (
   const result= await prisma.invitation.findUnique({
     where: { id },
     include: {
-      event: { select: { id: true, title: true, date: true, venue: true }},
+      event: { select: { id: true, title: true, date: true, location: true }},
       inviter: { select: { id: true, name: true, email: true ,image:true}},
       invitee: { select: { id: true, name: true, email: true ,image:true}},
     },
@@ -216,8 +216,8 @@ const updateInvitationService = async (
 ) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
   const userexist=await prisma.user.findUnique({where:{id:userId}})
-  if(invitation?.inviterId !==userId && userexist?.role!=="ADMIN" ){
-    throw new AppError(400,"you are not valid user for invitation, can update invitation just owner and admin")
+  if(invitation?.inviterId !==userId && (userexist?.role!=="ADMIN" && userexist?.role!=="MANAGER") ){
+    throw new AppError(400,"you are not valid user for invitation, can update invitation just owner and admin and manager")
   }
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);
  const updateInv= await prisma.invitation.update({
@@ -245,7 +245,7 @@ const updateInvitationService = async (
 const deleteInvitationService = async (id: string,userId:string) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
   const userexist=await prisma.user.findUnique({where:{id:userId}})
-  if(invitation?.inviterId !==userId && userexist?.role!=="ADMIN" ){
+  if(invitation?.inviterId !==userId && (userexist?.role!=="ADMIN" && userexist?.role!=="MANAGER") ){
     throw new AppError(400,"you are not valid user for invitation, can delete invitation just owner and admin")
   }
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);

@@ -12,7 +12,7 @@ const router = Router();
 // Routes for blog CRUD
 router.post(
     "/blog",
-    auth([Role.ADMIN, Role.USER, Role.MANAGER]), 
+    auth([Role.ADMIN, Role.MANAGER]), 
     multerUpload.array("files"),
     validateRequest(createBlogSchema),
     BlogController.createBlog
@@ -20,26 +20,24 @@ router.post(
 
 router.get(
   "/blogs",
-  auth([Role.ADMIN, Role.USER]),
   BlogController.getAllBlogs
 );
 
 router.get(
   "/blog/:id",
-  auth([Role.ADMIN, Role.USER]),
   BlogController.getSingleBlog
 );
 
 router.put(
   "/blog/:id",
-  auth([Role.ADMIN, Role.USER]),
+  auth([Role.ADMIN, Role.MANAGER]),
   validateRequest(updateBlogSchema),
   BlogController.updateBlog
 );
 
 router.delete(
   "/blog/:id",
-  auth([Role.ADMIN, Role.USER]),
+  auth([Role.ADMIN]),
   BlogController.deleteBlog
 );
 

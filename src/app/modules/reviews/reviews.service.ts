@@ -96,7 +96,7 @@ const deleteReview = async (reviewid: string,userid:string) => {
     if (!review) {
         throw new AppError(404, "review not found");
     }
-    if (userid !== review.userId && existUser?.role !== "ADMIN") {
+    if (userid !== review.userId && (existUser?.role !== "ADMIN" && existUser?.role!=="MANAGER")) {
         throw new AppError(403, "You are not authorized to delete this review");
     }
 
@@ -185,7 +185,7 @@ const getReviewsByRole = async (
             id: true,
             title: true,
             date: true,
-            venue: true,
+            location: true,
             ...(role === "ADMIN" && { organizerId: true }),
           },
         },
@@ -216,7 +216,6 @@ const getReviewsByRole = async (
 
 const moderateReview = async (id: string, data: { status: ReviewStatus }) => {
     const {status}=data
-    console.log(status,'s')
 
     const reviewData = await prisma.review.findUnique({
         where: {

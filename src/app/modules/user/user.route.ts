@@ -17,14 +17,14 @@ router.get(
 
 router.put(
   "/profile/update",
-  auth([Role.USER, Role.ADMIN]),
+  auth([Role.USER, Role.ADMIN,Role.MANAGER]),
   validateRequest(UpdateuserProfileData),
   UserController.UpdateUserProfile
 );
 
-router.put("/admin/profile/:id",auth([Role.ADMIN]),validateRequest(UpdateUserCommonData),UserController.UpdateUser)
+router.put("/admin/profile/:id",auth([Role.ADMIN,Role.MANAGER]),validateRequest(UpdateUserCommonData),UserController.UpdateUser)
 
-router.delete("/profile/own/delete",auth([Role.USER,Role.ADMIN]),UserController.OwnProfileDelete)
+router.delete("/profile/own/delete",auth([Role.USER,Role.ADMIN,Role.MANAGER]),UserController.OwnProfileDelete)
 
 router.delete("/admin/profile/:id",auth([Role.ADMIN]),UserController.DeleteUserProfile)
 export const UsersRoutes = router;
