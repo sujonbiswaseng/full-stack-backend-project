@@ -58,7 +58,7 @@ const createParticipantService = async (
       title: true,
       fee: true,
       date: true,
-      venue: true,
+      location: true,
       visibility:true,
       priceType:true
     },
@@ -202,7 +202,7 @@ const getAllParticipantsService = async (userId:string,page:number,limit:number,
 
   const where = andConditions.length > 0 ? { AND: andConditions } : {};
 
-  if(user.role === "ADMIN"){
+  if(user.role === "ADMIN" || user.role==="MANAGER"){
 
     const result = await prisma.participant.findMany({
       where,
@@ -213,7 +213,7 @@ const getAllParticipantsService = async (userId:string,page:number,limit:number,
       },
       include: {
         user: { select: { id: true, name: true, email: true, image: true } },
-        event: { select: { id: true, title: true, date: true, venue: true } },
+        event: { select: { id: true, title: true, date: true, location: true } },
       },
     })
     const total = await prisma.participant.count();
@@ -241,7 +241,7 @@ const getAllParticipantsService = async (userId:string,page:number,limit:number,
         where: { ...where,eventId:{in:eventIds}},
         include: {
           user: { select: { id: true, name: true, email: true, image: true } },
-          event: { select: { id: true, title: true, date: true, venue: true } },
+          event: { select: { id: true, title: true, date: true, location: true } },
         },
     })
     const total = await prisma.participant.count({
@@ -269,7 +269,7 @@ const getOwnPaymentParticipantService = async (eventId:string,userId: string) =>
     },
     include: {
       payment: {select:{id:true,amount:true,status:true,transactionId:true,user:true,eventId:true}},
-      event: { select: { id: true, title: true, date: true, venue: true ,priceType:true} },
+      event: { select: { id: true, title: true, date: true, location: true ,priceType:true} },
     },
     orderBy: {
       joinedAt: "desc",
@@ -310,8 +310,8 @@ const ParticipantOwnRequestEventService = async (userId: string,page:number,limi
           id: true,
           title: true,
           date: true,
-          venue: true,
-          image: true,
+          location: true,
+          images: true,
           status: true,
           fee:true
         },
@@ -335,7 +335,7 @@ const getSingleParticipantService = async (id: string) => {
       user: {
         select: { id: true, name: true, role: true, email: true, image: true },
       },
-      event: { select: { id: true, title: true, date: true, venue: true } },
+      event: { select: { id: true, title: true, date: true, location: true } },
     },
   });
 };
@@ -368,7 +368,7 @@ const UpdateParticipantService = async (
     updateData.status = data.status;
   }
 
-  if (user.role === "ADMIN") {
+  if (user.role === "ADMIN" || user.role==="MANAGER") {
     updateData.status = data.status;
     updateData.paymentStatus = data.paymentStatus;
   }
@@ -457,7 +457,7 @@ const createParticipantPayLater=async( userId: string,
       include: {
         user: { select: { id: true, name: true, email: true } },
         event: {
-          select: { id: true, title: true, date: true, venue: true, fee: true },
+          select: { id: true, title: true, date: true, location: true, fee: true },
         },
       },
     });
