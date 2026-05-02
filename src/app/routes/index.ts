@@ -11,12 +11,14 @@ import { PaymentRoutes } from "../modules/payment/payment.route";
 import { BlogRouters } from "../modules/blog/blog.route";
 import { HighlightRouters } from "../modules/highlight/highlight.route";
 import { Ragrouter } from "../modules/rag/rag.route";
+import { NewsletterRouters } from "../modules/newsletter/newsletter.route";
 
 const router = Router()
 router.use('/v1/rag',Ragrouter)
 router.use("/v1", BlogRouters);
 router.use("/v1", HighlightRouters);
 
+router.use("/v1", NewsletterRouters);
 
 router.use("/v1/auth", AuthRouters);
 
