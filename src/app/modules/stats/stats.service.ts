@@ -125,6 +125,49 @@ export const getAdminDashboardStats = async () => {
 };
 
 
+export const getPublicStatsData = async () => {
+  try {
+    // Total Events
+    const totalEvents = await prisma.event.count();
+
+    // Total Users
+    const totalUsers = await prisma.user.count();
+
+    // Total Managers (role: MANAGER)
+    const totalManagers = await prisma.user.count({
+      where: { role: "MANAGER" }
+    });
+
+    // Total Admins (role: ADMIN)
+    const totalAdmins = await prisma.user.count({
+      where: { role: "ADMIN" }
+    });
+
+    // Total Participants (number of unique participants)
+    const totalParticipants = await prisma.participant.count();
+
+    // Total Reviews
+    const totalReviews = await prisma.review?.count?.() ?? 0;
+
+    // Total Newsletters
+    const totalNewsletters = await prisma.newsletter?.count?.() ?? 0;
+
+    return {
+      totalEvents,
+      totalUsers,
+      totalManagers,
+      totalAdmins,
+      totalParticipants,
+      totalReviews,
+      totalNewsletters
+    };
+  } catch (error) {
+    console.error("Failed to fetch public stats:", error);
+    throw new Error("Could not fetch public stats");
+  }
+};
+
+
 interface IBarChartData {
   month: string;
   revenue: number;
@@ -224,4 +267,4 @@ export const getUserDashboardStats = async (userId: string) => {
   }
 };
 
-export const statsService={ getDashboardStatsData}
+export const statsService={ getDashboardStatsData,getPublicStatsData}

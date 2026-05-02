@@ -8,11 +8,7 @@ export const createHighlightSchema = z.object({
 
 export const updateHighlightSchema = z
   .object({
-    title: z.string().min(1, { message: "Title cannot be empty." }).optional(),
-    description: z.string().min(1, { message: "Description cannot be empty." }).optional(),
-    image: z.string().url({ message: "Image must be a valid URL." }).optional().nullable(),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    image: z.any().optional()
   })
-  .refine(
-    data => Object.keys(data).length > 0,
-    { message: "At least one field must be provided to update the highlight." }
-  );
