@@ -41,6 +41,7 @@ const queryRag = catchAsync(async (req: Request, res: Response) => {
   }
   // generate cache key from query params
   const cacheKey=`rag:query:${query}:${limit??5}:${sourceType||"all"}`
+  console.log(cacheKey,'es')
   try {
     const cacheResult = await redisService.get(cacheKey)
     if(cacheResult){

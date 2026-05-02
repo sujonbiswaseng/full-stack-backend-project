@@ -47,4 +47,3 @@ export const multerUpload = multer({
     files: 10,
   },
 });
-console.log(multerUpload,'multeruplaod')

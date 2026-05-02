@@ -14,7 +14,7 @@ export const UpdateuserProfileData = z
 
     export const UpdateUserCommonData = z
     .object({
-      role: z.enum(["ADMIN", "USER"]).optional(),
+      role: z.enum(["ADMIN", "USER","MANAGER"]).optional(),
       status: z.enum(["ACTIVE", "INACTIVE", "BLOCKED", "DELETED"]).optional(),
       email: z.string().optional()
     })

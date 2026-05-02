@@ -7,14 +7,19 @@ import { ICreateBlogInput, IUpdateBlogInput } from "./blog.interface";
 
 const createBlog = async (user: IRequestUser, payload: ICreateBlogInput) => {
   const { title, content, images,eventId } = payload;
-  if (eventId) {
+  if (!images || !Array.isArray(images) || images.length === 0) {
+    throw new AppError(status.BAD_REQUEST, "At least one image is required to create a blog.");
+  }
+    if (!eventId) {
+      throw new AppError(status.BAD_REQUEST, "Event ID is required to create a blog.");
+    }
     const event = await prisma.event.findUnique({
       where: { id: eventId },
     });
     if (!event) {
       throw new AppError(status.BAD_REQUEST, "The provided eventId does not correspond to any existing event.");
     }
-  }
+  
   if (!title || !content || !images) {
     throw new AppError(status.BAD_REQUEST, "Title, content, and image are required to create a blog.");
   }

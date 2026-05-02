@@ -175,7 +175,7 @@ export type BlogGroupByOutputType = {
   _max: BlogMaxAggregateOutputType | null
 }
 
-export type GetBlogGroupByPayload<T extends BlogGroupByArgs> = Prisma.PrismaPromise<
+type GetBlogGroupByPayload<T extends BlogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BlogGroupByOutputType, T['by']> &
       {

@@ -158,7 +158,7 @@ export type NewsletterGroupByOutputType = {
   _max: NewsletterMaxAggregateOutputType | null
 }
 
-export type GetNewsletterGroupByPayload<T extends NewsletterGroupByArgs> = Prisma.PrismaPromise<
+type GetNewsletterGroupByPayload<T extends NewsletterGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<NewsletterGroupByOutputType, T['by']> &
       {

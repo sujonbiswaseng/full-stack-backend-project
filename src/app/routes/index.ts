@@ -13,7 +13,7 @@ import { HighlightRouters } from "../modules/highlight/highlight.route";
 import { Ragrouter } from "../modules/rag/rag.route";
 
 const router = Router()
-router.use('/rag',Ragrouter)
+router.use('/v1/rag',Ragrouter)
 router.use("/v1", BlogRouters);
 router.use("/v1", HighlightRouters);
 
