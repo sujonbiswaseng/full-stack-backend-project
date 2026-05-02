@@ -167,7 +167,7 @@ export type BlogGroupByOutputType = {
   content: string
   images: string[]
   authorId: string
-  eventId: string | null
+  eventId: string
   createdAt: Date
   updatedAt: Date
   _count: BlogCountAggregateOutputType | null
@@ -199,7 +199,7 @@ export type BlogWhereInput = {
   content?: Prisma.StringFilter<"Blog"> | string
   images?: Prisma.StringNullableListFilter<"Blog">
   authorId?: Prisma.StringFilter<"Blog"> | string
-  eventId?: Prisma.StringNullableFilter<"Blog"> | string | null
+  eventId?: Prisma.StringFilter<"Blog"> | string
   createdAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -212,7 +212,7 @@ export type BlogOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   images?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  eventId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
@@ -228,7 +228,7 @@ export type BlogWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"Blog"> | string
   images?: Prisma.StringNullableListFilter<"Blog">
   authorId?: Prisma.StringFilter<"Blog"> | string
-  eventId?: Prisma.StringNullableFilter<"Blog"> | string | null
+  eventId?: Prisma.StringFilter<"Blog"> | string
   createdAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -241,7 +241,7 @@ export type BlogOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   images?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  eventId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.BlogCountOrderByAggregateInput
@@ -258,7 +258,7 @@ export type BlogScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"Blog"> | string
   images?: Prisma.StringNullableListFilter<"Blog">
   authorId?: Prisma.StringWithAggregatesFilter<"Blog"> | string
-  eventId?: Prisma.StringNullableWithAggregatesFilter<"Blog"> | string | null
+  eventId?: Prisma.StringWithAggregatesFilter<"Blog"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Blog"> | Date | string
 }
@@ -280,7 +280,7 @@ export type BlogUncheckedCreateInput = {
   content: string
   images?: Prisma.BlogCreateimagesInput | string[]
   authorId: string
-  eventId?: string | null
+  eventId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -302,7 +302,7 @@ export type BlogUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.BlogUpdateimagesInput | string[]
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -313,7 +313,7 @@ export type BlogCreateManyInput = {
   content: string
   images?: Prisma.BlogCreateimagesInput | string[]
   authorId: string
-  eventId?: string | null
+  eventId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -333,7 +333,7 @@ export type BlogUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.BlogUpdateimagesInput | string[]
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -495,7 +495,7 @@ export type BlogUncheckedCreateWithoutAuthorInput = {
   title: string
   content: string
   images?: Prisma.BlogCreateimagesInput | string[]
-  eventId?: string | null
+  eventId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -535,7 +535,7 @@ export type BlogScalarWhereInput = {
   content?: Prisma.StringFilter<"Blog"> | string
   images?: Prisma.StringNullableListFilter<"Blog">
   authorId?: Prisma.StringFilter<"Blog"> | string
-  eventId?: Prisma.StringNullableFilter<"Blog"> | string | null
+  eventId?: Prisma.StringFilter<"Blog"> | string
   createdAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
 }
@@ -591,7 +591,7 @@ export type BlogCreateManyAuthorInput = {
   title: string
   content: string
   images?: Prisma.BlogCreateimagesInput | string[]
-  eventId?: string | null
+  eventId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -611,7 +611,7 @@ export type BlogUncheckedUpdateWithoutAuthorInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.BlogUpdateimagesInput | string[]
-  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -621,7 +621,7 @@ export type BlogUncheckedUpdateManyWithoutAuthorInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.BlogUpdateimagesInput | string[]
-  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -744,7 +744,7 @@ export type $BlogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     content: string
     images: string[]
     authorId: string
-    eventId: string | null
+    eventId: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["blog"]>

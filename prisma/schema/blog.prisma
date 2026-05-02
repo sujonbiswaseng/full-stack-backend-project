@@ -6,7 +6,7 @@ model Blog {
   images       String[]
   authorId    String
   author      User      @relation(fields: [authorId], references: [id] ,onDelete: Cascade, onUpdate: Cascade)
-  eventId    String? 
+  eventId    String 
   event      Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)  
 
   createdAt   DateTime  @default(now())

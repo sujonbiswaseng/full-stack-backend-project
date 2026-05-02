@@ -32,7 +32,8 @@ const createBlog = catchAsync(async (req: Request, res: Response) => {
 // Get all blog posts (with pagination and sorting)
 const getAllBlogs = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
-  const result = await BlogServices.getAllBlogs({ page, limit, skip, sortBy, sortOrder });
+  const {search}=req.query;
+  const result = await BlogServices.getAllBlogs(req.query,page, limit, skip, sortBy, sortOrder,search as any);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,

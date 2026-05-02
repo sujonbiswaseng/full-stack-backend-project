@@ -3,6 +3,9 @@ import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
 import { IRequestUser } from "../../interface/requestUser.interface";
 import { ICreateBlogInput, IUpdateBlogInput } from "./blog.interface";
+import { truncateSync } from "fs";
+import { BlogWhereInput } from "../../../generated/prisma/models";
+import { parseDateForPrisma } from "../../utils/parseDate";
 
 
 const createBlog = async (user: IRequestUser, payload: ICreateBlogInput) => {
@@ -29,6 +32,7 @@ const createBlog = async (user: IRequestUser, payload: ICreateBlogInput) => {
       content,
       images,
       authorId: user.userId,
+      eventId:event.id
     },
   });
   return blog;
@@ -37,45 +41,65 @@ const createBlog = async (user: IRequestUser, payload: ICreateBlogInput) => {
 const getAllBlogs = async (
   query?: Record<string, any>,
   page?: number,
-  limit?: number,
+  limit?: number | undefined,
   skip?: number,
-  sortBy: string = "createdAt",
-  sortOrder: "asc" | "desc" = "desc",
-  search?: string,
+  sortBy?: string | undefined,
+  sortOrder?: string | undefined,
+  search?:any
 ) => {
-  const where: any = {};
-  if (query?.title) {
-    where.title = { contains: query.title, mode: "insensitive" };
+
+  const andConditions: BlogWhereInput[]  = [];
+
+  if (query) {
+    const orConditions: any[] = [];
+    if (query.title) {
+      orConditions.push({
+        title: {
+          contains: query.title,
+          mode: "insensitive",
+        },
+      });
+    }
+
+    if (query.createdAt) {
+      const dateRange = parseDateForPrisma(query.createdAt);
+      andConditions.push({ createdAt: dateRange.gte });
+    }
+    if (search) {
+      orConditions.push(
+        {
+          title: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          content: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        }
+      );
+    }
   }
-  if (query?.content) {
-    where.content = { contains: query.content, mode: "insensitive" };
-  }
-  if (query?.tags) {
-    where.tags = { hasSome: Array.isArray(query.tags) ? query.tags : [query.tags] };
-  }
-  if (search) {
-    where.OR = [
-      { title: { contains: search, mode: "insensitive" } },
-      { content: { contains: search, mode: "insensitive" } },
-      { tags: { has: search } },
-    ];
-  }
+
   const blogs = await prisma.blog.findMany({
-    where,
+    where:{AND:andConditions},
     skip: skip || ((page && limit) ? (page - 1) * limit : undefined),
     take: limit,
-    orderBy: { [sortBy]: sortOrder },
+    orderBy: { [sortBy!]: sortOrder },
     include: {
       author: { select: { id: true, name: true, email: true, image: true } },
+      event:true
     },
   });
-  const total = await prisma.blog.count({ where });
+  const total = await prisma.blog.count({ where :{AND:andConditions}});
   return {
     data: blogs,
     pagination: {
       total,
       page: page || 1,
-      limit: limit || blogs.length,
+      limit: 9,
       totalpage: limit ? Math.ceil(total / limit) : 1,
     },
   };
@@ -86,6 +110,8 @@ const getSingleBlog = async (blogId: string) => {
     where: { id: blogId },
     include: {
       author: { select: { id: true, name: true, email: true, image: true } },
+      event:true,
+
     },
   });
   if (!blog) {
@@ -106,7 +132,11 @@ const updateBlog = async (blogId: string, payload: IUpdateBlogInput, user: IRequ
   }
   const updatedBlog = await prisma.blog.update({
     where: { id: blogId },
-    data: payload,
+    data:{
+      content:payload.content,
+      images:payload.images,
+      title:payload.title
+    },
   });
   return updatedBlog;
 };
