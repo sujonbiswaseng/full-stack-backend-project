@@ -32627,7 +32627,7 @@ function errorHandler(err, req, res, next) {
 var globalErrorHandeller_default = errorHandler;
 
 // src/app/routes/index.ts
-import { Router as Router9 } from "express";
+import { Router as Router10 } from "express";
 
 // src/app/modules/auth/auth.route.ts
 import { Router } from "express";
@@ -33554,11 +33554,11 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
     });
   }
   const result = {};
-  for (const status26 of statuses) {
+  for (const status28 of statuses) {
     const events = await prisma.event.findMany({
       take: limit,
       skip,
-      where: { status: status26, AND: andConditions, is_featured: is_featureddata },
+      where: { status: status28, AND: andConditions, is_featured: is_featureddata },
       include: {
         reviews: {
           where: { rating: { gt: 0 } }
@@ -33577,7 +33577,7 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
         [sortBy]: sortOrder
       }
     });
-    result[status26] = events.map((event) => {
+    result[status28] = events.map((event) => {
       const totalReviews = event.reviews.length;
       const avgRating = totalReviews > 0 ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews : 0;
       return { ...event, avgRating, totalReviews };
@@ -33631,9 +33631,9 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
     andConditions.push({ organizerId: userId });
   }
   const result = {};
-  for (const status26 of statuses) {
+  for (const status28 of statuses) {
     const events = await prisma.event.findMany({
-      where: { status: status26, AND: andConditions },
+      where: { status: status28, AND: andConditions },
       take: limit,
       skip,
       include: {
@@ -33642,7 +33642,7 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
       },
       orderBy: sortBy ? { [sortBy]: sortOrder } : { date: "desc" }
     });
-    result[status26] = events.map((event) => {
+    result[status28] = events.map((event) => {
       const totalReviews = event.reviews.length;
       const avgRating = totalReviews > 0 ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews : 0;
       return { ...event, avgRating, totalReviews };
@@ -33854,7 +33854,7 @@ var EventServices = {
 // src/app/helpers/paginationHelping.ts
 var paginationSortingHelper = (options) => {
   const page = Number(options.page) || 1;
-  const limit = Number(options.limit) || 12;
+  const limit = Number(options.limit) || 9;
   const skip = (page - 1) * limit;
   const sortBy = options.sortBy || "createdAt";
   const sortOrder = options.sortOrder || "desc";
@@ -35169,7 +35169,7 @@ var getReviewsByRole = async (role, userId, page = 1, limit = 10, skip = 0, data
   };
 };
 var moderateReview = async (id, data) => {
-  const { status: status26 } = data;
+  const { status: status28 } = data;
   const reviewData = await prisma.review.findUnique({
     where: {
       id
@@ -35190,7 +35190,7 @@ var moderateReview = async (id, data) => {
       id
     },
     data: {
-      status: status26
+      status: status28
     }
   });
   return result;
@@ -35466,6 +35466,33 @@ var getAdminDashboardStats = async () => {
     throw new Error("Could not fetch dashboard stats");
   }
 };
+var getPublicStatsData = async () => {
+  try {
+    const totalEvents = await prisma.event.count();
+    const totalUsers = await prisma.user.count();
+    const totalManagers = await prisma.user.count({
+      where: { role: "MANAGER" }
+    });
+    const totalAdmins = await prisma.user.count({
+      where: { role: "ADMIN" }
+    });
+    const totalParticipants = await prisma.participant.count();
+    const totalReviews = await prisma.review?.count?.() ?? 0;
+    const totalNewsletters = await prisma.newsletter?.count?.() ?? 0;
+    return {
+      totalEvents,
+      totalUsers,
+      totalManagers,
+      totalAdmins,
+      totalParticipants,
+      totalReviews,
+      totalNewsletters
+    };
+  } catch (error) {
+    console.error("Failed to fetch public stats:", error);
+    throw new Error("Could not fetch public stats");
+  }
+};
 var getUserDashboardStats = async (userId) => {
   try {
     const [participatedEventsCount, invitationsCount, paymentsCount] = await prisma.$transaction([
@@ -35544,7 +35571,7 @@ var getUserDashboardStats = async (userId) => {
     throw new Error("Could not fetch user dashboard stats");
   }
 };
-var statsService = { getDashboardStatsData };
+var statsService = { getDashboardStatsData, getPublicStatsData };
 
 // src/app/modules/stats/stats.controller.ts
 var getDashboardStatsData2 = catchAsync(async (req, res) => {
@@ -35557,8 +35584,19 @@ var getDashboardStatsData2 = catchAsync(async (req, res) => {
     data: result
   });
 });
+var getPublicStatsData2 = catchAsync(async (req, res) => {
+  const user = req.user;
+  const result = await statsService.getPublicStatsData();
+  sendResponse(res, {
+    httpStatusCode: status17.OK,
+    success: true,
+    message: "Stats data retrieved successfully!",
+    data: result
+  });
+});
 var StatsController = {
-  getDashboardStatsData: getDashboardStatsData2
+  getDashboardStatsData: getDashboardStatsData2,
+  getPublicStatsData: getPublicStatsData2
 };
 
 // src/app/modules/stats/stats.route.ts
@@ -35567,6 +35605,10 @@ router6.get(
   "/stats",
   Auth_default([Role.USER, Role.ADMIN]),
   StatsController.getDashboardStatsData
+);
+router6.get(
+  "/publicstats",
+  StatsController.getPublicStatsData
 );
 var StatsRoutes = router6;
 
@@ -36392,40 +36434,56 @@ var createBlog = async (user, payload) => {
   });
   return blog;
 };
-var getAllBlogs = async (query, page, limit, skip, sortBy = "createdAt", sortOrder = "desc", search) => {
-  const where = {};
-  if (query?.title) {
-    where.title = { contains: query.title, mode: "insensitive" };
-  }
-  if (query?.content) {
-    where.content = { contains: query.content, mode: "insensitive" };
-  }
-  if (query?.tags) {
-    where.tags = { hasSome: Array.isArray(query.tags) ? query.tags : [query.tags] };
-  }
-  if (search) {
-    where.OR = [
-      { title: { contains: search, mode: "insensitive" } },
-      { content: { contains: search, mode: "insensitive" } },
-      { tags: { has: search } }
-    ];
+var getAllBlogs = async (query, page, limit, skip, sortBy, sortOrder, search) => {
+  const andConditions = [];
+  if (query) {
+    const orConditions = [];
+    if (query.title) {
+      orConditions.push({
+        title: {
+          contains: query.title,
+          mode: "insensitive"
+        }
+      });
+    }
+    if (query.createdAt) {
+      const dateRange = parseDateForPrisma(query.createdAt);
+      andConditions.push({ createdAt: dateRange.gte });
+    }
+    if (search) {
+      orConditions.push(
+        {
+          title: {
+            contains: query.search,
+            mode: "insensitive"
+          }
+        },
+        {
+          content: {
+            contains: query.search,
+            mode: "insensitive"
+          }
+        }
+      );
+    }
   }
   const blogs = await prisma.blog.findMany({
-    where,
+    where: { AND: andConditions },
     skip: skip || (page && limit ? (page - 1) * limit : void 0),
     take: limit,
     orderBy: { [sortBy]: sortOrder },
     include: {
-      author: { select: { id: true, name: true, email: true, image: true } }
+      author: { select: { id: true, name: true, email: true, image: true } },
+      event: true
     }
   });
-  const total = await prisma.blog.count({ where });
+  const total = await prisma.blog.count({ where: { AND: andConditions } });
   return {
     data: blogs,
     pagination: {
       total,
       page: page || 1,
-      limit: limit || blogs.length,
+      limit: 9,
       totalpage: limit ? Math.ceil(total / limit) : 1
     }
   };
@@ -36434,7 +36492,8 @@ var getSingleBlog = async (blogId) => {
   const blog = await prisma.blog.findUnique({
     where: { id: blogId },
     include: {
-      author: { select: { id: true, name: true, email: true, image: true } }
+      author: { select: { id: true, name: true, email: true, image: true } },
+      event: true
     }
   });
   if (!blog) {
@@ -36454,7 +36513,11 @@ var updateBlog = async (blogId, payload, user) => {
   }
   const updatedBlog = await prisma.blog.update({
     where: { id: blogId },
-    data: payload
+    data: {
+      content: payload.content,
+      images: payload.images,
+      title: payload.title
+    }
   });
   return updatedBlog;
 };
@@ -36525,7 +36588,8 @@ var createBlog2 = catchAsync(async (req, res) => {
 });
 var getAllBlogs2 = catchAsync(async (req, res) => {
   const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
-  const result = await BlogServices.getAllBlogs({ page, limit, skip, sortBy, sortOrder });
+  const { search } = req.query;
+  const result = await BlogServices.getAllBlogs(req.query, page, limit, skip, sortBy, sortOrder, search);
   sendResponse(res, {
     httpStatusCode: status22.OK,
     success: true,
@@ -36613,13 +36677,10 @@ var createHighlightSchema = z8.object({
   image: z8.string().url({ message: "Image must be a valid URL." }).optional().nullable()
 });
 var updateHighlightSchema = z8.object({
-  title: z8.string().min(1, { message: "Title cannot be empty." }).optional(),
-  description: z8.string().min(1, { message: "Description cannot be empty." }).optional(),
-  image: z8.string().url({ message: "Image must be a valid URL." }).optional().nullable()
-}).refine(
-  (data) => Object.keys(data).length > 0,
-  { message: "At least one field must be provided to update the highlight." }
-);
+  title: z8.string().optional(),
+  description: z8.string().optional(),
+  image: z8.any().optional()
+});
 
 // src/app/modules/highlight/highlight.controller.ts
 import status24 from "http-status";
@@ -37418,21 +37479,244 @@ router12.post("/ingest-event", RagController.Ingestevents);
 router12.post("/query", RagController.queryRag);
 var Ragrouter = router12;
 
-// src/app/routes/index.ts
+// src/app/modules/newsletter/newsletter.route.ts
+import { Router as Router9 } from "express";
+init_enums();
+
+// src/app/modules/newsletter/newsletter.validation.ts
+import { z as z9 } from "zod";
+var createNewsletterSchema = z9.object({
+  email: z9.string()
+});
+var updateNewsletterSchema = z9.object({
+  email: z9.string().optional()
+});
+
+// src/app/modules/newsletter/newsletter.controller.ts
+import status27 from "http-status";
+
+// src/app/modules/newsletter/newsletter.service.ts
+import status26 from "http-status";
+init_prisma();
+var createNewsletter = async (payload) => {
+  console.log(payload.email, "emi");
+  if (!payload.email || !payload.userId) {
+    throw new AppError_default(status26.BAD_REQUEST, "Email and userId are required to subscribe to the newsletter.");
+  }
+  const existing = await prisma.newsletter.findUnique({
+    where: { email: payload.email }
+  });
+  if (existing) {
+    throw new AppError_default(status26.CONFLICT, "This email is already subscribed to the newsletter.");
+  }
+  const newsletter = await prisma.newsletter.create({
+    data: {
+      email: payload.email,
+      userId: payload.userId
+    }
+  });
+  return newsletter;
+};
+var getAllNewsletters = async (email, page, limit, skip) => {
+  const andConditions = [];
+  if (email) {
+    andConditions.push({
+      email: {
+        contains: email,
+        mode: "insensitive"
+      }
+    });
+  }
+  const newsletters = await prisma.newsletter.findMany({
+    skip: skip || (page && limit ? (page - 1) * limit : void 0),
+    take: limit,
+    where: { AND: andConditions },
+    orderBy: { createdAt: "desc" },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true, image: true }
+      }
+    }
+  });
+  const total = await prisma.newsletter.count({ where: { AND: andConditions } });
+  return {
+    data: newsletters,
+    pagination: {
+      total,
+      page: page || 1,
+      limit: 9,
+      totalpage: limit ? Math.ceil(total / limit) : 1
+    }
+  };
+};
+var getSingleNewsletter = async (newsletterId) => {
+  const newsletter = await prisma.newsletter.findUnique({
+    where: { id: newsletterId },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true, image: true }
+      }
+    }
+  });
+  if (!newsletter) {
+    throw new AppError_default(status26.NOT_FOUND, "Newsletter subscription not found");
+  }
+  return newsletter;
+};
+var updateNewsletter = async (newsletterId, payload) => {
+  const newsletter = await prisma.newsletter.findUnique({
+    where: { id: newsletterId }
+  });
+  if (!newsletter) {
+    throw new AppError_default(status26.NOT_FOUND, "Newsletter subscription not found");
+  }
+  if (payload.email && payload.email !== newsletter.email) {
+    const existing = await prisma.newsletter.findUnique({
+      where: { email: payload.email }
+    });
+    if (existing) {
+      throw new AppError_default(status26.CONFLICT, "This email is already subscribed to the newsletter.");
+    }
+  }
+  const updatedNewsletter = await prisma.newsletter.update({
+    where: { id: newsletterId },
+    data: payload
+  });
+  return updatedNewsletter;
+};
+var deleteNewsletter = async (newsletterId) => {
+  const newsletter = await prisma.newsletter.findUnique({
+    where: { id: newsletterId }
+  });
+  if (!newsletter) {
+    throw new AppError_default(status26.NOT_FOUND, "Newsletter subscription not found");
+  }
+  const deletedNewsletter = await prisma.newsletter.delete({
+    where: { id: newsletterId }
+  });
+  return deletedNewsletter;
+};
+var NewsletterService = {
+  createNewsletter,
+  getAllNewsletters,
+  getSingleNewsletter,
+  updateNewsletter,
+  deleteNewsletter
+};
+
+// src/app/modules/newsletter/newsletter.controller.ts
+var createNewsletter2 = catchAsync(async (req, res) => {
+  if (!req.user?.userId) {
+    throw new AppError_default(status27.UNAUTHORIZED, "Unauthorized access. Please login first.");
+  }
+  const { email } = req.body;
+  console.log(email, "email");
+  const result = await NewsletterService.createNewsletter({ email, userId: req.user.userId });
+  sendResponse(res, {
+    httpStatusCode: status27.CREATED,
+    success: true,
+    message: "Newsletter subscription created successfully",
+    data: result
+  });
+});
+var getAllNewsletters2 = catchAsync(async (req, res) => {
+  const { email } = req.query;
+  const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
+  const result = await NewsletterService.getAllNewsletters(email, page, limit, skip);
+  sendResponse(res, {
+    httpStatusCode: status27.OK,
+    success: true,
+    message: "Newsletters fetched successfully",
+    data: result
+  });
+});
+var getSingleNewsletter2 = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await NewsletterService.getSingleNewsletter(id);
+  sendResponse(res, {
+    httpStatusCode: status27.OK,
+    success: true,
+    message: "Newsletter fetched successfully",
+    data: result
+  });
+});
+var updateNewsletter2 = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const payload = {
+    ...req.body.email !== void 0 && { email: req.body.email }
+  };
+  const result = await NewsletterService.updateNewsletter(id, payload);
+  sendResponse(res, {
+    httpStatusCode: status27.OK,
+    success: true,
+    message: "Newsletter updated successfully",
+    data: result
+  });
+});
+var deleteNewsletter2 = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await NewsletterService.deleteNewsletter(id);
+  sendResponse(res, {
+    httpStatusCode: status27.OK,
+    success: true,
+    message: "Newsletter deleted successfully",
+    data: result
+  });
+});
+var NewsletterController = {
+  createNewsletter: createNewsletter2,
+  getAllNewsletters: getAllNewsletters2,
+  getSingleNewsletter: getSingleNewsletter2,
+  updateNewsletter: updateNewsletter2,
+  deleteNewsletter: deleteNewsletter2
+};
+
+// src/app/modules/newsletter/newsletter.route.ts
 var router13 = Router9();
-router13.use("/v1/rag", Ragrouter);
-router13.use("/v1", BlogRouters);
-router13.use("/v1", HighlightRouters);
-router13.use("/v1/auth", AuthRouters);
-router13.use("/v1", UsersRoutes);
-router13.use("/v1", EventRouters);
-router13.use("/v1", InvitationsRouters);
-router13.use("/v1", ParticipantRoutes);
-router13.use("/v1", ReviewsRouters);
-router13.use("/v1", StatsRoutes);
-router13.use("/v1", NotificationRoutes);
-router13.use("/v1", PaymentRoutes);
-var IndexRouter = router13;
+router13.post(
+  "/newsletter",
+  Auth_default([Role.ADMIN, Role.USER, Role.MANAGER]),
+  validateRequest(createNewsletterSchema),
+  NewsletterController.createNewsletter
+);
+router13.get(
+  "/newsletters",
+  Auth_default([Role.ADMIN, Role.MANAGER]),
+  NewsletterController.getAllNewsletters
+);
+router13.get(
+  "/newsletter/:id",
+  NewsletterController.getSingleNewsletter
+);
+router13.put(
+  "/newsletter/:id",
+  Auth_default([Role.ADMIN, Role.MANAGER]),
+  validateRequest(updateNewsletterSchema),
+  NewsletterController.updateNewsletter
+);
+router13.delete(
+  "/newsletter/:id",
+  Auth_default([Role.ADMIN, Role.MANAGER]),
+  NewsletterController.deleteNewsletter
+);
+var NewsletterRouters = router13;
+
+// src/app/routes/index.ts
+var router14 = Router10();
+router14.use("/v1/rag", Ragrouter);
+router14.use("/v1", BlogRouters);
+router14.use("/v1", HighlightRouters);
+router14.use("/v1", NewsletterRouters);
+router14.use("/v1/auth", AuthRouters);
+router14.use("/v1", UsersRoutes);
+router14.use("/v1", EventRouters);
+router14.use("/v1", InvitationsRouters);
+router14.use("/v1", ParticipantRoutes);
+router14.use("/v1", ReviewsRouters);
+router14.use("/v1", StatsRoutes);
+router14.use("/v1", NotificationRoutes);
+router14.use("/v1", PaymentRoutes);
+var IndexRouter = router14;
 
 // src/app.ts
 var app = express5();

@@ -27,52 +27,6 @@ enum EventStatus {
   COMPLETED
   CANCELLED
 }
-enum EventCategory {
-  // 🎉 Personal Events
-  BIRTHDAY
-  WEDDING
-  ANNIVERSARY
-  REUNION
-
-  // 🎓 Education & Career
-  SEMINAR
-  WORKSHOP
-  CONFERENCE
-  CAREER_FAIR
-
-  // 💼 Business
-  MEETING
-  NETWORKING
-  PRODUCT_LAUNCH
-  STARTUP_EVENT
-
-  // 🎭 Entertainment
-  CONCERT
-  PARTY
-  FESTIVAL
-  MOVIE_NIGHT
-
-  // 🏃 Sports & Health
-  TOURNAMENT
-  FITNESS
-  YOGA
-
-  // 🙏 Social & Community
-  CHARITY
-  COMMUNITY
-  RELIGIOUS
-
-  // 🎨 Creative
-  ART
-  PHOTOGRAPHY
-  FASHION_SHOW
-
-  // 🎮 Others
-  GAMING
-  FOOD_EVENT
-  TRAVEL_MEETUP
-}
-
 enum ParticipantStatus {
   PENDING
   APPROVED

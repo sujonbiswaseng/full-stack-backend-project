@@ -1,103 +1,98 @@
-import { createClient, RedisClientType } from 'redis';
-import { envVars } from '../config/env';
+import { envVars } from "../config/env";
+import { Redis } from "@upstash/redis";
 
 class RedisService {
-    private client: RedisClientType | null = null;
+    private client: Redis | null = null;
     private isConnected: boolean = false;
 
     async connect(): Promise<void> {
         try {
-            const redisUrl = envVars.REDIS_URL;
-            this.client = createClient({ url: redisUrl });
-            this.client.on('error', (err) => {
-                this.isConnected = false
-                console.error('Redis Client Error', err)
+            this.client = new Redis({
+                url: envVars.UPSTASH_REDIS_REST_URL,
+                token: envVars.UPSTASH_REDIS_REST_TOKEN,
             });
 
-            this.client.on("connect", () => {
-                console.log("Redis Client conected")
-                this.isConnected = true
-            })
-            this.client.on("ready", () => {
-                console.log("Redis Client Ready")
-                this.isConnected = true
-            })
-
-            this.client.on("end", () => {
-                console.log("Redis Client Disconected")
-                this.isConnected = false
-            })
-
-            this.client.on("reconnecting", () => {
-                console.log("Redis Client reconnecting")
-                this.isConnected = true
-            })
-
-            await this.client.connect();
+            // Upstash does not support events, so we simulate it
+            this.isConnected = true;
+            console.log("Redis Client Ready (Upstash)");
 
         } catch (error) {
-            console.error('Error connecting to Redis:', error);
-            this.isConnected = false
+            console.error("Error connecting to Redis:", error);
+            this.isConnected = false;
         }
     }
-    private ensureConection(): RedisClientType {
+
+    private ensureConnection(): Redis {
         if (!this.client) {
-            throw new Error("Redis client Not initialized. call connect() first.")
+            throw new Error("Redis client not initialized. call connect() first.");
         }
         if (!this.isConnected) {
-            throw new Error("Redis client not connected")
+            throw new Error("Redis client not connected");
         }
-        return this.client
+        return this.client;
     }
-    async get(key: string): Promise<string | null> {
 
+    async get(key: string): Promise<any> {
         try {
-            const client = this.ensureConection();
-            return client.get(key)
-            return null
+            const client = this.ensureConnection();
+            return await client.get(key);
         } catch (error) {
-            console.error("Redis get error")
-            return null
+            console.error("Redis get error:", error);
+            return null;
         }
     }
-    async set(key: string, value: any, ttlInSecound: number): Promise<void> {
+
+    async set(key: string, value: any, ttlInSecond: number): Promise<void> {
         try {
-            const client = this.ensureConection();
-            const stringValue = typeof value === "string" ? value : JSON.stringify(value);
-            await client.set(key, stringValue, { EX: ttlInSecound })
+            const client = this.ensureConnection();
+
+            const stringValue =
+                typeof value === "string"
+                    ? value
+                    : JSON.stringify(value);
+
+            await client.set(key, stringValue, {
+                ex: ttlInSecond,
+            });
         } catch (err) {
-            console.error("Redis SET error:",err)
+            console.error("Redis SET error:", err);
         }
     }
 
-    async update(key:string,value:any,ttlInSecounds:number):Promise<void>{
-        await this.set(key,value,ttlInSecounds)
+    async update(
+        key: string,
+        value: any,
+        ttlInSeconds: number
+    ): Promise<void> {
+        await this.set(key, value, ttlInSeconds);
     }
-    async delete(key:string):Promise<void>{
+
+    async delete(key: string): Promise<void> {
         try {
-            const client = this.ensureConection();
-            await client.del(key)
+            const client = this.ensureConnection();
+            await client.del(key);
         } catch (error) {
-            console.log("Redis DELETE ERROR:",error)
+            console.log("Redis DELETE ERROR:", error);
         }
     }
-    async isAvalilable():Promise<boolean>{
-      try {
-          const client = this.ensureConection();
-        await client.ping();
-        return true
-      } catch (error) {
-        console.error("",error)
-        return false
-      }
-    }
-    async disconnect():Promise<void>{
-        if(this.client && this.isConnected){
-            await this.client.quit();
-            this.isConnected=false
+
+    async isAvailable(): Promise<boolean> {
+        try {
+            const client = this.ensureConnection();
+            const res = await client.ping();
+            return res === "PONG";
+        } catch (error) {
+            console.error("Redis ping error:", error);
+            return false;
         }
+    }
+
+    async disconnect(): Promise<void> {
+        // Upstash does not require manual disconnect
+        this.client = null;
+        this.isConnected = false;
+        console.log("Redis Client Disconnected (virtual)");
     }
 }
 
-export const redisService = new RedisService()
-
+export const redisService = new RedisService();
