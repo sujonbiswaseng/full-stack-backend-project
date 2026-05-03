@@ -41,6 +41,7 @@ const queryRag = catchAsync(async (req: Request, res: Response) => {
   }
   // generate cache key from query params
   const cacheKey=`rag:query:${query}:${limit??5}:${sourceType||"all"}`
+
   console.log(cacheKey,'es')
   try {
     const cacheResult = await redisService.get(cacheKey)
@@ -69,7 +70,8 @@ const queryRag = catchAsync(async (req: Request, res: Response) => {
 
   try {
     // store cache with 10 min(600 secound)
-    await redisService.set(cacheKey,result,600);
+   const dat= await redisService.set(cacheKey,result,600);
+   console.log(dat,'da')
   } catch (error) {
     console.log("cache Write error",error)
   }

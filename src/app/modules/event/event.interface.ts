@@ -1,12 +1,11 @@
-import { EventCategory, EventStatus, EventType } from "../../../generated/prisma/enums";
-export interface ICreateEvent {
+import { EventStatus, EventType } from "../../../generated/prisma/enums";export interface ICreateEvent {
   title: string;
   description: string;
   date: string;
   time: string;
   location: string;
   visibility: EventType;
-  categories:EventCategory;
+  category_name:string;
   priceType?: "FREE" | "PAID";
   status:EventStatus;
   images:string[];
@@ -21,7 +20,7 @@ export interface IUpdateEventInput {
   time?: string;
   location?: string;
   images?: string[];
-  categories?: EventCategory;
+  category_name?: string;
   priceType?: "FREE" | "PAID";
   status?: EventStatus;
   visibility?: "PUBLIC" | "PRIVATE";

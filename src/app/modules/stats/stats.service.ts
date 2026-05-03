@@ -7,7 +7,7 @@ import { prisma } from "../../lib/prisma";
 const getDashboardStatsData = async (user : IRequestUser) => {
     let statsData;
     switch(user.role){
-        case Role.ADMIN:
+        case Role.ADMIN,Role.MANAGER:
             statsData = getAdminDashboardStats();
             break;
         case Role.USER:

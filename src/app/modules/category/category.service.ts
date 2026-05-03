@@ -1,11 +1,11 @@
 import { prisma } from "../../lib/prisma";
-import { formatZodIssues } from "../../utils/handleZodError";
-import { UpdatecategoryData } from "./category.validation";
+
 import { ICreateCategory, IUpdateCategory } from "./category.interface";
 import AppError from "../../errorHelper/AppError";
 import status from "http-status";
-import { CategoryWhereInput } from "../../../../generated/prisma/models";
 import { parseDateForPrisma } from "../../utils/parseDate";
+import { CategoryWhereInput, EventWhereInput } from "../../../generated/prisma/models";
+import { EventType } from "../../../generated/prisma/enums";
 const CreateCategory = async (data: ICreateCategory, email: string) => {
   if(!data.image){
     throw new AppError(404, "Image is required");
@@ -86,11 +86,7 @@ const getCategory = async (
       AND:andConditions
     },
     include: {
-      meals: {
-        where: {
-          status: "APPROVED",
-        },
-      },
+      event: true,
       user: true,
     },
     orderBy: { name: "desc" },
@@ -109,52 +105,166 @@ const getCategory = async (
     },
 }};
 
-const SingleCategory = async (id: string) => {
+const SingleCategory = async (
+  id: string,
+  query?: Record<string, any>,
+  page?: number,
+  limit?: number | undefined,
+  skip?: number,
+  search?:any
+
+) => {
+
+  const andConditions: EventWhereInput | EventWhereInput[] | undefined = [];
+
+
+  if (query) {
+    const orConditions: any[] = [];
+    if (query.title) {
+      orConditions.push({
+        title: {
+          contains: query.title,
+          mode: "insensitive",
+        },
+      });
+    }
+
+    if (query.createdAt) {
+      const dateRange = parseDateForPrisma(query.createdAt);
+      andConditions.push({ createdAt: dateRange.gte });
+    }
+    if (query.date) {
+      const dateRange = parseDateForPrisma(query.date);
+      andConditions.push({date: dateRange});
+    }
+
+    if (search) {
+      orConditions.push(
+        {
+          title: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          venue: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        }
+      );
+    }
+
+    if (query.description) {
+      orConditions.push({
+        description: {
+          contains: query.description,
+          mode: "insensitive",
+        },
+      });
+    }
+    if (query.categories) {
+      orConditions.push({
+        categories: query.categories,
+      });
+    }
+    if (orConditions.length > 0) {
+      andConditions.push({ OR: orConditions });
+    }
+  }
+
+
+  if (query?.fee) {
+    andConditions.push({
+      fee: {
+        gte: 1,
+        lte: Number(query.fee),
+      },
+    });
+  }
+
+  if (query?.visibility) {
+    andConditions.push({
+      visibility: query.visibility as EventType,
+    });
+  }
+
+  if (query?.priceType) {
+    andConditions.push({
+      priceType: query.priceType,
+    });
+  }
+
   const result = await prisma.category.findFirstOrThrow({
     where: { id },
     include: {
-      meals: {
+      event: {
         include: {
           reviews: true,
-          provider:{include:{user:true}}
         },
       },
       user: true,
     },
   });
-  if (result && Array.isArray(result.meals)) {
-    result.meals = result.meals.map(meal => {
-      let totalRating = 0;
-      let totalReviews = 0;
 
-      if (Array.isArray(meal.reviews)) {
-  
-        meal.reviews = meal.reviews.filter(
-          review =>
-            (review.status === "APPROVED" && review.parentId === null) ||
-            typeof review.status === "undefined"
-        );
-        meal.reviews.forEach(review => {
-          if (
-            (review.status === "APPROVED" || typeof review.status === "undefined") &&
-            typeof review.rating === "number"
-          ) {
-            totalRating += review.rating;
-            totalReviews++;
+
+  const events = await prisma.event.findMany({
+    where: {
+      category_name: result.name,
+      status:"UPCOMING",
+      AND:andConditions
+    },
+    take: limit,
+      skip,
+      include: {
+        reviews: {
+          where: { rating: { gt: 0 } },
+        },
+        organizer:{
+          select:{
+            id:true,
+            name:true,
+            email:true,
+            phone:true,
+            image:true
           }
-        });
-      }
+        }
+      },
+      orderBy: {
+        createdAt:"desc"
+      },
+  });
 
-      const avgRating = totalReviews > 0 ? Number((totalRating / totalReviews).toFixed(1)) : 0;
+  const eventdata=events.map((event) => {
+    const totalReviews = event.reviews.length;
+    const avgRating =
+      totalReviews > 0
+        ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        : 0;
 
-      return {
-        ...meal,
-        avgRating,
-        totalReviews,
-      };
-    });
-  }
-  return result;
+    return { ...event, avgRating, totalReviews };
+  });
+
+   const total = await prisma.event.count({ where: { AND: andConditions } });
+
+  return {
+     data:{
+      result,
+      eventdata
+     },
+    pagination: {
+      total,
+      page,
+      limit,
+      totalpage: Math.ceil(total / limit!) || 1,
+    },
+  };
 };
 
 const UpdateCategory = async (id: string, data: IUpdateCategory) => {

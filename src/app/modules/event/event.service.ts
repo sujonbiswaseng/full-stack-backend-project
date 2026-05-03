@@ -21,10 +21,10 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
     priceType,
     location,
     fee,
-    categories,
+    category_name,
     images,
   } = payload;
-  if(!images){
+  if (!images) {
     throw new AppError(status.BAD_REQUEST, "Image is required to create an event.");
   }
   console.log(images,'image')
@@ -35,7 +35,7 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
       date,
       time,
       priceType,
-      categories,
+      category_name,
       location,
       images:images as unknown as string[],
       visibility,
@@ -101,7 +101,7 @@ const getAllEvents = async (
           },
         },
         {
-          venue: {
+          location: {
             contains: query.search,
             mode: "insensitive",
           },
@@ -117,9 +117,9 @@ const getAllEvents = async (
         },
       });
     }
-    if (query.categories) {
+    if (query.category_name) {
       orConditions.push({
-        categories: query.categories,
+        category_name: query.category_name,
       });
     }
     if (orConditions.length > 0) {
@@ -209,6 +209,9 @@ const getAllEvents = async (
   };
 };
 
+
+
+
  const getEventsByRole = async (
   data: IEventQuery,
   userId: string,
@@ -234,8 +237,8 @@ const getAllEvents = async (
     if (orConditions.length > 0) andConditions.push({ OR: orConditions });
   }
 
-  if (data.categories) {
-    andConditions.push({ categories: data.categories });
+  if (data.category_name) {
+    andConditions.push({ category_name: data.category_name });
   }
   if (data.date) {
     const dateRange = parseDateForPrisma(data.date);
@@ -466,7 +469,7 @@ const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:str
       images: payload.images as unknown as string[],
       status: payload.status,
       priceType: payload.priceType,
-      categories: payload.categories,
+      category_name: payload.category_name,
       is_featured:payload.is_featured
       
     },

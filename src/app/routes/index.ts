@@ -12,6 +12,7 @@ import { BlogRouters } from "../modules/blog/blog.route";
 import { HighlightRouters } from "../modules/highlight/highlight.route";
 import { Ragrouter } from "../modules/rag/rag.route";
 import { NewsletterRouters } from "../modules/newsletter/newsletter.route";
+import { CategoryRouter } from "../modules/category/category.route";
 
 const router = Router()
 router.use('/v1/rag',Ragrouter)
@@ -21,6 +22,7 @@ router.use("/v1", HighlightRouters);
 router.use("/v1", NewsletterRouters);
 
 router.use("/v1/auth", AuthRouters);
+router.use("/v1", CategoryRouter.router);
 
 router.use("/v1", UsersRoutes);
 // event

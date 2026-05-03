@@ -10,8 +10,9 @@ model Event {
   priceType     PricingType @default(FREE)
   status EventStatus @default(UPCOMING)
   is_featured Boolean? @default(false)
-  categoryId   String
-  category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+   category_name     String
+
+  category          Category          @relation(fields: [category_name], references: [name], onDelete: Cascade)
   fee          Float    @default(0)
   organizerId  String
   organizer    User     @relation("UserEvents", fields: [organizerId], references: [id], onDelete: Cascade, onUpdate: Cascade)

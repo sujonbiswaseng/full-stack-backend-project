@@ -44,7 +44,17 @@ const getCategory = catchAsync(async (req: Request, res: Response) => {
 });
 
 const SingleCategory = catchAsync(async (req: Request, res: Response) => {
-  const result = await categoryService.SingleCategory(req.params.id as string);
+  const { page, limit, skip } = paginationSortingHelper(req.query);
+  console.log(req.query,)
+  const result = await categoryService.SingleCategory(
+    req.params.id as string,
+    req.query,
+    page,
+    limit,
+    skip,
+    typeof req.query.search === "string" ? req.query.search : undefined
+  );
+
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,

@@ -19,6 +19,7 @@ router.post(
 
 router.get("/event/isfeatured", EventController.IsFeautured);
 router.get("/events", EventController.getAllEvents);
+router.get("/category-events", EventController.getAllEvents);
 router.get("/my-events",auth([Role.USER,Role.ADMIN,Role.MANAGER]), EventController.getEventsByRoleController);
 router.get("/events/paidandfree", EventController.getPaidAndFreeEvent);
 router.get("/event/:id", EventController.getSingleEvent);

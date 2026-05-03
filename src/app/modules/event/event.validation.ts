@@ -1,42 +1,5 @@
 import { z } from "zod";
 import { EventType, PricingType } from "../../../generated/prisma/enums";
-export const EventCategoryEnum = z.enum([
-  "BIRTHDAY",
-  "WEDDING",
-  "ANNIVERSARY",
-  "REUNION",
-
-  "SEMINAR",
-  "WORKSHOP",
-  "CONFERENCE",
-  "CAREER_FAIR",
-
-  "MEETING",
-  "NETWORKING",
-  "PRODUCT_LAUNCH",
-  "STARTUP_EVENT",
-
-  "CONCERT",
-  "PARTY",
-  "FESTIVAL",
-  "MOVIE_NIGHT",
-
-  "TOURNAMENT",
-  "FITNESS",
-  "YOGA",
-
-  "CHARITY",
-  "COMMUNITY",
-  "RELIGIOUS",
-
-  "ART",
-  "PHOTOGRAPHY",
-  "FASHION_SHOW",
-
-  "GAMING",
-  "FOOD_EVENT",
-  "TRAVEL_MEETUP",
-]);
 
 export const EventStatusEnum =z.enum([
   "DRAFT",
@@ -57,7 +20,7 @@ export const getEventsSchema = z.object({
 export const CreateEventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  categories: EventCategoryEnum,
+  category_name: z.string().min(1, "At least one category is required"),
   date: z
   .string()
   .refine((val) => !isNaN(Date.parse(val)), {
