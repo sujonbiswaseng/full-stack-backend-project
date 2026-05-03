@@ -75,6 +75,8 @@ export class IndexingService {
           reviews: true,
           blogs: true,
           participants: true,
+          payments:true,
+          category:true,
           invitations: true,
           organizer: {
             select: {
@@ -126,6 +128,7 @@ export class IndexingService {
   ${event.invitations.length}
   `;
         const content = `
+        owner name : sujon biswas
         id:${event.id}
   Event Title:
   ${event.title}
@@ -134,7 +137,7 @@ export class IndexingService {
   ${event.description}
   
   Category:
-  ${event.categories}
+  ${event.category_name}
   
   Location:
   ${event.location}
@@ -178,7 +181,7 @@ export class IndexingService {
         const metadata = {
           eventId: event.id,
           title: event.title,
-          category: event.categories,
+          category: event.category_name,
           location: event.location,
           visibility: event.visibility,
           priceType: event.priceType,

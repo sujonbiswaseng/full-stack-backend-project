@@ -2,6 +2,7 @@ import status from "http-status";
 import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
 import { NewsletterWhereInput } from "../../../generated/prisma/models";
+import { parseDateForPrisma } from "../../utils/parseDate";
 
 const createNewsletter = async (payload: { email: string; userId: string }) => {
   console.log(payload.email,'emi')
@@ -26,17 +27,23 @@ const createNewsletter = async (payload: { email: string; userId: string }) => {
   return newsletter;
 };
 
-const getAllNewsletters = async (email?:string,page?: number,
+const getAllNewsletters = async (
+  query?: Record<string, any>,
+  page?: number,
   limit?: number | undefined,
   skip?: number,) => {
   const andConditions: NewsletterWhereInput[]  = [];
-  if (email) {
+  if (query?.email) {
     andConditions.push({
       email: {
-        contains: email,
+        contains: query.email,
         mode: "insensitive",
       },
     });
+  }
+  if (query?.createdAt) {
+    const dateRange = parseDateForPrisma(query.createdAt);
+    andConditions.push({ createdAt: dateRange.gte });
   }
   const newsletters = await prisma.newsletter.findMany({
     skip: skip || ((page && limit) ? (page - 1) * limit : undefined),
