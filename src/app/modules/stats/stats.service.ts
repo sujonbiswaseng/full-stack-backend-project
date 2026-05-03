@@ -4,21 +4,24 @@ import AppError from "../../errorHelper/AppError";
 import { IRequestUser } from "../../interface/requestUser.interface";
 import { prisma } from "../../lib/prisma";
 
-const getDashboardStatsData = async (user : IRequestUser) => {
-    let statsData;
-    switch(user.role){
-        case Role.ADMIN,Role.MANAGER:
-            statsData = getAdminDashboardStats();
-            break;
-        case Role.USER:
-            statsData = getUserDashboardStats(user.userId);
-            break;
-        default:
-            throw new AppError(status.BAD_REQUEST, "Invalid user role");
-    }
+const getDashboardStatsData = async (user: IRequestUser) => {
+  let statsData;
+  switch (user.role) {
+    case Role.ADMIN:
+      statsData = getAdminDashboardStats();
+      break;
+    case Role.MANAGER:
+      statsData = getAdminDashboardStats();
+      break;
+    case Role.USER:
+      statsData = getUserDashboardStats(user.userId);
+      break;
+    default:
+      throw new AppError(status.BAD_REQUEST, "Invalid user role");
+  }
 
-    return statsData;
-}
+  return statsData;
+};
 interface IBarChartData {
   month: string;
   revenue: number;
@@ -34,17 +37,29 @@ export const getAdminDashboardStats = async () => {
       prisma.payment.count(),
     ]);
 
-    const [eventCount, userCount, participantCount, invitationCount, paymentCount] = counts;
+    const [
+      eventCount,
+      userCount,
+      participantCount,
+      invitationCount,
+      paymentCount,
+    ] = counts;
 
     // 🔹 Total Revenue
     const revenueResult = await prisma.payment.aggregate({
       _sum: { amount: true },
-      where: { status:PaymentStatus.PAID },
+      where: { status: PaymentStatus.PAID },
     });
     const totalRevenue = revenueResult._sum.amount ?? 0;
 
     // 🔹 Event Status Counts
-    const [upcomingEvents, completedEvents, cancelledEvents,draftEvetn,ongoingEvent] = await Promise.all([
+    const [
+      upcomingEvents,
+      completedEvents,
+      cancelledEvents,
+      draftEvetn,
+      ongoingEvent,
+    ] = await Promise.all([
       prisma.event.count({ where: { status: "UPCOMING" } }),
       prisma.event.count({ where: { status: "COMPLETED" } }),
       prisma.event.count({ where: { status: "CANCELLED" } }),
@@ -52,15 +67,14 @@ export const getAdminDashboardStats = async () => {
       prisma.event.count({ where: { status: "ONGOING" } }),
     ]);
     const [privateEvent, publicEvent] = await Promise.all([
-      prisma.event.count({ where: { visibility:"PRIVATE" } }),
-      prisma.event.count({ where: { visibility:"PUBLIC" } })
+      prisma.event.count({ where: { visibility: "PRIVATE" } }),
+      prisma.event.count({ where: { visibility: "PUBLIC" } }),
     ]);
 
-    const [freeEvent,paidEvent] = await Promise.all([
-      prisma.event.count({ where: { priceType:"FREE" } }),
-      prisma.event.count({ where: { priceType:"PAID"} })
+    const [freeEvent, paidEvent] = await Promise.all([
+      prisma.event.count({ where: { priceType: "FREE" } }),
+      prisma.event.count({ where: { priceType: "PAID" } }),
     ]);
-
 
     // 🔹 Dynamic Monthly Revenue
     const payments = await prisma.payment.findMany({
@@ -68,14 +82,27 @@ export const getAdminDashboardStats = async () => {
       select: { amount: true, createdAt: true },
     });
 
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
 
     const monthlyRevenue: Record<number, number> = {};
 
-    payments.forEach(payment => {
+    payments.forEach((payment) => {
       const month = payment.createdAt.getMonth(); // 0-11
-      monthlyRevenue[month] = (monthlyRevenue[month] || 0) + Number(payment.amount);
+      monthlyRevenue[month] =
+        (monthlyRevenue[month] || 0) + Number(payment.amount);
     });
 
     const barChartData: IBarChartData[] = monthNames.map((month, idx) => ({
@@ -97,15 +124,15 @@ export const getAdminDashboardStats = async () => {
         participatedEvents: participantCount,
         invitations: invitationCount,
         payments: paymentCount,
-        user:userCount,
+        user: userCount,
       },
-      eventVisivillity:{
-        public:publicEvent,
-        private:privateEvent
+      eventVisivillity: {
+        public: publicEvent,
+        private: privateEvent,
       },
-      priceType:{
-        free:freeEvent,
-        paid:paidEvent
+      priceType: {
+        free: freeEvent,
+        paid: paidEvent,
       },
       totalRevenue,
       monthlyRevenue: barChartData,
@@ -113,8 +140,8 @@ export const getAdminDashboardStats = async () => {
         upcoming: upcomingEvents,
         completed: completedEvents,
         cancelled: cancelledEvents,
-        draft:draftEvetn,
-        ongoing:ongoingEvent
+        draft: draftEvetn,
+        ongoing: ongoingEvent,
       },
       pieChartData,
     };
@@ -123,7 +150,6 @@ export const getAdminDashboardStats = async () => {
     throw new Error("Could not fetch dashboard stats");
   }
 };
-
 
 export const getPublicStatsData = async () => {
   try {
@@ -135,22 +161,22 @@ export const getPublicStatsData = async () => {
 
     // Total Managers (role: MANAGER)
     const totalManagers = await prisma.user.count({
-      where: { role: "MANAGER" }
+      where: { role: "MANAGER" },
     });
 
     // Total Admins (role: ADMIN)
     const totalAdmins = await prisma.user.count({
-      where: { role: "ADMIN" }
+      where: { role: "ADMIN" },
     });
 
     // Total Participants (number of unique participants)
     const totalParticipants = await prisma.participant.count();
 
     // Total Reviews
-    const totalReviews = await prisma.review?.count?.() ?? 0;
+    const totalReviews = (await prisma.review?.count?.()) ?? 0;
 
     // Total Newsletters
-    const totalNewsletters = await prisma.newsletter?.count?.() ?? 0;
+    const totalNewsletters = (await prisma.newsletter?.count?.()) ?? 0;
 
     return {
       totalEvents,
@@ -159,14 +185,13 @@ export const getPublicStatsData = async () => {
       totalAdmins,
       totalParticipants,
       totalReviews,
-      totalNewsletters
+      totalNewsletters,
     };
   } catch (error) {
     console.error("Failed to fetch public stats:", error);
     throw new Error("Could not fetch public stats");
   }
 };
-
 
 interface IBarChartData {
   month: string;
@@ -176,11 +201,12 @@ interface IBarChartData {
 export const getUserDashboardStats = async (userId: string) => {
   try {
     // 🔹 Counts related to user
-    const [participatedEventsCount, invitationsCount, paymentsCount] = await prisma.$transaction([
-      prisma.participant.count({ where: { userId } }),
-      prisma.invitation.count({ where: { inviterId:userId } }),
-      prisma.payment.count({ where: { userId } }),
-    ]);
+    const [participatedEventsCount, invitationsCount, paymentsCount] =
+      await prisma.$transaction([
+        prisma.participant.count({ where: { userId } }),
+        prisma.invitation.count({ where: { inviterId: userId } }),
+        prisma.payment.count({ where: { userId } }),
+      ]);
 
     // 🔹 Total paid amount by user
     const revenueResult = await prisma.payment.aggregate({
@@ -190,22 +216,42 @@ export const getUserDashboardStats = async (userId: string) => {
     const totalRevenue = revenueResult._sum.amount ?? 0;
 
     // 🔹 Event Status Counts for user's participated events
-    const [upcomingEvents, completedEvents, cancelledEvents,draftEvent,ongoingEvent] = await Promise.all([
-      prisma.participant.count({ where: { userId, event: { status: "UPCOMING" } } }),
-      prisma.participant.count({ where: { userId, event: { status: "COMPLETED" } } }),
-      prisma.participant.count({ where: { userId, event: { status: "CANCELLED" } } }),
-      prisma.participant.count({ where: { userId, event: { status: "DRAFT"} } }),
-      prisma.participant.count({ where: { userId, event: { status:"ONGOING" } } }),
+    const [
+      upcomingEvents,
+      completedEvents,
+      cancelledEvents,
+      draftEvent,
+      ongoingEvent,
+    ] = await Promise.all([
+      prisma.participant.count({
+        where: { userId, event: { status: "UPCOMING" } },
+      }),
+      prisma.participant.count({
+        where: { userId, event: { status: "COMPLETED" } },
+      }),
+      prisma.participant.count({
+        where: { userId, event: { status: "CANCELLED" } },
+      }),
+      prisma.participant.count({
+        where: { userId, event: { status: "DRAFT" } },
+      }),
+      prisma.participant.count({
+        where: { userId, event: { status: "ONGOING" } },
+      }),
     ]);
 
     const [privateEvent, publicEvent] = await Promise.all([
-      prisma.event.count({ where: { organizerId:userId,visibility:"PRIVATE" } }),
-      prisma.event.count({ where: { organizerId:userId,visibility:"PUBLIC" } })
+      prisma.event.count({
+        where: { organizerId: userId, visibility: "PRIVATE" },
+      }),
+      prisma.event.count({
+        where: { organizerId: userId, visibility: "PUBLIC" },
+      }),
     ]);
 
-    const [freeEvent,paidEvent] = await Promise.all([
-      prisma.event.count({ where: {organizerId:userId, priceType:"FREE" } }),
-      prisma.event.count({ where: {organizerId:userId, priceType:"PAID"} })
+    const [freeEvent, paidEvent] = await Promise.all([
+      prisma.event.count({ where: { organizerId: userId, priceType: "FREE" } }),
+      prisma.event.count({ where: { organizerId: userId, priceType: "PAID" } }),
     ]);
 
     // 🔹 Dynamic monthly revenue from user's payments
@@ -214,12 +260,26 @@ export const getUserDashboardStats = async (userId: string) => {
       select: { amount: true, createdAt: true },
     });
 
-    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     const monthlyRevenue: Record<number, number> = {};
 
-    payments.forEach(payment => {
+    payments.forEach((payment) => {
       const month = payment.createdAt.getMonth();
-      monthlyRevenue[month] = (monthlyRevenue[month] || 0) + Number(payment.amount);
+      monthlyRevenue[month] =
+        (monthlyRevenue[month] || 0) + Number(payment.amount);
     });
 
     const barChartData: IBarChartData[] = monthNames.map((month, idx) => ({
@@ -242,13 +302,13 @@ export const getUserDashboardStats = async (userId: string) => {
         invitations: invitationsCount,
         payments: paymentsCount,
       },
-      eventVisivillity:{
-        public:publicEvent,
-        private:privateEvent
+      eventVisivillity: {
+        public: publicEvent,
+        private: privateEvent,
       },
-      priceType:{
-        free:freeEvent,
-        paid:paidEvent
+      priceType: {
+        free: freeEvent,
+        paid: paidEvent,
       },
       totalRevenue,
       monthlyRevenue: barChartData,
@@ -256,8 +316,8 @@ export const getUserDashboardStats = async (userId: string) => {
         upcoming: upcomingEvents,
         completed: completedEvents,
         cancelled: cancelledEvents,
-        draft:draftEvent,
-        ongoingEvent:ongoingEvent
+        draft: draftEvent,
+        ongoingEvent: ongoingEvent,
       },
       pieChartData,
     };
@@ -267,4 +327,4 @@ export const getUserDashboardStats = async (userId: string) => {
   }
 };
 
-export const statsService={ getDashboardStatsData,getPublicStatsData}
+export const statsService = { getDashboardStatsData, getPublicStatsData };

@@ -130,6 +130,7 @@ export class IndexingService {
         const content = `
         owner name : sujon biswas
         id:${event.id}
+        
   Event Title:
   ${event.title}
   

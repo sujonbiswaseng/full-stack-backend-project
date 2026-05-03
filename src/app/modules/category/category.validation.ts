@@ -9,4 +9,4 @@ import z from "zod";
 export const UpdatecategoryData = z.object({
     name: z.string().optional(),
     image:z.any().optional()
-  }).strict()
+  })

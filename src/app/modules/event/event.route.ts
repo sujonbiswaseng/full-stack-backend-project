@@ -23,6 +23,6 @@ router.get("/category-events", EventController.getAllEvents);
 router.get("/my-events",auth([Role.USER,Role.ADMIN,Role.MANAGER]), EventController.getEventsByRoleController);
 router.get("/events/paidandfree", EventController.getPaidAndFreeEvent);
 router.get("/event/:id", EventController.getSingleEvent);
-router.put("/event/:id",auth([Role.ADMIN,Role.USER]),validateRequest(UpdateEventSchema), EventController.updateEvent);
+router.put("/event/:id",auth([Role.ADMIN,Role.USER,Role.MANAGER]),validateRequest(UpdateEventSchema), EventController.updateEvent);
 router.delete("/event/:id",auth([Role.ADMIN,Role.USER,Role.MANAGER]), EventController.DeletedEvent);
 export const EventRouters=router

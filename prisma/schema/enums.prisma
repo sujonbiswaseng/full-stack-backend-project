@@ -49,6 +49,8 @@ enum InvitationStatus {
 enum ReviewStatus {
   APPROVED
   REJECTED
+  PENDING
+
 }
 
 enum BlogStatus {

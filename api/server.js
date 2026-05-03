@@ -2183,16 +2183,30 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
     "CANCELLED"
   ];
   const andConditions = [];
-  if (query) {
-    const orConditions = [];
-    if (query.title) {
-      orConditions.push({
+  const orConditions = [];
+  if (search) {
+    orConditions.push(
+      {
         title: {
-          contains: query.title,
+          contains: search,
           mode: "insensitive"
         }
-      });
-    }
+      },
+      {
+        description: {
+          contains: search,
+          mode: "insensitive"
+        }
+      },
+      {
+        location: {
+          contains: search,
+          mode: "insensitive"
+        }
+      }
+    );
+  }
+  if (query) {
     if (query.createdAt) {
       const dateRange = parseDateForPrisma(query.createdAt);
       andConditions.push({ createdAt: dateRange.gte });
@@ -2200,36 +2214,6 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
     if (query.date) {
       const dateRange = parseDateForPrisma(query.date);
       andConditions.push({ date: dateRange });
-    }
-    if (search) {
-      orConditions.push(
-        {
-          title: {
-            contains: query.search,
-            mode: "insensitive"
-          }
-        },
-        {
-          description: {
-            contains: query.search,
-            mode: "insensitive"
-          }
-        },
-        {
-          location: {
-            contains: query.search,
-            mode: "insensitive"
-          }
-        }
-      );
-    }
-    if (query.description) {
-      orConditions.push({
-        description: {
-          contains: query.description,
-          mode: "insensitive"
-        }
-      });
     }
     if (query.category_name) {
       orConditions.push({
@@ -5692,6 +5676,8 @@ var IndexingService = class {
           reviews: true,
           blogs: true,
           participants: true,
+          payments: true,
+          category: true,
           invitations: true,
           organizer: {
             select: {
@@ -5736,7 +5722,9 @@ var IndexingService = class {
   ${event.invitations.length}
   `;
         const content = `
+        owner name : sujon biswas
         id:${event.id}
+        
   Event Title:
   ${event.title}
   
@@ -5744,7 +5732,7 @@ var IndexingService = class {
   ${event.description}
   
   Category:
-  ${event.categories}
+  ${event.category_name}
   
   Location:
   ${event.location}
@@ -5788,7 +5776,7 @@ var IndexingService = class {
         const metadata = {
           eventId: event.id,
           title: event.title,
-          category: event.categories,
+          category: event.category_name,
           location: event.location,
           visibility: event.visibility,
           priceType: event.priceType,
@@ -6187,15 +6175,19 @@ var createNewsletter = async (payload) => {
   });
   return newsletter;
 };
-var getAllNewsletters = async (email, page, limit, skip) => {
+var getAllNewsletters = async (query, page, limit, skip) => {
   const andConditions = [];
-  if (email) {
+  if (query?.email) {
     andConditions.push({
       email: {
-        contains: email,
+        contains: query.email,
         mode: "insensitive"
       }
     });
+  }
+  if (query?.createdAt) {
+    const dateRange = parseDateForPrisma(query.createdAt);
+    andConditions.push({ createdAt: dateRange.gte });
   }
   const newsletters = await prisma.newsletter.findMany({
     skip: skip || (page && limit ? (page - 1) * limit : void 0),
