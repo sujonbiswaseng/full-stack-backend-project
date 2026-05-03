@@ -2216,7 +2216,7 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
           }
         },
         {
-          venue: {
+          location: {
             contains: query.search,
             mode: "insensitive"
           }
@@ -2231,9 +2231,9 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
         }
       });
     }
-    if (query.categories) {
+    if (query.category_name) {
       orConditions.push({
-        categories: query.categories
+        category_name: query.category_name
       });
     }
     if (orConditions.length > 0) {
@@ -2742,6 +2742,7 @@ router2.post(
 );
 router2.get("/event/isfeatured", EventController.IsFeautured);
 router2.get("/events", EventController.getAllEvents);
+router2.get("/category-events", EventController.getAllEvents);
 router2.get("/my-events", Auth_default([Role.USER, Role.ADMIN, Role.MANAGER]), EventController.getEventsByRoleController);
 router2.get("/events/paidandfree", EventController.getPaidAndFreeEvent);
 router2.get("/event/:id", EventController.getSingleEvent);
@@ -4045,7 +4046,7 @@ init_prisma();
 var getDashboardStatsData = async (user) => {
   let statsData;
   switch (user.role) {
-    case Role.ADMIN:
+    case (Role.ADMIN, Role.MANAGER):
       statsData = getAdminDashboardStats();
       break;
     case Role.USER:
@@ -4288,7 +4289,7 @@ var StatsController = {
 var router6 = express2.Router();
 router6.get(
   "/stats",
-  Auth_default([Role.USER, Role.ADMIN]),
+  Auth_default([Role.USER, Role.ADMIN, Role.MANAGER]),
   StatsController.getDashboardStatsData
 );
 router6.get(
@@ -6127,7 +6128,8 @@ var queryRag = catchAsync(async (req, res) => {
     true
   );
   try {
-    await redisService.set(cacheKey, result, 600);
+    const dat = await redisService.set(cacheKey, result, 600);
+    console.log(dat, "da");
   } catch (error) {
     console.log("cache Write error", error);
   }
@@ -6455,7 +6457,83 @@ var getCategory = async (data, page, limit, skip) => {
     }
   };
 };
-var SingleCategory = async (id) => {
+var SingleCategory = async (id, query, page, limit, skip, search) => {
+  const andConditions = [];
+  if (query) {
+    const orConditions = [];
+    if (query.title) {
+      orConditions.push({
+        title: {
+          contains: query.title,
+          mode: "insensitive"
+        }
+      });
+    }
+    if (query.createdAt) {
+      const dateRange = parseDateForPrisma(query.createdAt);
+      andConditions.push({ createdAt: dateRange.gte });
+    }
+    if (query.date) {
+      const dateRange = parseDateForPrisma(query.date);
+      andConditions.push({ date: dateRange });
+    }
+    if (search) {
+      orConditions.push(
+        {
+          title: {
+            contains: query.search,
+            mode: "insensitive"
+          }
+        },
+        {
+          description: {
+            contains: query.search,
+            mode: "insensitive"
+          }
+        },
+        {
+          venue: {
+            contains: query.search,
+            mode: "insensitive"
+          }
+        }
+      );
+    }
+    if (query.description) {
+      orConditions.push({
+        description: {
+          contains: query.description,
+          mode: "insensitive"
+        }
+      });
+    }
+    if (query.categories) {
+      orConditions.push({
+        categories: query.categories
+      });
+    }
+    if (orConditions.length > 0) {
+      andConditions.push({ OR: orConditions });
+    }
+  }
+  if (query?.fee) {
+    andConditions.push({
+      fee: {
+        gte: 1,
+        lte: Number(query.fee)
+      }
+    });
+  }
+  if (query?.visibility) {
+    andConditions.push({
+      visibility: query.visibility
+    });
+  }
+  if (query?.priceType) {
+    andConditions.push({
+      priceType: query.priceType
+    });
+  }
   const result = await prisma.category.findFirstOrThrow({
     where: { id },
     include: {
@@ -6467,30 +6545,50 @@ var SingleCategory = async (id) => {
       user: true
     }
   });
-  if (result && Array.isArray(result.event)) {
-    result.event = result.event.map((meal) => {
-      let totalRating = 0;
-      let totalReviews = 0;
-      if (Array.isArray(meal.reviews)) {
-        meal.reviews = meal.reviews.filter(
-          (review) => review.status === "APPROVED" && review.parentId === null || typeof review.status === "undefined"
-        );
-        meal.reviews.forEach((review) => {
-          if ((review.status === "APPROVED" || typeof review.status === "undefined") && typeof review.rating === "number") {
-            totalRating += review.rating;
-            totalReviews++;
-          }
-        });
+  const events = await prisma.event.findMany({
+    where: {
+      category_name: result.name,
+      status: "UPCOMING",
+      AND: andConditions
+    },
+    take: limit,
+    skip,
+    include: {
+      reviews: {
+        where: { rating: { gt: 0 } }
+      },
+      organizer: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          image: true
+        }
       }
-      const avgRating = totalReviews > 0 ? Number((totalRating / totalReviews).toFixed(1)) : 0;
-      return {
-        ...meal,
-        avgRating,
-        totalReviews
-      };
-    });
-  }
-  return result;
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+  const eventdata = events.map((event) => {
+    const totalReviews = event.reviews.length;
+    const avgRating = totalReviews > 0 ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews : 0;
+    return { ...event, avgRating, totalReviews };
+  });
+  const total = await prisma.event.count({ where: { AND: andConditions } });
+  return {
+    data: {
+      result,
+      eventdata
+    },
+    pagination: {
+      total,
+      page,
+      limit,
+      totalpage: Math.ceil(total / limit) || 1
+    }
+  };
 };
 var UpdateCategory = async (id, data) => {
   const { name } = data;
@@ -6565,7 +6663,16 @@ var getCategory2 = catchAsync(async (req, res) => {
   });
 });
 var SingleCategory2 = catchAsync(async (req, res) => {
-  const result = await categoryService.SingleCategory(req.params.id);
+  const { page, limit, skip } = paginationHelping_default(req.query);
+  console.log(req.query);
+  const result = await categoryService.SingleCategory(
+    req.params.id,
+    req.query,
+    page,
+    limit,
+    skip,
+    typeof req.query.search === "string" ? req.query.search : void 0
+  );
   sendResponse(res, {
     httpStatusCode: status29.OK,
     success: true,

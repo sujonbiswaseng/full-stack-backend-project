@@ -1,21 +1,24 @@
 
 ### Project name : 
-##### Planora – Event Management Platform 
+##### lumen – Event Management Platform 
 
 ### Project description : 
-##### Planora is a high-performance, full-stack event management platform designed to bridge the gap between event organizers and attendees. Whether it’s a public concert or a private corporate workshop, Planora provides a seamless workflow for event creation, secure payments, and role-based participant management.
+##### Lumen is a high-performance, full-stack event management ecosystem engineered for the modern era. It serves as a comprehensive bridge between ambitious event organizers and global audiences. From high-capacity music festivals to intimate corporate seminars, Lumen provides a professional-grade suite of tools for event discovery, secure ticketing, and real-time participant management.
+
+Built with a focus on scalability, security, and intelligence, Lumen eliminates the friction of traditional planning by integrating AI-driven insights and a flawless, role-based user experience.
 
 ### Quick Links
- - Frontend Repo    : https://github.com/sujonbiswasdev/frontend-nextlevel-assignment-5.git
-- Backend Repo     : https://github.com/sujonbiswasdev/nextlevel-backend-assignment-5.git
-- Frontend Live    : https://frontend-nextlevel-assignment-5.vercel.app
-- Backend Live     : https://nextlevel-backend-assignment-5.vercel.app
+ - Frontend Repo    : https://github.com/sujonbiswaseng/lumen-frontend-project.git
+- Backend Repo     : https://github.com/sujonbiswaseng/full-stack-backend-project.git
+- Frontend Live    : https://lumen-frontend-project.vercel.app
+- Backend Live     : https://full-stack-backend-project-taupe.vercel.app
 
 ### Key feature
 Authentication
 - User registration and login
 - Secure authentication using JWT
 - Protected routes
+- Google social login
 
 📅 Event Management
 - Create, update, and delete events
@@ -82,11 +85,11 @@ Deployment
 - vercel(Backend)
 
 ## Setup Instructions
-- (frontend) : git clone https://github.com/sujonbiswasdev/frontend-nextlevel-assignment-5.git
-- (backend) : git clone https://github.com/sujonbiswasdev/nextlevel-backend-assignment-5.git
+- (frontend) : git clone https://github.com/sujonbiswaseng/lumen-frontend-project.git
+- (backend) : git clone https://github.com/sujonbiswaseng/full-stack-backend-project.git
 
 ### Backend Setup
-- cd nextlevel-backend-assignment-5
+- cd full-stack-backend-project.git
 - pnpm install
 - Create .env file:
 ```typescript
@@ -136,7 +139,7 @@ Run the cmd:
 
 ### Frontend Setup
 
-- cd frontend-nextlevel-assignment-5
+- cd lumen-frontend-project.git
 - pnpm install
 - Create .env file:
 

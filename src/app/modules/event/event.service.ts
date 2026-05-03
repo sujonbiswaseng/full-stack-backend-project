@@ -65,18 +65,36 @@ const getAllEvents = async (
     "CANCELLED",
   ] as const;
   const andConditions: EventWhereInput[] | EventWhereInput = [];
+  const orConditions: any[] = [];
 
-  if (query) {
-    const orConditions: any[] = [];
-    if (query.title) {
-      orConditions.push({
+
+
+
+  if (search) {
+    orConditions.push(
+      {
         title: {
-          contains: query.title,
+          contains: search,
           mode: "insensitive",
         },
-      });
-    }
+      },
+      {
+        description: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      {
+        location: {
+          contains:search,
+          mode: "insensitive",
+        },
+      }
+    );
+  }
 
+  if (query) {
+  
     if (query.createdAt) {
       const dateRange = parseDateForPrisma(query.createdAt);
       andConditions.push({ createdAt: dateRange.gte });
@@ -86,37 +104,7 @@ const getAllEvents = async (
       andConditions.push({date: dateRange});
     }
 
-    if (search) {
-      orConditions.push(
-        {
-          title: {
-            contains: query.search,
-            mode: "insensitive",
-          },
-        },
-        {
-          description: {
-            contains: query.search,
-            mode: "insensitive",
-          },
-        },
-        {
-          location: {
-            contains: query.search,
-            mode: "insensitive",
-          },
-        }
-      );
-    }
-
-    if (query.description) {
-      orConditions.push({
-        description: {
-          contains: query.description,
-          mode: "insensitive",
-        },
-      });
-    }
+  
     if (query.category_name) {
       orConditions.push({
         category_name: query.category_name,
