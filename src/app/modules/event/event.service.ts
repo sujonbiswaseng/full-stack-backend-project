@@ -25,9 +25,12 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
     images,
   } = payload;
   if (!images) {
-    throw new AppError(status.BAD_REQUEST, "Image is required to create an event.");
+    throw new AppError(
+      status.BAD_REQUEST,
+      "Image is required to create an event.",
+    );
   }
-  console.log(images,'image')
+  console.log(images, "image");
   const event = await prisma.event.create({
     data: {
       title,
@@ -37,7 +40,7 @@ const createEvent = async (user: IRequestUser, payload: ICreateEvent) => {
       priceType,
       category_name,
       location,
-      images:images as unknown as string[],
+      images: images as unknown as string[],
       visibility,
       fee,
       organizerId: user.userId,
@@ -54,8 +57,8 @@ const getAllEvents = async (
   skip?: number,
   sortBy?: string | undefined,
   sortOrder?: string | undefined,
-  is_featureddata?:any,
-  search?:any
+  is_featureddata?: any,
+  search?: any,
 ) => {
   const statuses = [
     "DRAFT",
@@ -66,9 +69,6 @@ const getAllEvents = async (
   ] as const;
   const andConditions: EventWhereInput[] | EventWhereInput = [];
   const orConditions: any[] = [];
-
-
-
 
   if (search) {
     orConditions.push(
@@ -86,25 +86,23 @@ const getAllEvents = async (
       },
       {
         location: {
-          contains:search,
+          contains: search,
           mode: "insensitive",
         },
-      }
+      },
     );
   }
 
   if (query) {
-  
     if (query.createdAt) {
       const dateRange = parseDateForPrisma(query.createdAt);
       andConditions.push({ createdAt: dateRange.gte });
     }
     if (query.date) {
       const dateRange = parseDateForPrisma(query.date);
-      andConditions.push({date: dateRange});
+      andConditions.push({ date: dateRange });
     }
 
-  
     if (query.category_name) {
       orConditions.push({
         category_name: query.category_name,
@@ -114,7 +112,6 @@ const getAllEvents = async (
       andConditions.push({ OR: orConditions });
     }
   }
-
 
   if (query?.fee) {
     andConditions.push({
@@ -142,35 +139,39 @@ const getAllEvents = async (
     });
   }
 
-
   if (query?.status) {
     andConditions.push({
       status: query.status,
     });
   }
+  if (orConditions.length > 0) {
+    andConditions.push({ OR: orConditions });
+  }
+  console.log(orConditions, "or");
+  console.log(andConditions, "and");
 
   const result: any = {};
   for (const status of statuses) {
     const events = await prisma.event.findMany({
       take: limit,
       skip,
-      where: { status, AND: andConditions,is_featured:is_featureddata},
+      where: { status, AND: andConditions, is_featured: is_featureddata },
       include: {
         reviews: {
           where: { rating: { gt: 0 } },
         },
-        organizer:{
-          select:{
-            id:true,
-            name:true,
-            email:true,
-            phone:true,
-            image:true
-          }
-        }
+        organizer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            image: true,
+          },
+        },
       },
       orderBy: {
-        [sortBy!]:sortOrder
+        [sortBy!]: sortOrder,
       },
     });
 
@@ -187,7 +188,7 @@ const getAllEvents = async (
   const total = await prisma.event.count({ where: { AND: andConditions } });
 
   return {
-     data:result,
+    data: result,
     pagination: {
       total,
       page,
@@ -197,10 +198,7 @@ const getAllEvents = async (
   };
 };
 
-
-
-
- const getEventsByRole = async (
+const getEventsByRole = async (
   data: IEventQuery,
   userId: string,
   role: string,
@@ -209,19 +207,25 @@ const getAllEvents = async (
   skip?: number,
   sortBy?: string,
   sortOrder?: string,
-  search?:string
+  search?: string,
 ) => {
-  const statuses = ["DRAFT", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as const;
+  const statuses = [
+    "DRAFT",
+    "UPCOMING",
+    "ONGOING",
+    "COMPLETED",
+    "CANCELLED",
+  ] as const;
   const andConditions: EventWhereInput[] = [];
 
   // ---------- Filters ----------
   if (search) {
     const orConditions: any[] = [];
-      orConditions.push(
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { venue: { contains: search, mode: "insensitive" } }
-      );
+    orConditions.push(
+      { title: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+      { venue: { contains: search, mode: "insensitive" } },
+    );
     if (orConditions.length > 0) andConditions.push({ OR: orConditions });
   }
 
@@ -237,11 +241,15 @@ const getAllEvents = async (
     andConditions.push({ createdAt: createdAtRange });
   }
   if (data.fee) andConditions.push({ fee: { lte: Number(data.fee) } });
-  if (data.visibility) andConditions.push({ visibility: data.visibility as EventType });
+  if (data.visibility)
+    andConditions.push({ visibility: data.visibility as EventType });
   if (data.priceType) andConditions.push({ priceType: data.priceType });
   if (data.is_featured !== undefined) {
     andConditions.push({
-      is_featured: typeof data.is_featured === "string" ? data.is_featured === "true" : data.is_featured
+      is_featured:
+        typeof data.is_featured === "string"
+          ? data.is_featured === "true"
+          : data.is_featured,
     });
   }
   if (data.status) andConditions.push({ status: data.status });
@@ -250,7 +258,7 @@ const getAllEvents = async (
   // ---------- Role Based Filter ----------
   if (role === "USER") {
     andConditions.push({ organizerId: userId });
-  } 
+  }
   const result: any = {};
 
   for (const status of statuses) {
@@ -260,14 +268,19 @@ const getAllEvents = async (
       skip,
       include: {
         reviews: { where: { rating: { gt: 0 } } },
-        organizer: { select: { name: true, email: true, phone: true, image: true } },
+        organizer: {
+          select: { name: true, email: true, phone: true, image: true },
+        },
       },
       orderBy: sortBy ? { [sortBy]: sortOrder } : { date: "desc" },
     });
 
     result[status] = events.map((event) => {
       const totalReviews = event.reviews.length;
-      const avgRating = totalReviews > 0 ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews : 0;
+      const avgRating =
+        totalReviews > 0
+          ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+          : 0;
       return { ...event, avgRating, totalReviews };
     });
   }
@@ -298,15 +311,15 @@ const getSingleEvent = async (eventId: string) => {
                 include: {
                   replies: true,
                   user: true,
-                }
+                },
               },
               user: true,
-            }
+            },
           },
           user: true,
         },
       },
-      organizer:true
+      organizer: true,
     },
   });
 
@@ -326,11 +339,11 @@ const getSingleEvent = async (eventId: string) => {
   };
 };
 
-
 const calculateReviewStats = (event: any) => {
   const totalReviews = event.reviews.length;
   const avgRating = totalReviews
-    ? event.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews
+    ? event.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) /
+      totalReviews
     : 0;
 
   const { reviews, ...eventData } = event;
@@ -342,25 +355,24 @@ const GetPaidAndFreeEvent = async (
   limit?: number | undefined,
   skip?: number,
   sortBy?: string | undefined,
-  sortOrder?: string | undefined,) => {
-
-
+  sortOrder?: string | undefined,
+) => {
   const PublicPaidEventRaw = await prisma.event.findMany({
     take: limit,
     skip,
     where: {
       visibility: "PUBLIC",
-      priceType:"PAID",
+      priceType: "PAID",
     },
     include: {
       reviews: {
         where: {
-          rating: { gt: 0 }
-        }
-      }
+          rating: { gt: 0 },
+        },
+      },
     },
     orderBy: {
-      [sortBy!]:sortOrder
+      [sortBy!]: sortOrder,
     },
   });
 
@@ -369,15 +381,15 @@ const GetPaidAndFreeEvent = async (
   const PublicFreeEventRaw = await prisma.event.findMany({
     where: {
       visibility: "PUBLIC",
-      priceType:"FREE"
+      priceType: "FREE",
     },
     include: {
       reviews: {
         where: {
-          rating: { gt: 0 }
-        }
-      }
-    }
+          rating: { gt: 0 },
+        },
+      },
+    },
   });
 
   const PublicFreeEvent = PublicFreeEventRaw.map(calculateReviewStats);
@@ -385,30 +397,30 @@ const GetPaidAndFreeEvent = async (
   const PrivateFreeEventRaw = await prisma.event.findMany({
     where: {
       visibility: "PRIVATE",
-      priceType:"FREE",
+      priceType: "FREE",
     },
     include: {
       reviews: {
         where: {
-          rating: { gt: 0 }
-        }
-      }
-    }
+          rating: { gt: 0 },
+        },
+      },
+    },
   });
 
   const PrivateFreeEvent = PrivateFreeEventRaw.map(calculateReviewStats);
   const PrivatePaidEventRaw = await prisma.event.findMany({
     where: {
       visibility: "PRIVATE",
-      priceType:"PAID",
+      priceType: "PAID",
     },
     include: {
       reviews: {
         where: {
-          rating: { gt: 0 }
-        }
-      }
-    }
+          rating: { gt: 0 },
+        },
+      },
+    },
   });
 
   const PrivatePaidEvent = PrivatePaidEventRaw.map(calculateReviewStats);
@@ -420,13 +432,16 @@ const GetPaidAndFreeEvent = async (
     PrivatePaidEvent,
     pagination: {
       page,
-      limit
+      limit,
     },
   };
 };
 
-
-const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:string) => {
+const updateEvent = async (
+  eventId: string,
+  payload: IUpdateEventInput,
+  email: string,
+) => {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
   });
@@ -436,8 +451,8 @@ const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:str
   if (!userExist) {
     throw new AppError(404, "User not found");
   }
-  
-  if (payload.is_featured && userExist.role!=="ADMIN") {
+
+  if (payload.is_featured && userExist.role !== "ADMIN") {
     throw new AppError(403, "You are not authorized to feature this event");
   }
 
@@ -458,8 +473,7 @@ const updateEvent = async (eventId: string, payload: IUpdateEventInput,email:str
       status: payload.status,
       priceType: payload.priceType,
       category_name: payload.category_name,
-      is_featured:payload.is_featured
-      
+      is_featured: payload.is_featured,
     },
   });
 
@@ -503,13 +517,12 @@ const IsFeautured = async () => {
       is_featured: true,
     },
     orderBy: {
-      date: 'asc',
+      date: "asc",
     },
   });
 
   return featuredEvents;
 };
-
 
 export const EventServices = {
   createEvent,
@@ -519,5 +532,5 @@ export const EventServices = {
   DeleteEvent,
   GetPaidAndFreeEvent,
   getEventsByRole,
-  IsFeautured
+  IsFeautured,
 };

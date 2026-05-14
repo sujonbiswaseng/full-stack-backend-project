@@ -9,7 +9,7 @@ export class LLMService {
   constructor() {
     this.apiKey = envVars.RAG.OPENROUTER_API_KEY;
     this.model =
-      envVars.RAG.OPENROUTER_LLM_MODEL ;
+      envVars.RAG.OPENROUTER_LLM_MODEL;
 
     if (!this.apiKey) {
       throw new Error("OpenRouter api key is missing...");

@@ -2714,7 +2714,20 @@ var CreateEventSchema = z3.object({
   status: EventStatusEnum.default("UPCOMING"),
   is_featured: z3.boolean().optional().default(false)
 });
-var UpdateEventSchema = CreateEventSchema.partial();
+var UpdateEventSchema = z3.object({
+  title: z3.string().optional(),
+  description: z3.string().optional(),
+  category_name: z3.string().optional(),
+  date: z3.any().optional(),
+  time: z3.string().optional(),
+  location: z3.string().optional(),
+  images: z3.any().optional(),
+  visibility: z3.any().optional(),
+  priceType: z3.any().optional(),
+  fee: z3.coerce.number().optional(),
+  status: z3.any().optional(),
+  is_featured: z3.boolean().optional()
+});
 
 // src/app/modules/event/event.route.ts
 var router2 = Router2();
@@ -5155,37 +5168,32 @@ var createBlog = async (user, payload) => {
 };
 var getAllBlogs = async (query, page, limit, skip, sortBy, sortOrder, search) => {
   const andConditions = [];
+  const orConditions = [];
   if (query) {
-    const orConditions = [];
-    if (query.title) {
-      orConditions.push({
-        title: {
-          contains: query.title,
-          mode: "insensitive"
-        }
-      });
-    }
     if (query.createdAt) {
       const dateRange = parseDateForPrisma(query.createdAt);
       andConditions.push({ createdAt: dateRange.gte });
     }
-    if (search) {
-      orConditions.push(
-        {
-          title: {
-            contains: query.search,
-            mode: "insensitive"
-          }
-        },
-        {
-          content: {
-            contains: query.search,
-            mode: "insensitive"
-          }
-        }
-      );
-    }
   }
+  console.log(search, "serch");
+  if (search) {
+    orConditions.push(
+      {
+        title: {
+          contains: search,
+          mode: "insensitive"
+        }
+      },
+      {
+        content: {
+          contains: search,
+          mode: "insensitive"
+        }
+      }
+    );
+    andConditions.push({ OR: orConditions });
+  }
+  console.log(andConditions, "donsdfssadsfdddd");
   const blogs = await prisma.blog.findMany({
     where: { AND: andConditions },
     skip: skip || (page && limit ? (page - 1) * limit : void 0),
@@ -6331,9 +6339,8 @@ var createNewsletter2 = catchAsync(async (req, res) => {
   });
 });
 var getAllNewsletters2 = catchAsync(async (req, res) => {
-  const { email } = req.query;
   const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
-  const result = await NewsletterService.getAllNewsletters(email, page, limit, skip);
+  const result = await NewsletterService.getAllNewsletters(req.query, page, limit, skip);
   sendResponse(res, {
     httpStatusCode: status27.OK,
     success: true,

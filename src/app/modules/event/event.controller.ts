@@ -7,15 +7,18 @@ import paginationSortingHelper from "../../helpers/paginationHelping";
 import AppError from "../../errorHelper/AppError";
 
 const createEvent = catchAsync(async (req: Request, res: Response) => {
-        if (!req.user?.userId) {
-          throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
-        }
-        const files = req.files as Express.Multer.File[];
+  if (!req.user?.userId) {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Unauthorized access. Please login first.",
+    );
+  }
+  const files = req.files as Express.Multer.File[];
 
-        const payload = {
-          ...req.body,
-          images: files?.length ? files.map((file) => file.path) : req.body.images,
-        };
+  const payload = {
+    ...req.body,
+    images: files?.length ? files.map((file) => file.path) : req.body.images,
+  };
 
   const user = req.user;
   const result = await EventServices.createEvent(user, payload);
@@ -29,9 +32,11 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllEvents = catchAsync(async (req: Request, res: Response) => {
-  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
-  const {search}=req.query
-  const {is_featured}=req.query
+  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(
+    req.query,
+  );
+  const { search } = req.query;
+  const { is_featured } = req.query;
   const is_featureddata = is_featured
     ? req.query.is_featured === "true"
       ? true
@@ -39,7 +44,16 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
         ? false
         : undefined
     : undefined;
-  const events = await EventServices.getAllEvents(req.query,page, limit, skip, sortBy, sortOrder,is_featureddata,search);
+  const events = await EventServices.getAllEvents(
+    req.query,
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+    is_featureddata,
+    search,
+  );
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
@@ -48,35 +62,41 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getEventsByRoleController = catchAsync(
+  async (req: Request, res: Response) => {
+    const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(
+      req.query,
+    );
 
- const getEventsByRoleController = catchAsync(async (req: Request, res: Response) => {
-  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
+    if (!req.user?.userId || !req.user?.role) {
+      throw new AppError(
+        status.UNAUTHORIZED,
+        "Unauthorized access. Please login first.",
+      );
+    }
+    const userId = req.user.userId;
+    const role = req.user.role;
+    const search = req.query?.search;
+    const events = await EventServices.getEventsByRole(
+      req.query,
+      userId,
+      role,
+      page,
+      limit,
+      skip,
+      sortBy,
+      sortOrder,
+      search as string,
+    );
 
-  if (!req.user?.userId || !req.user?.role) {
-    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
-  }
-  const userId = req.user.userId;
-  const role = req.user.role;
-  const search=req.query?.search
-  const events = await EventServices.getEventsByRole(
-    req.query,
-    userId,
-    role,
-    page,
-    limit,
-    skip,
-    sortBy,
-    sortOrder,
-    search as string
-  );
-
-  sendResponse(res, {
-    httpStatusCode: status.OK,
-    success: true,
-    message: "Events fetched based on role successfully",
-    data: events,
-  });
-});
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "Events fetched based on role successfully",
+      data: events,
+    });
+  },
+);
 
 const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
   const eventId = req.params.id;
@@ -91,8 +111,16 @@ const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
-  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
-  const events = await EventServices.GetPaidAndFreeEvent(page, limit, skip, sortBy, sortOrder);
+  const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(
+    req.query,
+  );
+  const events = await EventServices.GetPaidAndFreeEvent(
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+  );
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
@@ -101,14 +129,21 @@ const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
- const updateEvent = catchAsync(async (req: Request, res: Response) => {
+const updateEvent = catchAsync(async (req: Request, res: Response) => {
   const eventId = req.params.id;
   if (!req.user?.email) {
-    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Unauthorized access. Please login first.",
+    );
   }
-  const user=req.user
+  const user = req.user;
 
-  const updatedEvent = await EventServices.updateEvent(eventId as string, req.body ,user.email);
+  const updatedEvent = await EventServices.updateEvent(
+    eventId as string,
+    req.body,
+    user.email,
+  );
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -118,12 +153,18 @@ const getPaidAndFreeEvent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
- const DeletedEvent = catchAsync(async (req: Request, res: Response) => {
+const DeletedEvent = catchAsync(async (req: Request, res: Response) => {
   const eventId = req.params.id;
   if (!req.user?.userId) {
-    throw new AppError(status.UNAUTHORIZED, "Unauthorized access. Please login first.");
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Unauthorized access. Please login first.",
+    );
   }
-  const deletedEvent = await EventServices.DeleteEvent(req.user,eventId as string);
+  const deletedEvent = await EventServices.DeleteEvent(
+    req.user,
+    eventId as string,
+  );
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
@@ -142,5 +183,13 @@ const IsFeautured = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-export const EventController={createEvent,getAllEvents,getSingleEvent,updateEvent,DeletedEvent,getPaidAndFreeEvent,getEventsByRoleController,IsFeautured}
+export const EventController = {
+  createEvent,
+  getAllEvents,
+  getSingleEvent,
+  updateEvent,
+  DeletedEvent,
+  getPaidAndFreeEvent,
+  getEventsByRoleController,
+  IsFeautured,
+};

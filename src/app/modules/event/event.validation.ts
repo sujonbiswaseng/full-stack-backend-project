@@ -36,5 +36,18 @@ export const CreateEventSchema = z.object({
   status: EventStatusEnum.default("UPCOMING"),
   is_featured: z.boolean().optional().default(false),
 })
-export const UpdateEventSchema = CreateEventSchema.partial();
+export const UpdateEventSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  category_name: z.string().optional(),
+  date: z.any().optional(),
+  time: z.string().optional(),
+  location: z.string().optional(),
+  images: z.any().optional(),
+  visibility: z.any().optional(),
+  priceType: z.any().optional(),
+  fee: z.coerce.number().optional(),
+  status:z.any().optional(),
+  is_featured: z.boolean().optional(),
+});
 
