@@ -191,4 +191,150 @@ export class LLMService {
       throw error;
     }
   }
+
+  async generatePersonalizedRecommendations(
+    userId: string,
+    viewerId:string,
+    prompt: string,
+    context: string[] = [],
+    asJson: boolean = false,
+  ) {
+
+    // User activity history
+    const userActivities = await prisma.userActivity.findMany({
+      where: {
+        viewerId:viewerId,
+      },
+  
+      take: 10,
+  
+      orderBy: {
+        createdAt: "desc",
+      },
+  
+      include: {
+        event: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            category_name: true,
+            location: true,
+          },
+        },
+      },
+    });
+
+    const events = userActivities.map((item) => ({
+      id: item.eventid,
+      title: item.event.title,
+      description: item.event.description,
+      location: item.event.location,
+      category_name: item.event.category_name,
+    }));
+
+    try {
+      const aiPrompt = `
+      You are an AI-powered recommendation engine.
+  
+      TASK:
+      Generate ONLY personalized event recommendations.
+  
+      USER SEARCH:
+      ${prompt}  
+    
+  
+      AVAILABLE EVENTS:
+      ${JSON.stringify(events)}
+  
+      EXTRA CONTEXT:
+      ${context}
+  
+      STRICT RULES:
+      - Only personalized event recommendations
+      - Use user activity + AI history
+      - Short meaningful titles
+      - Professional response
+      - No markdown
+      - JSON only
+  
+      RETURN FORMAT:
+      {
+        "recommendations": [
+          {
+            "id": "event id",
+            "title": "event title",
+            "category": "event category",
+            "reason": "recommended based on user activity"
+          }
+        ]
+      }
+      `;
+  
+      const bodyPayload: any = {
+        model: this.model,
+  
+        messages: [
+          {
+            role: "user",
+            content: aiPrompt,
+          },
+        ],
+      };
+  
+      if (
+        asJson &&
+        (
+          this.model.includes("gpt") ||
+          this.model.includes("openai") ||
+          this.model.includes("DeepSeek") ||
+          this.model.includes("deepseek")
+        )
+      ) {
+        bodyPayload.response_format = {
+          type: "json_object",
+        };
+      }
+  
+      const response = await fetch(
+        `${this.apiUrl}/chat/completions`,
+        {
+          method: "POST",
+  
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://lumen-management.local",
+            "X-Title": "lumen Management System",
+          },
+  
+          body: JSON.stringify(bodyPayload),
+        },
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+  
+        throw new Error(
+          `OpenRouter API error: ${response.status} - ${
+            errorData.error?.message || "unknown error"
+          }`,
+        );
+      }
+  
+      const data = await response.json();
+      console.log(data,'data')
+      console.log(data.choices[0].message.content,'content')
+      return data.choices[0].message.content;
+  
+    } catch (error) {
+  
+      console.error(
+        "Error generating personalized recommendations:",
+        error,
+      );
+  
+      throw error;
+    }
+  }
 }

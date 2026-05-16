@@ -35,7 +35,6 @@ model User {
   highlights    Highlight[]
   categories     Category[]
   aicreations     AIContent[]
-  UserActivitys  UserActivity[]
   @@map("user")
 }
 

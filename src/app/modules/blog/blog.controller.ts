@@ -42,8 +42,9 @@ const getAllBlogs = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getSingleBlog = catchAsync(async (req: Request, res: Response) => {
+  const viewerId = req.viewerId;
   const { id } = req.params;
-  const result = await BlogServices.getSingleBlog(id as string);
+  const result = await BlogServices.getSingleBlog(id as string,viewerId as string);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,

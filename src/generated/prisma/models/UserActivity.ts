@@ -26,52 +26,58 @@ export type AggregateUserActivity = {
 
 export type UserActivityMinAggregateOutputType = {
   id: string | null
+  viewerId: string | null
   category: string | null
   eventid: string | null
-  userId: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type UserActivityMaxAggregateOutputType = {
   id: string | null
+  viewerId: string | null
   category: string | null
   eventid: string | null
-  userId: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type UserActivityCountAggregateOutputType = {
   id: number
+  viewerId: number
   category: number
   eventid: number
-  userId: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
 
 export type UserActivityMinAggregateInputType = {
   id?: true
+  viewerId?: true
   category?: true
   eventid?: true
-  userId?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type UserActivityMaxAggregateInputType = {
   id?: true
+  viewerId?: true
   category?: true
   eventid?: true
-  userId?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type UserActivityCountAggregateInputType = {
   id?: true
+  viewerId?: true
   category?: true
   eventid?: true
-  userId?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -149,10 +155,11 @@ export type UserActivityGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type UserActivityGroupByOutputType = {
   id: string
+  viewerId: string
   category: string
   eventid: string
-  userId: string
   createdAt: Date
+  updatedAt: Date
   _count: UserActivityCountAggregateOutputType | null
   _min: UserActivityMinAggregateOutputType | null
   _max: UserActivityMaxAggregateOutputType | null
@@ -178,43 +185,45 @@ export type UserActivityWhereInput = {
   OR?: Prisma.UserActivityWhereInput[]
   NOT?: Prisma.UserActivityWhereInput | Prisma.UserActivityWhereInput[]
   id?: Prisma.StringFilter<"UserActivity"> | string
+  viewerId?: Prisma.StringFilter<"UserActivity"> | string
   category?: Prisma.StringFilter<"UserActivity"> | string
   eventid?: Prisma.StringFilter<"UserActivity"> | string
-  userId?: Prisma.StringFilter<"UserActivity"> | string
   createdAt?: Prisma.DateTimeFilter<"UserActivity"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"UserActivity"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type UserActivityOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  viewerId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   eventid?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   event?: Prisma.EventOrderByWithRelationInput
-  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type UserActivityWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  viewerId_eventid_category?: Prisma.UserActivityViewerIdEventidCategoryCompoundUniqueInput
   AND?: Prisma.UserActivityWhereInput | Prisma.UserActivityWhereInput[]
   OR?: Prisma.UserActivityWhereInput[]
   NOT?: Prisma.UserActivityWhereInput | Prisma.UserActivityWhereInput[]
+  viewerId?: Prisma.StringFilter<"UserActivity"> | string
   category?: Prisma.StringFilter<"UserActivity"> | string
   eventid?: Prisma.StringFilter<"UserActivity"> | string
-  userId?: Prisma.StringFilter<"UserActivity"> | string
   createdAt?: Prisma.DateTimeFilter<"UserActivity"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"UserActivity"> | Date | string
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id">
+}, "id" | "viewerId_eventid_category">
 
 export type UserActivityOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  viewerId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   eventid?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserActivityCountOrderByAggregateInput
   _max?: Prisma.UserActivityMaxOrderByAggregateInput
   _min?: Prisma.UserActivityMinOrderByAggregateInput
@@ -225,64 +234,73 @@ export type UserActivityScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserActivityScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserActivityScalarWhereWithAggregatesInput | Prisma.UserActivityScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"UserActivity"> | string
+  viewerId?: Prisma.StringWithAggregatesFilter<"UserActivity"> | string
   category?: Prisma.StringWithAggregatesFilter<"UserActivity"> | string
   eventid?: Prisma.StringWithAggregatesFilter<"UserActivity"> | string
-  userId?: Prisma.StringWithAggregatesFilter<"UserActivity"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"UserActivity"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"UserActivity"> | Date | string
 }
 
 export type UserActivityCreateInput = {
   id?: string
+  viewerId: string
   category: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutUserActivitysInput
-  user: Prisma.UserCreateNestedOneWithoutUserActivitysInput
 }
 
 export type UserActivityUncheckedCreateInput = {
   id?: string
+  viewerId: string
   category: string
   eventid: string
-  userId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserActivityUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  viewerId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutUserActivitysNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutUserActivitysNestedInput
 }
 
 export type UserActivityUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  viewerId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   eventid?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserActivityCreateManyInput = {
   id?: string
+  viewerId: string
   category: string
   eventid: string
-  userId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserActivityUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  viewerId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserActivityUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  viewerId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   eventid?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserActivityListRelationFilter = {
@@ -295,70 +313,37 @@ export type UserActivityOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type UserActivityViewerIdEventidCategoryCompoundUniqueInput = {
+  viewerId: string
+  eventid: string
+  category: string
+}
+
 export type UserActivityCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  viewerId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   eventid?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type UserActivityMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  viewerId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   eventid?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type UserActivityMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  viewerId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   eventid?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-}
-
-export type UserActivityCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.UserActivityCreateWithoutUserInput, Prisma.UserActivityUncheckedCreateWithoutUserInput> | Prisma.UserActivityCreateWithoutUserInput[] | Prisma.UserActivityUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.UserActivityCreateOrConnectWithoutUserInput | Prisma.UserActivityCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.UserActivityCreateManyUserInputEnvelope
-  connect?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-}
-
-export type UserActivityUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.UserActivityCreateWithoutUserInput, Prisma.UserActivityUncheckedCreateWithoutUserInput> | Prisma.UserActivityCreateWithoutUserInput[] | Prisma.UserActivityUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.UserActivityCreateOrConnectWithoutUserInput | Prisma.UserActivityCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.UserActivityCreateManyUserInputEnvelope
-  connect?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-}
-
-export type UserActivityUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.UserActivityCreateWithoutUserInput, Prisma.UserActivityUncheckedCreateWithoutUserInput> | Prisma.UserActivityCreateWithoutUserInput[] | Prisma.UserActivityUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.UserActivityCreateOrConnectWithoutUserInput | Prisma.UserActivityCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.UserActivityUpsertWithWhereUniqueWithoutUserInput | Prisma.UserActivityUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.UserActivityCreateManyUserInputEnvelope
-  set?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  disconnect?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  delete?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  connect?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  update?: Prisma.UserActivityUpdateWithWhereUniqueWithoutUserInput | Prisma.UserActivityUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.UserActivityUpdateManyWithWhereWithoutUserInput | Prisma.UserActivityUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.UserActivityScalarWhereInput | Prisma.UserActivityScalarWhereInput[]
-}
-
-export type UserActivityUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.UserActivityCreateWithoutUserInput, Prisma.UserActivityUncheckedCreateWithoutUserInput> | Prisma.UserActivityCreateWithoutUserInput[] | Prisma.UserActivityUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.UserActivityCreateOrConnectWithoutUserInput | Prisma.UserActivityCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.UserActivityUpsertWithWhereUniqueWithoutUserInput | Prisma.UserActivityUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.UserActivityCreateManyUserInputEnvelope
-  set?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  disconnect?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  delete?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  connect?: Prisma.UserActivityWhereUniqueInput | Prisma.UserActivityWhereUniqueInput[]
-  update?: Prisma.UserActivityUpdateWithWhereUniqueWithoutUserInput | Prisma.UserActivityUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.UserActivityUpdateManyWithWhereWithoutUserInput | Prisma.UserActivityUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.UserActivityScalarWhereInput | Prisma.UserActivityScalarWhereInput[]
+  updatedAt?: Prisma.SortOrder
 }
 
 export type UserActivityCreateNestedManyWithoutEventInput = {
@@ -403,69 +388,20 @@ export type UserActivityUncheckedUpdateManyWithoutEventNestedInput = {
   deleteMany?: Prisma.UserActivityScalarWhereInput | Prisma.UserActivityScalarWhereInput[]
 }
 
-export type UserActivityCreateWithoutUserInput = {
-  id?: string
-  category: string
-  createdAt?: Date | string
-  event: Prisma.EventCreateNestedOneWithoutUserActivitysInput
-}
-
-export type UserActivityUncheckedCreateWithoutUserInput = {
-  id?: string
-  category: string
-  eventid: string
-  createdAt?: Date | string
-}
-
-export type UserActivityCreateOrConnectWithoutUserInput = {
-  where: Prisma.UserActivityWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserActivityCreateWithoutUserInput, Prisma.UserActivityUncheckedCreateWithoutUserInput>
-}
-
-export type UserActivityCreateManyUserInputEnvelope = {
-  data: Prisma.UserActivityCreateManyUserInput | Prisma.UserActivityCreateManyUserInput[]
-  skipDuplicates?: boolean
-}
-
-export type UserActivityUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.UserActivityWhereUniqueInput
-  update: Prisma.XOR<Prisma.UserActivityUpdateWithoutUserInput, Prisma.UserActivityUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.UserActivityCreateWithoutUserInput, Prisma.UserActivityUncheckedCreateWithoutUserInput>
-}
-
-export type UserActivityUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.UserActivityWhereUniqueInput
-  data: Prisma.XOR<Prisma.UserActivityUpdateWithoutUserInput, Prisma.UserActivityUncheckedUpdateWithoutUserInput>
-}
-
-export type UserActivityUpdateManyWithWhereWithoutUserInput = {
-  where: Prisma.UserActivityScalarWhereInput
-  data: Prisma.XOR<Prisma.UserActivityUpdateManyMutationInput, Prisma.UserActivityUncheckedUpdateManyWithoutUserInput>
-}
-
-export type UserActivityScalarWhereInput = {
-  AND?: Prisma.UserActivityScalarWhereInput | Prisma.UserActivityScalarWhereInput[]
-  OR?: Prisma.UserActivityScalarWhereInput[]
-  NOT?: Prisma.UserActivityScalarWhereInput | Prisma.UserActivityScalarWhereInput[]
-  id?: Prisma.StringFilter<"UserActivity"> | string
-  category?: Prisma.StringFilter<"UserActivity"> | string
-  eventid?: Prisma.StringFilter<"UserActivity"> | string
-  userId?: Prisma.StringFilter<"UserActivity"> | string
-  createdAt?: Prisma.DateTimeFilter<"UserActivity"> | Date | string
-}
-
 export type UserActivityCreateWithoutEventInput = {
   id?: string
+  viewerId: string
   category: string
   createdAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutUserActivitysInput
+  updatedAt?: Date | string
 }
 
 export type UserActivityUncheckedCreateWithoutEventInput = {
   id?: string
+  viewerId: string
   category: string
-  userId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserActivityCreateOrConnectWithoutEventInput = {
@@ -494,128 +430,114 @@ export type UserActivityUpdateManyWithWhereWithoutEventInput = {
   data: Prisma.XOR<Prisma.UserActivityUpdateManyMutationInput, Prisma.UserActivityUncheckedUpdateManyWithoutEventInput>
 }
 
-export type UserActivityCreateManyUserInput = {
-  id?: string
-  category: string
-  eventid: string
-  createdAt?: Date | string
-}
-
-export type UserActivityUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  event?: Prisma.EventUpdateOneRequiredWithoutUserActivitysNestedInput
-}
-
-export type UserActivityUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
-  eventid?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type UserActivityUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
-  eventid?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type UserActivityScalarWhereInput = {
+  AND?: Prisma.UserActivityScalarWhereInput | Prisma.UserActivityScalarWhereInput[]
+  OR?: Prisma.UserActivityScalarWhereInput[]
+  NOT?: Prisma.UserActivityScalarWhereInput | Prisma.UserActivityScalarWhereInput[]
+  id?: Prisma.StringFilter<"UserActivity"> | string
+  viewerId?: Prisma.StringFilter<"UserActivity"> | string
+  category?: Prisma.StringFilter<"UserActivity"> | string
+  eventid?: Prisma.StringFilter<"UserActivity"> | string
+  createdAt?: Prisma.DateTimeFilter<"UserActivity"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"UserActivity"> | Date | string
 }
 
 export type UserActivityCreateManyEventInput = {
   id?: string
+  viewerId: string
   category: string
-  userId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserActivityUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  viewerId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutUserActivitysNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserActivityUncheckedUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  viewerId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserActivityUncheckedUpdateManyWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  viewerId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
 
 export type UserActivitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  viewerId?: boolean
   category?: boolean
   eventid?: boolean
-  userId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userActivity"]>
 
 export type UserActivitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  viewerId?: boolean
   category?: boolean
   eventid?: boolean
-  userId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userActivity"]>
 
 export type UserActivitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  viewerId?: boolean
   category?: boolean
   eventid?: boolean
-  userId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userActivity"]>
 
 export type UserActivitySelectScalar = {
   id?: boolean
+  viewerId?: boolean
   category?: boolean
   eventid?: boolean
-  userId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type UserActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "category" | "eventid" | "userId" | "createdAt", ExtArgs["result"]["userActivity"]>
+export type UserActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "viewerId" | "category" | "eventid" | "createdAt" | "updatedAt", ExtArgs["result"]["userActivity"]>
 export type UserActivityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type UserActivityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type UserActivityIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $UserActivityPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserActivity"
   objects: {
     event: Prisma.$EventPayload<ExtArgs>
-    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    viewerId: string
     category: string
     eventid: string
-    userId: string
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["userActivity"]>
   composites: {}
 }
@@ -1011,7 +933,6 @@ readonly fields: UserActivityFieldRefs;
 export interface Prisma__UserActivityClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   event<T extends Prisma.EventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventDefaultArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1042,10 +963,11 @@ export interface Prisma__UserActivityClient<T, Null = never, ExtArgs extends run
  */
 export interface UserActivityFieldRefs {
   readonly id: Prisma.FieldRef<"UserActivity", 'String'>
+  readonly viewerId: Prisma.FieldRef<"UserActivity", 'String'>
   readonly category: Prisma.FieldRef<"UserActivity", 'String'>
   readonly eventid: Prisma.FieldRef<"UserActivity", 'String'>
-  readonly userId: Prisma.FieldRef<"UserActivity", 'String'>
   readonly createdAt: Prisma.FieldRef<"UserActivity", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"UserActivity", 'DateTime'>
 }
     
 

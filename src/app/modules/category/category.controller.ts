@@ -45,9 +45,11 @@ const getCategory = catchAsync(async (req: Request, res: Response) => {
 
 const SingleCategory = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, skip } = paginationSortingHelper(req.query);
-  console.log(req.query,)
+
+const viewerId=req.viewerId
   const result = await categoryService.SingleCategory(
     req.params.id as string,
+    viewerId as string,
     req.query,
     page,
     limit,

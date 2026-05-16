@@ -107,6 +107,7 @@ const getCategory = async (
 
 const SingleCategory = async (
   id: string,
+  viewerId:string,
   query?: Record<string, any>,
   page?: number,
   limit?: number | undefined,
@@ -241,12 +242,26 @@ const SingleCategory = async (
       },
   });
 
-  const eventdata=events.map((event) => {
+  const eventdata=events.map(async(event) => {
     const totalReviews = event.reviews.length;
     const avgRating =
       totalReviews > 0
         ? event.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
         : 0;
+
+        await prisma.userActivity.upsert({
+          where: {
+            viewerId_eventid_category: {
+              viewerId,
+              eventid: event.id,
+              category:event.category_name,
+            },
+          },
+          create: { viewerId, eventid: event.id, category: event.category_name },
+          update: {
+            updatedAt:new Date()
+          },
+        });
 
     return { ...event, avgRating, totalReviews };
   });

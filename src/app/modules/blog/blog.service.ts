@@ -102,13 +102,26 @@ const getAllBlogs = async (
   };
 };
 
-const getSingleBlog = async (blogId: string) => {
+const getSingleBlog = async (blogId: string,viewerId:string) => {
   const blog = await prisma.blog.findUnique({
     where: { id: blogId },
     include: {
       author: { select: { id: true, name: true, email: true, image: true } },
       event:true,
 
+    },
+  });
+  await prisma.userActivity.upsert({
+    where: {
+      viewerId_eventid_category: {
+        viewerId,
+        eventid: blog?.eventId as string,
+        category:blog?.event?.category_name as string,
+      },
+    },
+    create: { viewerId, eventid:  blog?.eventId as string, category:blog?.event?.category_name as string },
+    update: {
+      updatedAt:new Date()
     },
   });
   if (!blog) {

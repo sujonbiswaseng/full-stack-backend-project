@@ -152,6 +152,82 @@ export class RAGService {
       console.log(error);
     }
   }
+
+  async generatePersonalizedRecommendations(
+    userId: string,
+    viewerId:string,
+    query: string,
+    asJson: boolean = false,
+  ) {
+    try {
+  
+      // Retrieve RAG documents
+      const relevantDocs = await this.retieveRelevantDocuments(query);
+  
+      const context = (relevantDocs as any)
+        .filter((doc: any) => doc.content)
+        .map((doc: any) => doc.content);
+  
+      // Generate AI recommendations
+      let answer =
+        await this.llmService.generatePersonalizedRecommendations(
+          userId,
+          viewerId,
+          query,
+          context,
+          asJson,
+     
+        );
+  
+      let parsedAnswer: any = answer;
+      console.log(parsedAnswer,'par')
+  
+      // Parse JSON safely
+      if (asJson) {
+        try {
+  
+          // Remove markdown if exists
+          if (answer.startsWith("```json")) {
+            answer = answer
+              .replace(/```json\n?/g, "")
+              .replace(/```$/g, "")
+              .trim();
+  
+          } else if (answer.startsWith("```")) {
+            answer = answer
+              .replace(/```\n?/g, "")
+              .replace(/```$/g, "")
+              .trim();
+          }
+  
+          parsedAnswer = JSON.parse(answer);
+  
+        } catch (e) {
+  
+          console.error(
+            "Failed to parse AI recommendation JSON response:",
+            e,
+          );
+  
+          throw e;
+        }
+      }
+      console.log(parsedAnswer,'answer')
+  
+      return {
+        answer: parsedAnswer,
+      };
+  
+    } catch (error) {
+  
+      console.log(
+        "Personalized Recommendation Error:",
+        error,
+      );
+  
+      throw error;
+    }
+  }
   async getStats() {
     try {
       const totalDocuments = await prisma.$queryRaw(Prisma.sql`

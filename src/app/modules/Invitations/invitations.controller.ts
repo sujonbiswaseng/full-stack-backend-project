@@ -39,7 +39,8 @@ const getInvitationsService = catchAsync(async (req: Request, res: Response) => 
 
 const GetSingleInvitationController = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await invitationsServices.getSingleInvitationService(id as string);
+  const viewerId=req.viewerId
+  const result = await invitationsServices.getSingleInvitationService(id as string,viewerId);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,

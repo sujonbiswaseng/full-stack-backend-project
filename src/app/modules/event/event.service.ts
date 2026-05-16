@@ -298,7 +298,7 @@ const getEventsByRole = async (
   };
 };
 
-const getSingleEvent = async (eventId: string) => {
+const getSingleEvent = async (eventId: string,viewerId:string) => {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     include: {
@@ -326,6 +326,21 @@ const getSingleEvent = async (eventId: string) => {
   if (!event) {
     throw new AppError(404, "event not found");
   }
+
+  await prisma.userActivity.upsert({
+    where: {
+      viewerId_eventid_category: {
+        viewerId,
+        eventid: event.id,
+        category:event.category_name,
+      },
+    },
+    create: { viewerId, eventid: event.id, category: event.category_name },
+    update: {
+      updatedAt:new Date()
+    },
+  });
+
   const totalReviews = event.reviews.length || 0;
   const avgRating =
     totalReviews > 0

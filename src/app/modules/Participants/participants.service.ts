@@ -57,6 +57,7 @@ const createParticipantService = async (
       id: true,
       title: true,
       fee: true,
+      category_name:true,
       date: true,
       location: true,
       visibility:true,
@@ -67,6 +68,8 @@ const createParticipantService = async (
   if (!event) {
     throw new AppError(404, "Event not found");
   }
+
+  
 
   const isFree = Number(event.fee) === 0;
 

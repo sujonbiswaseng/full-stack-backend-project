@@ -327,7 +327,6 @@ export type UserWhereInput = {
   highlights?: Prisma.HighlightListRelationFilter
   categories?: Prisma.CategoryListRelationFilter
   aicreations?: Prisma.AIContentListRelationFilter
-  UserActivitys?: Prisma.UserActivityListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -363,7 +362,6 @@ export type UserOrderByWithRelationInput = {
   highlights?: Prisma.HighlightOrderByRelationAggregateInput
   categories?: Prisma.CategoryOrderByRelationAggregateInput
   aicreations?: Prisma.AIContentOrderByRelationAggregateInput
-  UserActivitys?: Prisma.UserActivityOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -402,7 +400,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   highlights?: Prisma.HighlightListRelationFilter
   categories?: Prisma.CategoryListRelationFilter
   aicreations?: Prisma.AIContentListRelationFilter
-  UserActivitys?: Prisma.UserActivityListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -486,7 +483,6 @@ export type UserCreateInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -522,7 +518,6 @@ export type UserUncheckedCreateInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -558,7 +553,6 @@ export type UserUpdateInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -594,7 +588,6 @@ export type UserUncheckedUpdateInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -972,20 +965,6 @@ export type UserUpdateOneRequiredWithoutServicesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutServicesInput, Prisma.UserUpdateWithoutServicesInput>, Prisma.UserUncheckedUpdateWithoutServicesInput>
 }
 
-export type UserCreateNestedOneWithoutUserActivitysInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserActivitysInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutUserActivitysNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserActivitysInput
-  upsert?: Prisma.UserUpsertWithoutUserActivitysInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserActivitysInput, Prisma.UserUpdateWithoutUserActivitysInput>, Prisma.UserUncheckedUpdateWithoutUserActivitysInput>
-}
-
 export type UserCreateWithoutAicreationsInput = {
   id?: string
   name: string
@@ -1018,7 +997,6 @@ export type UserCreateWithoutAicreationsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAicreationsInput = {
@@ -1053,7 +1031,6 @@ export type UserUncheckedCreateWithoutAicreationsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAicreationsInput = {
@@ -1104,7 +1081,6 @@ export type UserUpdateWithoutAicreationsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAicreationsInput = {
@@ -1139,7 +1115,6 @@ export type UserUncheckedUpdateWithoutAicreationsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1174,7 +1149,6 @@ export type UserCreateWithoutSessionsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1209,7 +1183,6 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1260,7 +1233,6 @@ export type UserUpdateWithoutSessionsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1295,7 +1267,6 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1330,7 +1301,6 @@ export type UserCreateWithoutAccountsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1365,7 +1335,6 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1416,7 +1385,6 @@ export type UserUpdateWithoutAccountsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1451,7 +1419,6 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBlogsInput = {
@@ -1486,7 +1453,6 @@ export type UserCreateWithoutBlogsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBlogsInput = {
@@ -1521,7 +1487,6 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBlogsInput = {
@@ -1572,7 +1537,6 @@ export type UserUpdateWithoutBlogsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlogsInput = {
@@ -1607,7 +1571,6 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCategoriesInput = {
@@ -1642,7 +1605,6 @@ export type UserCreateWithoutCategoriesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCategoriesInput = {
@@ -1677,7 +1639,6 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCategoriesInput = {
@@ -1728,7 +1689,6 @@ export type UserUpdateWithoutCategoriesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCategoriesInput = {
@@ -1763,7 +1723,6 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEventsInput = {
@@ -1798,7 +1757,6 @@ export type UserCreateWithoutEventsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEventsInput = {
@@ -1833,7 +1791,6 @@ export type UserUncheckedCreateWithoutEventsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEventsInput = {
@@ -1884,7 +1841,6 @@ export type UserUpdateWithoutEventsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEventsInput = {
@@ -1919,7 +1875,6 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutHighlightsInput = {
@@ -1954,7 +1909,6 @@ export type UserCreateWithoutHighlightsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHighlightsInput = {
@@ -1989,7 +1943,6 @@ export type UserUncheckedCreateWithoutHighlightsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHighlightsInput = {
@@ -2040,7 +1993,6 @@ export type UserUpdateWithoutHighlightsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHighlightsInput = {
@@ -2075,7 +2027,6 @@ export type UserUncheckedUpdateWithoutHighlightsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitationsSentInput = {
@@ -2110,7 +2061,6 @@ export type UserCreateWithoutInvitationsSentInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsSentInput = {
@@ -2145,7 +2095,6 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsSentInput = {
@@ -2185,7 +2134,6 @@ export type UserCreateWithoutInvitationsReceivedInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
@@ -2220,7 +2168,6 @@ export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsReceivedInput = {
@@ -2271,7 +2218,6 @@ export type UserUpdateWithoutInvitationsSentInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsSentInput = {
@@ -2306,7 +2252,6 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutInvitationsReceivedInput = {
@@ -2352,7 +2297,6 @@ export type UserUpdateWithoutInvitationsReceivedInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsReceivedInput = {
@@ -2387,7 +2331,6 @@ export type UserUncheckedUpdateWithoutInvitationsReceivedInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNewsletterInput = {
@@ -2422,7 +2365,6 @@ export type UserCreateWithoutNewsletterInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNewsletterInput = {
@@ -2457,7 +2399,6 @@ export type UserUncheckedCreateWithoutNewsletterInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNewsletterInput = {
@@ -2508,7 +2449,6 @@ export type UserUpdateWithoutNewsletterInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNewsletterInput = {
@@ -2543,7 +2483,6 @@ export type UserUncheckedUpdateWithoutNewsletterInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -2578,7 +2517,6 @@ export type UserCreateWithoutNotificationsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -2613,7 +2551,6 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -2664,7 +2601,6 @@ export type UserUpdateWithoutNotificationsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -2699,7 +2635,6 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipantsInput = {
@@ -2734,7 +2669,6 @@ export type UserCreateWithoutParticipantsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipantsInput = {
@@ -2769,7 +2703,6 @@ export type UserUncheckedCreateWithoutParticipantsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipantsInput = {
@@ -2820,7 +2753,6 @@ export type UserUpdateWithoutParticipantsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipantsInput = {
@@ -2855,7 +2787,6 @@ export type UserUncheckedUpdateWithoutParticipantsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPaymentsInput = {
@@ -2890,7 +2821,6 @@ export type UserCreateWithoutPaymentsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -2925,7 +2855,6 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -2976,7 +2905,6 @@ export type UserUpdateWithoutPaymentsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -3011,7 +2939,6 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReviewsInput = {
@@ -3046,7 +2973,6 @@ export type UserCreateWithoutReviewsInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReviewsInput = {
@@ -3081,7 +3007,6 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReviewsInput = {
@@ -3132,7 +3057,6 @@ export type UserUpdateWithoutReviewsInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -3167,7 +3091,6 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutServicesInput = {
@@ -3202,7 +3125,6 @@ export type UserCreateWithoutServicesInput = {
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutServicesInput = {
@@ -3237,7 +3159,6 @@ export type UserUncheckedCreateWithoutServicesInput = {
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
   aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutServicesInput = {
@@ -3288,7 +3209,6 @@ export type UserUpdateWithoutServicesInput = {
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServicesInput = {
@@ -3323,163 +3243,6 @@ export type UserUncheckedUpdateWithoutServicesInput = {
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
   aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
-  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutUserActivitysInput = {
-  id?: string
-  name: string
-  email: string
-  role?: $Enums.Role
-  status?: $Enums.UserStatus
-  phone?: string | null
-  image: string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  bgimage?: string | null
-  isActive?: boolean
-  emailVerified?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  plan?: $Enums.PlanType
-  promptCount?: number
-  promptResetAt?: Date | string | null
-  events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
-  blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  newsletter?: Prisma.NewsletterCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
-  invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
-  services?: Prisma.ServiceCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
-  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutUserActivitysInput = {
-  id?: string
-  name: string
-  email: string
-  role?: $Enums.Role
-  status?: $Enums.UserStatus
-  phone?: string | null
-  image: string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  bgimage?: string | null
-  isActive?: boolean
-  emailVerified?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  plan?: $Enums.PlanType
-  promptCount?: number
-  promptResetAt?: Date | string | null
-  events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
-  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  newsletter?: Prisma.NewsletterUncheckedCreateNestedManyWithoutUserInput
-  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
-  invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
-  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
-  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutUserActivitysInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
-}
-
-export type UserUpsertWithoutUserActivitysInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutUserActivitysInput, Prisma.UserUncheckedUpdateWithoutUserActivitysInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutUserActivitysInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutUserActivitysInput, Prisma.UserUncheckedUpdateWithoutUserActivitysInput>
-}
-
-export type UserUpdateWithoutUserActivitysInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  image?: Prisma.StringFieldUpdateOperationsInput | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
-  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
-  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
-  blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  newsletter?: Prisma.NewsletterUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
-  invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
-  services?: Prisma.ServiceUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
-  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutUserActivitysInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  image?: Prisma.StringFieldUpdateOperationsInput | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
-  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
-  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
-  blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  newsletter?: Prisma.NewsletterUncheckedUpdateManyWithoutUserNestedInput
-  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
-  invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
-  services?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
-  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -3503,7 +3266,6 @@ export type UserCountOutputType = {
   highlights: number
   categories: number
   aicreations: number
-  UserActivitys: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3522,7 +3284,6 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   highlights?: boolean | UserCountOutputTypeCountHighlightsArgs
   categories?: boolean | UserCountOutputTypeCountCategoriesArgs
   aicreations?: boolean | UserCountOutputTypeCountAicreationsArgs
-  UserActivitys?: boolean | UserCountOutputTypeCountUserActivitysArgs
 }
 
 /**
@@ -3640,13 +3401,6 @@ export type UserCountOutputTypeCountAicreationsArgs<ExtArgs extends runtime.Type
   where?: Prisma.AIContentWhereInput
 }
 
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountUserActivitysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserActivityWhereInput
-}
-
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3681,7 +3435,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
   aicreations?: boolean | Prisma.User$aicreationsArgs<ExtArgs>
-  UserActivitys?: boolean | Prisma.User$UserActivitysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3762,7 +3515,6 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
   aicreations?: boolean | Prisma.User$aicreationsArgs<ExtArgs>
-  UserActivitys?: boolean | Prisma.User$UserActivitysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3786,7 +3538,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     highlights: Prisma.$HighlightPayload<ExtArgs>[]
     categories: Prisma.$CategoryPayload<ExtArgs>[]
     aicreations: Prisma.$AIContentPayload<ExtArgs>[]
-    UserActivitys: Prisma.$UserActivityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4215,7 +3966,6 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   highlights<T extends Prisma.User$highlightsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$highlightsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HighlightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   categories<T extends Prisma.User$categoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aicreations<T extends Prisma.User$aicreationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aicreationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AIContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  UserActivitys<T extends Prisma.User$UserActivitysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$UserActivitysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5012,30 +4762,6 @@ export type User$aicreationsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.AIContentScalarFieldEnum | Prisma.AIContentScalarFieldEnum[]
-}
-
-/**
- * User.UserActivitys
- */
-export type User$UserActivitysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the UserActivity
-   */
-  select?: Prisma.UserActivitySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the UserActivity
-   */
-  omit?: Prisma.UserActivityOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserActivityInclude<ExtArgs> | null
-  where?: Prisma.UserActivityWhereInput
-  orderBy?: Prisma.UserActivityOrderByWithRelationInput | Prisma.UserActivityOrderByWithRelationInput[]
-  cursor?: Prisma.UserActivityWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.UserActivityScalarFieldEnum | Prisma.UserActivityScalarFieldEnum[]
 }
 
 /**

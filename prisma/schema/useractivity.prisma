@@ -1,9 +1,16 @@
 model UserActivity {
-  id          String      @id @default(uuid())
-  category    String
-  eventid    String 
-  userId      String
-  event        Event        @relation(fields: [eventid], references: [id])
-  user        User        @relation(fields: [userId], references: [id])
-  createdAt   DateTime    @default(now())
+  id        String   @id @default(uuid())
+
+  viewerId  String   
+  category  String  
+  eventid   String
+
+  event     Event    @relation(fields: [eventid], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([viewerId])
+  @@index([eventid])
+  @@unique([viewerId, eventid, category])
 }

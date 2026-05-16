@@ -194,13 +194,27 @@ const getInvitationsService = async (
 };
 
 
- const getSingleInvitationService = async (id: string) => {
+ const getSingleInvitationService = async (id: string,viewerId:string) => {
   const result= await prisma.invitation.findUnique({
     where: { id },
     include: {
-      event: { select: { id: true, title: true, date: true, location: true }},
+      event: { select: { id: true, title: true, date: true, location: true,category_name:true }},
       inviter: { select: { id: true, name: true, email: true ,image:true}},
       invitee: { select: { id: true, name: true, email: true ,image:true}},
+    },
+  });
+
+  await prisma.userActivity.upsert({
+    where: {
+      viewerId_eventid_category: {
+        viewerId,
+        eventid: result?.eventId as string,
+        category:result?.event?.category_name as string,
+      },
+    },
+    create: { viewerId, eventid:  result?.eventId as string as string, category:result?.event?.category_name as string },
+    update: {
+      updatedAt:new Date()
     },
   });
   if(!result){

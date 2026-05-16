@@ -6,12 +6,13 @@ import { createcategoryData, UpdatecategoryData } from "./category.validation";
 import { multerUpload } from "../../config/multer.config";
 import auth from "../../middleware/Auth";
 import { Role } from "../../../generated/prisma/enums";
+import { attachViewer } from "../../lib/attracviewer";
 
 const router=Router()
 
 router.post("/category",auth([Role.ADMIN,Role.MANAGER]),multerUpload.single("file"),validateRequest(createcategoryData),CategoryController.CreateCategory)
 router.get("/category",CategoryController.getCategory)
-router.get("/category/:id",CategoryController.SingleCategory)
+router.get("/category/:id",attachViewer,CategoryController.SingleCategory)
 router.put("/admin/category/:id",auth([Role.ADMIN]),validateRequest(UpdatecategoryData),CategoryController.UpdateCategory)
 router.delete("/admin/category/:id",auth([Role.ADMIN]),CategoryController.DeleteCategory)
 

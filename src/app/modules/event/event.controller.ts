@@ -100,8 +100,9 @@ const getEventsByRoleController = catchAsync(
 
 const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
   const eventId = req.params.id;
+  const viewerId = req.viewerId;
 
-  const event = await EventServices.getSingleEvent(eventId as string);
+  const event = await EventServices.getSingleEvent(eventId as string,viewerId as string);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
