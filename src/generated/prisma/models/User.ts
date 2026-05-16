@@ -20,8 +20,18 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  promptCount: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  promptCount: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -39,6 +49,9 @@ export type UserMinAggregateOutputType = {
   emailVerified: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  plan: $Enums.PlanType | null
+  promptCount: number | null
+  promptResetAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -56,6 +69,9 @@ export type UserMaxAggregateOutputType = {
   emailVerified: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  plan: $Enums.PlanType | null
+  promptCount: number | null
+  promptResetAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -73,9 +89,20 @@ export type UserCountAggregateOutputType = {
   emailVerified: number
   createdAt: number
   updatedAt: number
+  plan: number
+  promptCount: number
+  promptResetAt: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  promptCount?: true
+}
+
+export type UserSumAggregateInputType = {
+  promptCount?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -92,6 +119,9 @@ export type UserMinAggregateInputType = {
   emailVerified?: true
   createdAt?: true
   updatedAt?: true
+  plan?: true
+  promptCount?: true
+  promptResetAt?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -109,6 +139,9 @@ export type UserMaxAggregateInputType = {
   emailVerified?: true
   createdAt?: true
   updatedAt?: true
+  plan?: true
+  promptCount?: true
+  promptResetAt?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -126,6 +159,9 @@ export type UserCountAggregateInputType = {
   emailVerified?: true
   createdAt?: true
   updatedAt?: true
+  plan?: true
+  promptCount?: true
+  promptResetAt?: true
   _all?: true
 }
 
@@ -167,6 +203,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -197,6 +245,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -216,12 +266,17 @@ export type UserGroupByOutputType = {
   emailVerified: boolean
   createdAt: Date
   updatedAt: Date
+  plan: $Enums.PlanType
+  promptCount: number
+  promptResetAt: Date | null
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
 
-type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+export type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserGroupByOutputType, T['by']> &
       {
@@ -254,6 +309,9 @@ export type UserWhereInput = {
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  plan?: Prisma.EnumPlanTypeFilter<"User"> | $Enums.PlanType
+  promptCount?: Prisma.IntFilter<"User"> | number
+  promptResetAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   events?: Prisma.EventListRelationFilter
   participants?: Prisma.ParticipantListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
@@ -268,6 +326,8 @@ export type UserWhereInput = {
   accounts?: Prisma.AccountListRelationFilter
   highlights?: Prisma.HighlightListRelationFilter
   categories?: Prisma.CategoryListRelationFilter
+  aicreations?: Prisma.AIContentListRelationFilter
+  UserActivitys?: Prisma.UserActivityListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -285,6 +345,9 @@ export type UserOrderByWithRelationInput = {
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
+  promptCount?: Prisma.SortOrder
+  promptResetAt?: Prisma.SortOrderInput | Prisma.SortOrder
   events?: Prisma.EventOrderByRelationAggregateInput
   participants?: Prisma.ParticipantOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
@@ -299,6 +362,8 @@ export type UserOrderByWithRelationInput = {
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   highlights?: Prisma.HighlightOrderByRelationAggregateInput
   categories?: Prisma.CategoryOrderByRelationAggregateInput
+  aicreations?: Prisma.AIContentOrderByRelationAggregateInput
+  UserActivitys?: Prisma.UserActivityOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -319,6 +384,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  plan?: Prisma.EnumPlanTypeFilter<"User"> | $Enums.PlanType
+  promptCount?: Prisma.IntFilter<"User"> | number
+  promptResetAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   events?: Prisma.EventListRelationFilter
   participants?: Prisma.ParticipantListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
@@ -333,6 +401,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   accounts?: Prisma.AccountListRelationFilter
   highlights?: Prisma.HighlightListRelationFilter
   categories?: Prisma.CategoryListRelationFilter
+  aicreations?: Prisma.AIContentListRelationFilter
+  UserActivitys?: Prisma.UserActivityListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -350,9 +420,14 @@ export type UserOrderByWithAggregationInput = {
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
+  promptCount?: Prisma.SortOrder
+  promptResetAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -373,6 +448,9 @@ export type UserScalarWhereWithAggregatesInput = {
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  plan?: Prisma.EnumPlanTypeWithAggregatesFilter<"User"> | $Enums.PlanType
+  promptCount?: Prisma.IntWithAggregatesFilter<"User"> | number
+  promptResetAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -390,6 +468,9 @@ export type UserCreateInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -404,6 +485,8 @@ export type UserCreateInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -421,6 +504,9 @@ export type UserUncheckedCreateInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -435,6 +521,8 @@ export type UserUncheckedCreateInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -452,6 +540,9 @@ export type UserUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -466,6 +557,8 @@ export type UserUpdateInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -483,6 +576,9 @@ export type UserUncheckedUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -497,6 +593,8 @@ export type UserUncheckedUpdateInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -514,6 +612,9 @@ export type UserCreateManyInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -531,6 +632,9 @@ export type UserUpdateManyMutationInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -548,6 +652,14 @@ export type UserUncheckedUpdateManyInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -565,6 +677,13 @@ export type UserCountOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
+  promptCount?: Prisma.SortOrder
+  promptResetAt?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  promptCount?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -582,6 +701,9 @@ export type UserMaxOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
+  promptCount?: Prisma.SortOrder
+  promptResetAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -599,15 +721,27 @@ export type UserMinOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
+  promptCount?: Prisma.SortOrder
+  promptResetAt?: Prisma.SortOrder
 }
 
-export type UserScalarRelationFilter = {
-  is?: Prisma.UserWhereInput
-  isNot?: Prisma.UserWhereInput
+export type UserSumOrderByAggregateInput = {
+  promptCount?: Prisma.SortOrder
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type UserCreateNestedOneWithoutAicreationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAicreationsInput, Prisma.UserUncheckedCreateWithoutAicreationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAicreationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAicreationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAicreationsInput, Prisma.UserUncheckedCreateWithoutAicreationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAicreationsInput
+  upsert?: Prisma.UserUpsertWithoutAicreationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAicreationsInput, Prisma.UserUpdateWithoutAicreationsInput>, Prisma.UserUncheckedUpdateWithoutAicreationsInput>
 }
 
 export type EnumRoleFieldUpdateOperationsInput = {
@@ -630,8 +764,16 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
+export type EnumPlanTypeFieldUpdateOperationsInput = {
+  set?: $Enums.PlanType
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type UserCreateNestedOneWithoutSessionsInput = {
@@ -830,6 +972,176 @@ export type UserUpdateOneRequiredWithoutServicesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutServicesInput, Prisma.UserUpdateWithoutServicesInput>, Prisma.UserUncheckedUpdateWithoutServicesInput>
 }
 
+export type UserCreateNestedOneWithoutUserActivitysInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserActivitysInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUserActivitysNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserActivitysInput
+  upsert?: Prisma.UserUpsertWithoutUserActivitysInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserActivitysInput, Prisma.UserUpdateWithoutUserActivitysInput>, Prisma.UserUncheckedUpdateWithoutUserActivitysInput>
+}
+
+export type UserCreateWithoutAicreationsInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  phone?: string | null
+  image: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
+  emailVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
+  events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
+  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  newsletter?: Prisma.NewsletterCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
+  invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
+  services?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAicreationsInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  phone?: string | null
+  image: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
+  emailVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
+  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  newsletter?: Prisma.NewsletterUncheckedCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
+  invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAicreationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAicreationsInput, Prisma.UserUncheckedCreateWithoutAicreationsInput>
+}
+
+export type UserUpsertWithoutAicreationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAicreationsInput, Prisma.UserUncheckedUpdateWithoutAicreationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAicreationsInput, Prisma.UserUncheckedCreateWithoutAicreationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAicreationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAicreationsInput, Prisma.UserUncheckedUpdateWithoutAicreationsInput>
+}
+
+export type UserUpdateWithoutAicreationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
+  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  newsletter?: Prisma.NewsletterUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
+  invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAicreationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
+  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  newsletter?: Prisma.NewsletterUncheckedUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
+  invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   name: string
@@ -845,6 +1157,9 @@ export type UserCreateWithoutSessionsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -858,6 +1173,8 @@ export type UserCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -875,6 +1192,9 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -888,6 +1208,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -921,6 +1243,9 @@ export type UserUpdateWithoutSessionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -934,6 +1259,8 @@ export type UserUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -951,6 +1278,9 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -964,6 +1294,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -981,6 +1313,9 @@ export type UserCreateWithoutAccountsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -994,6 +1329,8 @@ export type UserCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1011,6 +1348,9 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -1024,6 +1364,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1057,6 +1399,9 @@ export type UserUpdateWithoutAccountsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -1070,6 +1415,8 @@ export type UserUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1087,6 +1434,9 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -1100,6 +1450,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBlogsInput = {
@@ -1117,6 +1469,9 @@ export type UserCreateWithoutBlogsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -1130,6 +1485,8 @@ export type UserCreateWithoutBlogsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBlogsInput = {
@@ -1147,6 +1504,9 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -1160,6 +1520,8 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBlogsInput = {
@@ -1193,6 +1555,9 @@ export type UserUpdateWithoutBlogsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -1206,6 +1571,8 @@ export type UserUpdateWithoutBlogsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlogsInput = {
@@ -1223,6 +1590,9 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -1236,6 +1606,8 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCategoriesInput = {
@@ -1253,6 +1625,9 @@ export type UserCreateWithoutCategoriesInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -1266,6 +1641,8 @@ export type UserCreateWithoutCategoriesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCategoriesInput = {
@@ -1283,6 +1660,9 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -1296,6 +1676,8 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCategoriesInput = {
@@ -1329,6 +1711,9 @@ export type UserUpdateWithoutCategoriesInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -1342,6 +1727,8 @@ export type UserUpdateWithoutCategoriesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCategoriesInput = {
@@ -1359,6 +1746,9 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -1372,6 +1762,8 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEventsInput = {
@@ -1389,6 +1781,9 @@ export type UserCreateWithoutEventsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
@@ -1402,6 +1797,8 @@ export type UserCreateWithoutEventsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEventsInput = {
@@ -1419,6 +1816,9 @@ export type UserUncheckedCreateWithoutEventsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -1432,6 +1832,8 @@ export type UserUncheckedCreateWithoutEventsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEventsInput = {
@@ -1465,6 +1867,9 @@ export type UserUpdateWithoutEventsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
@@ -1478,6 +1883,8 @@ export type UserUpdateWithoutEventsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEventsInput = {
@@ -1495,6 +1902,9 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -1508,6 +1918,8 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutHighlightsInput = {
@@ -1525,6 +1937,9 @@ export type UserCreateWithoutHighlightsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -1538,6 +1953,8 @@ export type UserCreateWithoutHighlightsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHighlightsInput = {
@@ -1555,6 +1972,9 @@ export type UserUncheckedCreateWithoutHighlightsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -1568,6 +1988,8 @@ export type UserUncheckedCreateWithoutHighlightsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHighlightsInput = {
@@ -1601,6 +2023,9 @@ export type UserUpdateWithoutHighlightsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -1614,6 +2039,8 @@ export type UserUpdateWithoutHighlightsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHighlightsInput = {
@@ -1631,6 +2058,9 @@ export type UserUncheckedUpdateWithoutHighlightsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -1644,6 +2074,8 @@ export type UserUncheckedUpdateWithoutHighlightsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitationsSentInput = {
@@ -1661,6 +2093,9 @@ export type UserCreateWithoutInvitationsSentInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -1674,6 +2109,8 @@ export type UserCreateWithoutInvitationsSentInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsSentInput = {
@@ -1691,6 +2128,9 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -1704,6 +2144,8 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsSentInput = {
@@ -1726,6 +2168,9 @@ export type UserCreateWithoutInvitationsReceivedInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -1739,6 +2184,8 @@ export type UserCreateWithoutInvitationsReceivedInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
@@ -1756,6 +2203,9 @@ export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -1769,6 +2219,8 @@ export type UserUncheckedCreateWithoutInvitationsReceivedInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsReceivedInput = {
@@ -1802,6 +2254,9 @@ export type UserUpdateWithoutInvitationsSentInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -1815,6 +2270,8 @@ export type UserUpdateWithoutInvitationsSentInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsSentInput = {
@@ -1832,6 +2289,9 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -1845,6 +2305,8 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutInvitationsReceivedInput = {
@@ -1873,6 +2335,9 @@ export type UserUpdateWithoutInvitationsReceivedInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -1886,6 +2351,8 @@ export type UserUpdateWithoutInvitationsReceivedInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsReceivedInput = {
@@ -1903,6 +2370,9 @@ export type UserUncheckedUpdateWithoutInvitationsReceivedInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -1916,6 +2386,8 @@ export type UserUncheckedUpdateWithoutInvitationsReceivedInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNewsletterInput = {
@@ -1933,6 +2405,9 @@ export type UserCreateWithoutNewsletterInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -1946,6 +2421,8 @@ export type UserCreateWithoutNewsletterInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNewsletterInput = {
@@ -1963,6 +2440,9 @@ export type UserUncheckedCreateWithoutNewsletterInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -1976,6 +2456,8 @@ export type UserUncheckedCreateWithoutNewsletterInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNewsletterInput = {
@@ -2009,6 +2491,9 @@ export type UserUpdateWithoutNewsletterInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -2022,6 +2507,8 @@ export type UserUpdateWithoutNewsletterInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNewsletterInput = {
@@ -2039,6 +2526,9 @@ export type UserUncheckedUpdateWithoutNewsletterInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -2052,6 +2542,8 @@ export type UserUncheckedUpdateWithoutNewsletterInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -2069,6 +2561,9 @@ export type UserCreateWithoutNotificationsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -2082,6 +2577,8 @@ export type UserCreateWithoutNotificationsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -2099,6 +2596,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -2112,6 +2612,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -2145,6 +2647,9 @@ export type UserUpdateWithoutNotificationsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -2158,6 +2663,8 @@ export type UserUpdateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -2175,6 +2682,9 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -2188,6 +2698,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipantsInput = {
@@ -2205,6 +2717,9 @@ export type UserCreateWithoutParticipantsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
@@ -2218,6 +2733,8 @@ export type UserCreateWithoutParticipantsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipantsInput = {
@@ -2235,6 +2752,9 @@ export type UserUncheckedCreateWithoutParticipantsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -2248,6 +2768,8 @@ export type UserUncheckedCreateWithoutParticipantsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipantsInput = {
@@ -2281,6 +2803,9 @@ export type UserUpdateWithoutParticipantsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
@@ -2294,6 +2819,8 @@ export type UserUpdateWithoutParticipantsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipantsInput = {
@@ -2311,6 +2838,9 @@ export type UserUncheckedUpdateWithoutParticipantsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -2324,6 +2854,8 @@ export type UserUncheckedUpdateWithoutParticipantsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPaymentsInput = {
@@ -2341,6 +2873,9 @@ export type UserCreateWithoutPaymentsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -2354,6 +2889,8 @@ export type UserCreateWithoutPaymentsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -2371,6 +2908,9 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -2384,6 +2924,8 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -2417,6 +2959,9 @@ export type UserUpdateWithoutPaymentsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -2430,6 +2975,8 @@ export type UserUpdateWithoutPaymentsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -2447,6 +2994,9 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -2460,6 +3010,8 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReviewsInput = {
@@ -2477,6 +3029,9 @@ export type UserCreateWithoutReviewsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
@@ -2490,6 +3045,8 @@ export type UserCreateWithoutReviewsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReviewsInput = {
@@ -2507,6 +3064,9 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -2520,6 +3080,8 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReviewsInput = {
@@ -2553,6 +3115,9 @@ export type UserUpdateWithoutReviewsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
@@ -2566,6 +3131,8 @@ export type UserUpdateWithoutReviewsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -2583,6 +3150,9 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -2596,6 +3166,8 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutServicesInput = {
@@ -2613,6 +3185,9 @@ export type UserCreateWithoutServicesInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
@@ -2626,6 +3201,8 @@ export type UserCreateWithoutServicesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutServicesInput = {
@@ -2643,6 +3220,9 @@ export type UserUncheckedCreateWithoutServicesInput = {
   emailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -2656,6 +3236,8 @@ export type UserUncheckedCreateWithoutServicesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+  UserActivitys?: Prisma.UserActivityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutServicesInput = {
@@ -2689,6 +3271,9 @@ export type UserUpdateWithoutServicesInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
@@ -2702,6 +3287,8 @@ export type UserUpdateWithoutServicesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServicesInput = {
@@ -2719,6 +3306,9 @@ export type UserUncheckedUpdateWithoutServicesInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -2732,6 +3322,164 @@ export type UserUncheckedUpdateWithoutServicesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
+  UserActivitys?: Prisma.UserActivityUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutUserActivitysInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  phone?: string | null
+  image: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
+  emailVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
+  events?: Prisma.EventCreateNestedManyWithoutOrganizerInput
+  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  newsletter?: Prisma.NewsletterCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInviterInput
+  invitationsReceived?: Prisma.InvitationCreateNestedManyWithoutInviteeInput
+  services?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutUserActivitysInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  phone?: string | null
+  image: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  bgimage?: string | null
+  isActive?: boolean
+  emailVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.PlanType
+  promptCount?: number
+  promptResetAt?: Date | string | null
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutOrganizerInput
+  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  newsletter?: Prisma.NewsletterUncheckedCreateNestedManyWithoutUserInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput
+  invitationsReceived?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  aicreations?: Prisma.AIContentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutUserActivitysInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
+}
+
+export type UserUpsertWithoutUserActivitysInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUserActivitysInput, Prisma.UserUncheckedUpdateWithoutUserActivitysInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserActivitysInput, Prisma.UserUncheckedCreateWithoutUserActivitysInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUserActivitysInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUserActivitysInput, Prisma.UserUncheckedUpdateWithoutUserActivitysInput>
+}
+
+export type UserUpdateWithoutUserActivitysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  events?: Prisma.EventUpdateManyWithoutOrganizerNestedInput
+  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  newsletter?: Prisma.NewsletterUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInviterNestedInput
+  invitationsReceived?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUserActivitysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bgimage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  promptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  promptResetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  events?: Prisma.EventUncheckedUpdateManyWithoutOrganizerNestedInput
+  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  newsletter?: Prisma.NewsletterUncheckedUpdateManyWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput
+  invitationsReceived?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  aicreations?: Prisma.AIContentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -2754,6 +3502,8 @@ export type UserCountOutputType = {
   accounts: number
   highlights: number
   categories: number
+  aicreations: number
+  UserActivitys: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2771,6 +3521,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   highlights?: boolean | UserCountOutputTypeCountHighlightsArgs
   categories?: boolean | UserCountOutputTypeCountCategoriesArgs
+  aicreations?: boolean | UserCountOutputTypeCountAicreationsArgs
+  UserActivitys?: boolean | UserCountOutputTypeCountUserActivitysArgs
 }
 
 /**
@@ -2881,6 +3633,20 @@ export type UserCountOutputTypeCountCategoriesArgs<ExtArgs extends runtime.Types
   where?: Prisma.CategoryWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAicreationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AIContentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUserActivitysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserActivityWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2897,6 +3663,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
+  promptCount?: boolean
+  promptResetAt?: boolean
   events?: boolean | Prisma.User$eventsArgs<ExtArgs>
   participants?: boolean | Prisma.User$participantsArgs<ExtArgs>
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
@@ -2911,6 +3680,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
+  aicreations?: boolean | Prisma.User$aicreationsArgs<ExtArgs>
+  UserActivitys?: boolean | Prisma.User$UserActivitysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2929,6 +3700,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
+  promptCount?: boolean
+  promptResetAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2946,6 +3720,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
+  promptCount?: boolean
+  promptResetAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -2963,9 +3740,12 @@ export type UserSelectScalar = {
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
+  promptCount?: boolean
+  promptResetAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "role" | "status" | "phone" | "image" | "isDeleted" | "deletedAt" | "bgimage" | "isActive" | "emailVerified" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "role" | "status" | "phone" | "image" | "isDeleted" | "deletedAt" | "bgimage" | "isActive" | "emailVerified" | "createdAt" | "updatedAt" | "plan" | "promptCount" | "promptResetAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   events?: boolean | Prisma.User$eventsArgs<ExtArgs>
   participants?: boolean | Prisma.User$participantsArgs<ExtArgs>
@@ -2981,6 +3761,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
+  aicreations?: boolean | Prisma.User$aicreationsArgs<ExtArgs>
+  UserActivitys?: boolean | Prisma.User$UserActivitysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3003,6 +3785,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     highlights: Prisma.$HighlightPayload<ExtArgs>[]
     categories: Prisma.$CategoryPayload<ExtArgs>[]
+    aicreations: Prisma.$AIContentPayload<ExtArgs>[]
+    UserActivitys: Prisma.$UserActivityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3019,6 +3803,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailVerified: boolean
     createdAt: Date
     updatedAt: Date
+    plan: $Enums.PlanType
+    promptCount: number
+    promptResetAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -3427,6 +4214,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   highlights<T extends Prisma.User$highlightsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$highlightsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HighlightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   categories<T extends Prisma.User$categoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  aicreations<T extends Prisma.User$aicreationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aicreationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AIContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  UserActivitys<T extends Prisma.User$UserActivitysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$UserActivitysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3470,6 +4259,9 @@ export interface UserFieldRefs {
   readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly plan: Prisma.FieldRef<"User", 'PlanType'>
+  readonly promptCount: Prisma.FieldRef<"User", 'Int'>
+  readonly promptResetAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 
@@ -4196,6 +4988,54 @@ export type User$categoriesArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.CategoryScalarFieldEnum | Prisma.CategoryScalarFieldEnum[]
+}
+
+/**
+ * User.aicreations
+ */
+export type User$aicreationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AIContent
+   */
+  select?: Prisma.AIContentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AIContent
+   */
+  omit?: Prisma.AIContentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AIContentInclude<ExtArgs> | null
+  where?: Prisma.AIContentWhereInput
+  orderBy?: Prisma.AIContentOrderByWithRelationInput | Prisma.AIContentOrderByWithRelationInput[]
+  cursor?: Prisma.AIContentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AIContentScalarFieldEnum | Prisma.AIContentScalarFieldEnum[]
+}
+
+/**
+ * User.UserActivitys
+ */
+export type User$UserActivitysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserActivity
+   */
+  select?: Prisma.UserActivitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserActivity
+   */
+  omit?: Prisma.UserActivityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserActivityInclude<ExtArgs> | null
+  where?: Prisma.UserActivityWhereInput
+  orderBy?: Prisma.UserActivityOrderByWithRelationInput | Prisma.UserActivityOrderByWithRelationInput[]
+  cursor?: Prisma.UserActivityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserActivityScalarFieldEnum | Prisma.UserActivityScalarFieldEnum[]
 }
 
 /**

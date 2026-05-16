@@ -81,6 +81,7 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
       const session = event.data.object;
       const participantId = session.metadata?.participantId;
       const paymentId = session.metadata?.paymentId;
+      const userId=session.metadata?.userId
 
       if (!participantId || !paymentId) {
         console.error("Missing appointmentId or paymentId in session metadata");
@@ -124,6 +125,19 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
             paymentGatewayData: session as any,
           },
         });
+        await tx.user.update({
+          where:{
+            id:userId
+          },
+          data:{
+            promptCount:{
+              increment:10,
+
+            },
+            promptResetAt:null,
+            plan:"PREMIUM"
+          }
+        })
       });
 
       console.log(
@@ -164,7 +178,6 @@ const handlerStripeWebhookEvent = async (event: Stripe.Event) => {
       const session = event.data.object;
       const participantId = session.metadata?.participantId;
       const paymentId = session.metadata?.paymentId;
-
       await deleteParticipantAndPayment(participantId, paymentId);
       break;
     }

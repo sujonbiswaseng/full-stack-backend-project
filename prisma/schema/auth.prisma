@@ -15,6 +15,9 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+ plan PlanType @default(FREE)
+   promptCount Int @default(0) 
+   promptResetAt DateTime?
 
     // relations
   events       Event[]          @relation("UserEvents")
@@ -31,6 +34,8 @@ model User {
   accounts      Account[]
   highlights    Highlight[]
   categories     Category[]
+  aicreations     AIContent[]
+  UserActivitys  UserActivity[]
   @@map("user")
 }
 

@@ -7,4 +7,5 @@ router.post("/ingest-event",RagController.Ingestevents)
 
 // query rag
 router.post("/query", RagController.queryRag);
+router.post("/suggest", RagController.querySuggession);
 export const Ragrouter=router

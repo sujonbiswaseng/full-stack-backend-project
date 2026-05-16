@@ -17,7 +17,7 @@ class RedisService {
             console.log("Redis Client Ready (Upstash)");
 
         } catch (error) {
-            console.error("Error connecting to Redis:", error);
+            console.log({ error }, "Error connecting to Redis");
             this.isConnected = false;
         }
     }
@@ -37,7 +37,7 @@ class RedisService {
             const client = this.ensureConnection();
             return await client.get(key);
         } catch (error) {
-            console.error("Redis get error:", error);
+            console.error({ error }, "Redis get error");
             return null;
         }
     }
@@ -55,7 +55,7 @@ class RedisService {
                 ex: ttlInSecond,
             });
         } catch (err) {
-            console.error("Redis SET error:", err);
+            console.error({ error: err }, "Redis set error");
         }
     }
 
@@ -72,7 +72,7 @@ class RedisService {
             const client = this.ensureConnection();
             await client.del(key);
         } catch (error) {
-            console.log("Redis DELETE ERROR:", error);
+            console.error({ error }, "Redis delete error");
         }
     }
 
@@ -82,7 +82,7 @@ class RedisService {
             const res = await client.ping();
             return res === "PONG";
         } catch (error) {
-            console.error("Redis ping error:", error);
+            console.error({ error }, "Redis ping error");
             return false;
         }
     }
@@ -91,7 +91,7 @@ class RedisService {
         // Upstash does not require manual disconnect
         this.client = null;
         this.isConnected = false;
-        console.log("Redis Client Disconnected (virtual)");
+        console.info("Redis Client Disconnected (virtual)");
     }
 }
 

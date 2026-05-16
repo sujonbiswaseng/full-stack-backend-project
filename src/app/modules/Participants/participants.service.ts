@@ -145,7 +145,8 @@ const createParticipantService = async (
       ],
       metadata: {
         participantId: participantData.id,
-        paymentId: paymentData.id
+        paymentId: paymentData.id,
+        userId:userId
       },
       payment_intent_data: {
         metadata: {

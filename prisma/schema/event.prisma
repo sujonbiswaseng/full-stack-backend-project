@@ -23,6 +23,7 @@ model Event {
   reviews      Review[]
   payments     Payment[]
   blogs        Blog[]
+  UserActivitys UserActivity[]
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

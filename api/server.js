@@ -2155,7 +2155,10 @@ var createEvent = async (user, payload) => {
     images
   } = payload;
   if (!images) {
-    throw new AppError_default(status10.BAD_REQUEST, "Image is required to create an event.");
+    throw new AppError_default(
+      status10.BAD_REQUEST,
+      "Image is required to create an event."
+    );
   }
   console.log(images, "image");
   const event = await prisma.event.create({
@@ -2253,6 +2256,11 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
       status: query.status
     });
   }
+  if (orConditions.length > 0) {
+    andConditions.push({ OR: orConditions });
+  }
+  console.log(orConditions, "or");
+  console.log(andConditions, "and");
   const result = {};
   for (const status30 of statuses) {
     const events = await prisma.event.findMany({
@@ -2295,7 +2303,13 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
   };
 };
 var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sortOrder, search) => {
-  const statuses = ["DRAFT", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"];
+  const statuses = [
+    "DRAFT",
+    "UPCOMING",
+    "ONGOING",
+    "COMPLETED",
+    "CANCELLED"
+  ];
   const andConditions = [];
   if (search) {
     const orConditions = [];
@@ -2318,7 +2332,8 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
     andConditions.push({ createdAt: createdAtRange });
   }
   if (data.fee) andConditions.push({ fee: { lte: Number(data.fee) } });
-  if (data.visibility) andConditions.push({ visibility: data.visibility });
+  if (data.visibility)
+    andConditions.push({ visibility: data.visibility });
   if (data.priceType) andConditions.push({ priceType: data.priceType });
   if (data.is_featured !== void 0) {
     andConditions.push({
@@ -2338,7 +2353,9 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
       skip,
       include: {
         reviews: { where: { rating: { gt: 0 } } },
-        organizer: { select: { name: true, email: true, phone: true, image: true } }
+        organizer: {
+          select: { name: true, email: true, phone: true, image: true }
+        }
       },
       orderBy: sortBy ? { [sortBy]: sortOrder } : { date: "desc" }
     });
@@ -2571,7 +2588,10 @@ var paginationHelping_default = paginationSortingHelper;
 // src/app/modules/event/event.controller.ts
 var createEvent2 = catchAsync(async (req, res) => {
   if (!req.user?.userId) {
-    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+    throw new AppError_default(
+      status11.UNAUTHORIZED,
+      "Unauthorized access. Please login first."
+    );
   }
   const files = req.files;
   const payload = {
@@ -2588,11 +2608,22 @@ var createEvent2 = catchAsync(async (req, res) => {
   });
 });
 var getAllEvents2 = catchAsync(async (req, res) => {
-  const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
+  const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(
+    req.query
+  );
   const { search } = req.query;
   const { is_featured } = req.query;
   const is_featureddata = is_featured ? req.query.is_featured === "true" ? true : req.query.is_featured === "false" ? false : void 0 : void 0;
-  const events = await EventServices.getAllEvents(req.query, page, limit, skip, sortBy, sortOrder, is_featureddata, search);
+  const events = await EventServices.getAllEvents(
+    req.query,
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+    is_featureddata,
+    search
+  );
   sendResponse(res, {
     httpStatusCode: status11.OK,
     success: true,
@@ -2600,32 +2631,39 @@ var getAllEvents2 = catchAsync(async (req, res) => {
     data: events
   });
 });
-var getEventsByRoleController = catchAsync(async (req, res) => {
-  const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
-  if (!req.user?.userId || !req.user?.role) {
-    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+var getEventsByRoleController = catchAsync(
+  async (req, res) => {
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(
+      req.query
+    );
+    if (!req.user?.userId || !req.user?.role) {
+      throw new AppError_default(
+        status11.UNAUTHORIZED,
+        "Unauthorized access. Please login first."
+      );
+    }
+    const userId = req.user.userId;
+    const role = req.user.role;
+    const search = req.query?.search;
+    const events = await EventServices.getEventsByRole(
+      req.query,
+      userId,
+      role,
+      page,
+      limit,
+      skip,
+      sortBy,
+      sortOrder,
+      search
+    );
+    sendResponse(res, {
+      httpStatusCode: status11.OK,
+      success: true,
+      message: "Events fetched based on role successfully",
+      data: events
+    });
   }
-  const userId = req.user.userId;
-  const role = req.user.role;
-  const search = req.query?.search;
-  const events = await EventServices.getEventsByRole(
-    req.query,
-    userId,
-    role,
-    page,
-    limit,
-    skip,
-    sortBy,
-    sortOrder,
-    search
-  );
-  sendResponse(res, {
-    httpStatusCode: status11.OK,
-    success: true,
-    message: "Events fetched based on role successfully",
-    data: events
-  });
-});
+);
 var getSingleEvent2 = catchAsync(async (req, res) => {
   const eventId = req.params.id;
   const event = await EventServices.getSingleEvent(eventId);
@@ -2637,8 +2675,16 @@ var getSingleEvent2 = catchAsync(async (req, res) => {
   });
 });
 var getPaidAndFreeEvent = catchAsync(async (req, res) => {
-  const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(req.query);
-  const events = await EventServices.GetPaidAndFreeEvent(page, limit, skip, sortBy, sortOrder);
+  const { page, limit, skip, sortBy, sortOrder } = paginationHelping_default(
+    req.query
+  );
+  const events = await EventServices.GetPaidAndFreeEvent(
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder
+  );
   sendResponse(res, {
     httpStatusCode: status11.OK,
     success: true,
@@ -2649,10 +2695,17 @@ var getPaidAndFreeEvent = catchAsync(async (req, res) => {
 var updateEvent2 = catchAsync(async (req, res) => {
   const eventId = req.params.id;
   if (!req.user?.email) {
-    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+    throw new AppError_default(
+      status11.UNAUTHORIZED,
+      "Unauthorized access. Please login first."
+    );
   }
   const user = req.user;
-  const updatedEvent = await EventServices.updateEvent(eventId, req.body, user.email);
+  const updatedEvent = await EventServices.updateEvent(
+    eventId,
+    req.body,
+    user.email
+  );
   sendResponse(res, {
     httpStatusCode: status11.OK,
     success: true,
@@ -2663,9 +2716,15 @@ var updateEvent2 = catchAsync(async (req, res) => {
 var DeletedEvent = catchAsync(async (req, res) => {
   const eventId = req.params.id;
   if (!req.user?.userId) {
-    throw new AppError_default(status11.UNAUTHORIZED, "Unauthorized access. Please login first.");
+    throw new AppError_default(
+      status11.UNAUTHORIZED,
+      "Unauthorized access. Please login first."
+    );
   }
-  const deletedEvent = await EventServices.DeleteEvent(req.user, eventId);
+  const deletedEvent = await EventServices.DeleteEvent(
+    req.user,
+    eventId
+  );
   sendResponse(res, {
     httpStatusCode: status11.OK,
     success: true,
@@ -2681,7 +2740,16 @@ var IsFeautured2 = catchAsync(async (req, res) => {
     data: featuredEvents
   });
 });
-var EventController = { createEvent: createEvent2, getAllEvents: getAllEvents2, getSingleEvent: getSingleEvent2, updateEvent: updateEvent2, DeletedEvent, getPaidAndFreeEvent, getEventsByRoleController, IsFeautured: IsFeautured2 };
+var EventController = {
+  createEvent: createEvent2,
+  getAllEvents: getAllEvents2,
+  getSingleEvent: getSingleEvent2,
+  updateEvent: updateEvent2,
+  DeletedEvent,
+  getPaidAndFreeEvent,
+  getEventsByRoleController,
+  IsFeautured: IsFeautured2
+};
 
 // src/app/modules/event/event.validation.ts
 init_enums();
@@ -5167,6 +5235,7 @@ var createBlog = async (user, payload) => {
   return blog;
 };
 var getAllBlogs = async (query, page, limit, skip, sortBy, sortOrder, search) => {
+  console.log(query?.createdAt);
   const andConditions = [];
   const orConditions = [];
   if (query) {
@@ -5175,7 +5244,6 @@ var getAllBlogs = async (query, page, limit, skip, sortBy, sortOrder, search) =>
       andConditions.push({ createdAt: dateRange.gte });
     }
   }
-  console.log(search, "serch");
   if (search) {
     orConditions.push(
       {
@@ -5191,9 +5259,11 @@ var getAllBlogs = async (query, page, limit, skip, sortBy, sortOrder, search) =>
         }
       }
     );
+  }
+  if (orConditions.length > 0) {
     andConditions.push({ OR: orConditions });
   }
-  console.log(andConditions, "donsdfssadsfdddd");
+  console.log(andConditions, "andcondition");
   const blogs = await prisma.blog.findMany({
     where: { AND: andConditions },
     skip: skip || (page && limit ? (page - 1) * limit : void 0),

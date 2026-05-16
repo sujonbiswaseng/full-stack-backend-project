@@ -13,9 +13,13 @@ import { HighlightRouters } from "../modules/highlight/highlight.route";
 import { Ragrouter } from "../modules/rag/rag.route";
 import { NewsletterRouters } from "../modules/newsletter/newsletter.route";
 import { CategoryRouter } from "../modules/category/category.route";
+import { AiRouter } from "../modules/ai/ai.route";
+
 
 const router = Router()
 router.use('/v1/rag',Ragrouter)
+router.use("/v1/ai", AiRouter);
+
 router.use("/v1", BlogRouters);
 router.use("/v1", HighlightRouters);
 

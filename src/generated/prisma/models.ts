@@ -8,6 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/AIContent'
 export type * from './models/User'
 export type * from './models/Session'
 export type * from './models/Account'
@@ -24,4 +25,5 @@ export type * from './models/Payment'
 export type * from './models/DocumentEmbedding'
 export type * from './models/Review'
 export type * from './models/Service'
+export type * from './models/UserActivity'
 export type * from './commonInputTypes'

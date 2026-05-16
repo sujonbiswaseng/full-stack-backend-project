@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  AIContent: 'AIContent',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -66,7 +67,8 @@ export const ModelName = {
   Payment: 'Payment',
   DocumentEmbedding: 'DocumentEmbedding',
   Review: 'Review',
-  Service: 'Service'
+  Service: 'Service',
+  UserActivity: 'UserActivity'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -85,6 +87,18 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const AIContentScalarFieldEnum = {
+  id: 'id',
+  prompt: 'prompt',
+  generatedText: 'generatedText',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type AIContentScalarFieldEnum = (typeof AIContentScalarFieldEnum)[keyof typeof AIContentScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -99,7 +113,10 @@ export const UserScalarFieldEnum = {
   isActive: 'isActive',
   emailVerified: 'emailVerified',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  plan: 'plan',
+  promptCount: 'promptCount',
+  promptResetAt: 'promptResetAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -317,6 +334,17 @@ export const ServiceScalarFieldEnum = {
 } as const
 
 export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const UserActivityScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  eventid: 'eventid',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserActivityScalarFieldEnum = (typeof UserActivityScalarFieldEnum)[keyof typeof UserActivityScalarFieldEnum]
 
 
 export const SortOrder = {

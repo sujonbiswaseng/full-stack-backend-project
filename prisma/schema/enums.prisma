@@ -71,3 +71,8 @@ enum BlogCategory {
   COMMENTARY
   FEATURE
 }
+
+enum PlanType {
+   FREE
+ PREMIUM
+ }

@@ -115,3 +115,11 @@ export const BlogCategory = {
 } as const
 
 export type BlogCategory = (typeof BlogCategory)[keyof typeof BlogCategory]
+
+
+export const PlanType = {
+  FREE: 'FREE',
+  PREMIUM: 'PREMIUM'
+} as const
+
+export type PlanType = (typeof PlanType)[keyof typeof PlanType]

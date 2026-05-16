@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { envVars } from "../../config/env";
+import { prisma } from "../../lib/prisma";
 
 export class LLMService {
   private apiKey: string;
@@ -9,7 +10,7 @@ export class LLMService {
   constructor() {
     this.apiKey = envVars.RAG.OPENROUTER_API_KEY;
     this.model =
-      envVars.RAG.OPENROUTER_LLM_MODEL;
+      envVars.RAG.OPENROUTER_LLM_MODEL || envVars.RAG.DEESPEEK_OPEN_ROUTER_API_MODEL;
 
     if (!this.apiKey) {
       throw new Error("OpenRouter api key is missing...");
@@ -54,10 +55,115 @@ export class LLMService {
 
       if (
         asJson &&
-        (this.model.includes("gpt") || this.model.includes("openai"))
+        (this.model.includes("gpt") || this.model.includes("openai")) || (this.model.includes("DeepSeek"))
       ) {
         bodyPayload.response_format = { type: "json_object" };
       }
+
+      const response = await fetch(`${this.apiUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://lumen-management.local",
+          "X-Title": "lumen Management System",
+        },
+        body: JSON.stringify(bodyPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `OpenRouter API error: ${response.status} - ${errorData.error?.message} || "unknown error"`,
+        );
+      }
+
+      const data = await response.json();
+
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error("Error generating LLM response:", error);
+      throw error;
+    }
+  }
+
+  async generateSegessions(
+    prompt: string,
+    context: string[] = [],
+    asJson: boolean = false,
+  ) {
+
+    const events =
+    await prisma.event.findMany({
+      where: {
+        title: {
+          contains: prompt,
+          mode: "insensitive",
+        },
+      },
+
+      take: 5,
+
+      select: {
+        id: true,
+        title: true,
+        description: true,
+      },
+    });
+    try {
+      const aiPrompt = `
+      You are an AI-powered event search engine.
+      
+      TASK:
+      Generate ONLY event-related search suggestions.
+      
+      USER QUERY:
+      ${prompt}
+      
+      AVAILABLE EVENTS:
+      ${JSON.stringify(events)}
+
+      avalible information : 
+      ${context}
+      
+      STRICT RULES:
+      - Only event suggestions
+      - Short meaningful titles
+      - No explanation
+      - No markdown
+      - JSON only
+      
+      RETURN FORMAT:
+      {
+        "suggestions": [
+          {
+            "title": "event title"
+          }
+        ]
+      }
+      `;
+
+      
+      const bodyPayload: any = {
+        model: this.model,
+        messages: [
+          {
+            role: "user",
+            content: aiPrompt,
+          },
+        ],
+        temperature: 0.1, // Lower temperature for more deterministic JSON
+        max_tokens: 1500,
+      };
+
+      if (
+        asJson &&
+        (this.model.includes("gpt") || this.model.includes("openai")) || (this.model.includes("DeepSeek"))
+      ) {
+        bodyPayload.response_format = { type: "json_object" };
+      }
+
+  
 
       const response = await fetch(`${this.apiUrl}/chat/completions`, {
         method: "POST",

@@ -196,7 +196,7 @@ export type DocumentEmbeddingGroupByOutputType = {
   _max: DocumentEmbeddingMaxAggregateOutputType | null
 }
 
-type GetDocumentEmbeddingGroupByPayload<T extends DocumentEmbeddingGroupByArgs> = Prisma.PrismaPromise<
+export type GetDocumentEmbeddingGroupByPayload<T extends DocumentEmbeddingGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<DocumentEmbeddingGroupByOutputType, T['by']> &
       {

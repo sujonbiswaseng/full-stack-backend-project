@@ -213,7 +213,7 @@ export type ReviewGroupByOutputType = {
   _max: ReviewMaxAggregateOutputType | null
 }
 
-type GetReviewGroupByPayload<T extends ReviewGroupByArgs> = Prisma.PrismaPromise<
+export type GetReviewGroupByPayload<T extends ReviewGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ReviewGroupByOutputType, T['by']> &
       {
@@ -545,14 +545,6 @@ export type ReviewUncheckedCreateNestedManyWithoutParentInput = {
   connectOrCreate?: Prisma.ReviewCreateOrConnectWithoutParentInput | Prisma.ReviewCreateOrConnectWithoutParentInput[]
   createMany?: Prisma.ReviewCreateManyParentInputEnvelope
   connect?: Prisma.ReviewWhereUniqueInput | Prisma.ReviewWhereUniqueInput[]
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type EnumReviewStatusFieldUpdateOperationsInput = {

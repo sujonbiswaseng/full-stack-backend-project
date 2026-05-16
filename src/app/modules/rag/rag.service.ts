@@ -108,6 +108,50 @@ export class RAGService {
   }
 
 
+  async generateSuggessions(
+    query: string,
+    asJson: boolean = false,
+  ) {
+    try {
+      const relevantDocs = await this.retieveRelevantDocuments(
+        query
+      );
+      const context = (relevantDocs as any)
+        .filter((doc: any) => doc.content)
+        .map((doc: any) => doc.content);
+      let answer = await this.llmService.generateSegessions(
+        query,
+        context,
+        asJson,
+      );
+      let parsedAnswer: any = answer;
+      if (asJson) {
+        try {
+          // If the model wrapped the JSON in markdown blocks, clean it up
+          if (answer.startsWith("```json")) {
+            answer = answer
+              .replace(/```json\n?/, "")
+              .replace(/```$/, "")
+              .trim();
+          } else if (answer.startsWith("```")) {
+            answer = answer
+              .replace(/```\n?/, "")
+              .replace(/```$/, "")
+              .trim();
+          }
+          parsedAnswer = JSON.parse(answer);
+        } catch (e) {
+          console.error("Failed to parse LLM JSON response:", e);
+          throw e;
+        }
+      }
+      return {
+        answer: parsedAnswer,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async getStats() {
     try {
       const totalDocuments = await prisma.$queryRaw(Prisma.sql`

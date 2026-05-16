@@ -1,0 +1,9 @@
+model UserActivity {
+  id          String      @id @default(uuid())
+  category    String
+  eventid    String 
+  userId      String
+  event        Event        @relation(fields: [eventid], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+  createdAt   DateTime    @default(now())
+}
