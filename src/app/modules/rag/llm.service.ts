@@ -337,4 +337,157 @@ export class LLMService {
       throw error;
     }
   }
+
+  async generateTrendingItems(
+    prompt: string,
+    context: string[] = [],
+    asJson: boolean = false
+  ) {
+    try {
+  
+      // 1. Get trending data from user activity
+      const trendingActivities = await prisma.userActivity.groupBy({
+        by: ["eventid"],  
+        _count: {
+          eventid: true,
+        },
+  
+        orderBy: {
+          _count: {
+            eventid: "desc",
+          },
+        },
+      });
+  
+      const eventIds = trendingActivities.map((t) => t.eventid);
+  
+      // 2. Fetch event details
+      const events = await prisma.event.findMany({
+        where: {
+          id: {
+            in: eventIds,
+          },
+        },
+  
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          category_name: true,
+          location: true,
+        },
+      });
+  
+      // 3. Maintain ranking order
+      const trendingEvents = eventIds.map((id) =>
+        events.find((e) => e.id === id),
+      );
+  
+      // 4. AI Prompt (same style as yours)
+      const aiPrompt = `
+      You are an AI-powered trending engine.
+  
+      TASK:
+      Generate ONLY trending event items based on user activity.
+  
+      USER SEARCH:
+      ${prompt}
+  
+      AVAILABLE TRENDING EVENTS:
+      ${JSON.stringify(trendingEvents)}
+  
+      EXTRA CONTEXT:
+      ${context}
+  
+      STRICT RULES:
+      - Only trending events
+      - Based on user activity analysis
+      - Short meaningful titles
+      - Professional response
+      - No markdown
+      - JSON only
+  
+      RETURN FORMAT:
+      {
+        "trending": [
+          {
+            "id": "event id",
+            "title": "event title",
+            "category": "event category",
+            "reason": "why this event is trending"
+          }
+        ]
+      }
+      `;
+  
+      // 5. API Payload
+      const bodyPayload: any = {
+        model: this.model,
+  
+        messages: [
+          {
+            role: "user",
+            content: aiPrompt,
+          },
+        ],
+      };
+  
+      // 6. JSON mode support
+      if (
+        asJson &&
+        (
+          this.model.includes("gpt") ||
+          this.model.includes("openai") ||
+          this.model.includes("DeepSeek") ||
+          this.model.includes("deepseek")
+        )
+      ) {
+        bodyPayload.response_format = {
+          type: "json_object",
+        };
+      }
+  
+      // 7. Call LLM
+      const response = await fetch(`${this.apiUrl}/chat/completions`, {
+        method: "POST",
+  
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://lumen-management.local",
+          "X-Title": "lumen Management System",
+        },
+  
+        body: JSON.stringify(bodyPayload),
+      });
+  
+      // 8. Error handling
+      if (!response.ok) {
+        const errorData = await response.json();
+  
+        throw new Error(
+          `OpenRouter API error: ${response.status} - ${
+            errorData.error?.message || "unknown error"
+          }`,
+        );
+      }
+  
+      // 9. Response
+      const data = await response.json();
+  
+      console.log(data, "data");
+      console.log(data.choices[0].message.content, "content");
+  
+      return data.choices[0].message.content;
+  
+    } catch (error) {
+  
+      console.error(
+        "Error generating trending items:",
+        error,
+      );
+  
+      throw error;
+    }
+  }
 }

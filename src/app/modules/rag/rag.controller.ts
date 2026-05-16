@@ -118,16 +118,14 @@ const personalizedRecommendation = catchAsync(
       const { prompt } = req.body;
       const userId = req.user?.userId;
       const viewerId = req.viewerId;
-
-      // Check user authentication
-      if (!userId) {
+      if (!viewerId) {
         return sendResponse(res, {
           success: false,
-          httpStatusCode: status.UNAUTHORIZED,
-          message: "User ID not found. Please login.",
+          httpStatusCode: status.BAD_REQUEST,
+          message: "viewerId is required",
         });
       }
-
+ 
       // Validate prompt
       if (!prompt) {
         return sendResponse(res, {
@@ -232,6 +230,102 @@ const personalizedRecommendation = catchAsync(
   }
 );
 
+const trendingItems = catchAsync(
+  async (req: Request, res: Response) => {
+    try {
+      const { prompt } = req.body;
+
+      let finalPrompt = prompt;
+      if (!finalPrompt) {
+        finalPrompt = "give me event trending items";
+      }
+ 
+
+      // Create cache key (trending, so distinguished key)
+      const cacheKey = `prompt:${finalPrompt}`;
+
+      // Try cache first
+      try {
+        const cacheResult = await redisService.get(cacheKey);
+        if (cacheResult) {
+          const parsedData = typeof cacheResult === "string" ? JSON.parse(cacheResult) : cacheResult;
+          return sendResponse(res, {
+            success: true,
+            httpStatusCode: status.OK,
+            message: "Trending items retrieved from cache",
+            data: parsedData,
+          });
+        }
+      } catch (error: any) {
+        console.error("TrendingItems: Cache read error:", error);
+      }
+
+      // Generate trending items using AI analysis of user activity
+      let result;
+      try {
+        result = await ragService.generateTrendingItems(
+          finalPrompt,
+          true
+        );
+      } catch (error) {
+        console.error("Error in generateTrendingItems:", error);
+        return sendResponse(res, {
+          success: false,
+          httpStatusCode: status.INTERNAL_SERVER_ERROR,
+          message: "Failed to generate trending items from AI service.",
+        });
+      }
+
+      // Validate result structure (expecting: { answer: { trending: [...] } })
+      if (
+        !result ||
+        !result.answer ||
+        !Array.isArray(result.answer.trending) ||
+        result.answer.trending.length === 0
+      ) {
+        return sendResponse(res, {
+          success: false,
+          httpStatusCode: status.BAD_REQUEST,
+          message: "No trending items found.",
+        });
+      }
+
+      // Try to cache trending items
+      try {
+        // Only cache trending array, not the whole result object
+        await redisService.set(cacheKey, result.answer.trending, 600);
+      } catch (error) {
+        console.error("TrendingItems: Cache write error:", error);
+      }
+
+      // Return successful trending response
+      return sendResponse(res, {
+        success: true,
+        httpStatusCode: status.OK,
+        message: "Trending items generated successfully",
+        data: result.answer,
+      });
+    } catch (error: any) {
+      // Handle AI rate limits
+      if (
+        error?.message?.includes("429") ||
+        error?.response?.status === 429
+      ) {
+        return sendResponse(res, {
+          success: false,
+          httpStatusCode: status.TOO_MANY_REQUESTS,
+          message: "Daily AI request limit exceeded. Please try again later.",
+        });
+      }
+      return sendResponse(res, {
+        success: false,
+        httpStatusCode: status.INTERNAL_SERVER_ERROR,
+        message: "Failed to generate trending items",
+      });
+    }
+  }
+);
+
 const queryRag = catchAsync(async (req: Request, res: Response) => {
   const { query, limit, sourceType } = req.body;
 
@@ -285,4 +379,4 @@ const queryRag = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-export const RagController={getStats,Ingestevents,queryRag,querySuggession,personalizedRecommendation}
+export const RagController={getStats,Ingestevents,queryRag,querySuggession,personalizedRecommendation,trendingItems}

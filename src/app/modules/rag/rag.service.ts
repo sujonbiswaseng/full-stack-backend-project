@@ -228,6 +228,77 @@ export class RAGService {
       throw error;
     }
   }
+  async generateTrendingItems(
+    query: string,
+    asJson: boolean = false,
+  ) {
+    try {
+  
+      // 1. Retrieve RAG documents
+      const relevantDocs = await this.retieveRelevantDocuments(query);
+  
+      const context = (relevantDocs as any)
+        .filter((doc: any) => doc.content)
+        .map((doc: any) => doc.content);
+  
+      // 2. Call LLM for personalized recommendations
+      let answer = await this.llmService.generateTrendingItems(
+        query,
+        context,
+        asJson
+   
+      );
+  
+      let parsedAnswer: any = answer;
+  
+      console.log(parsedAnswer, "raw-answer");
+  
+      // 3. Safe JSON parsing
+      if (asJson) {
+        try {
+  
+          // remove ```json block if exists
+          if (answer.startsWith("```json")) {
+            answer = answer
+              .replace(/```json\n?/g, "")
+              .replace(/```$/g, "")
+              .trim();
+  
+          } else if (answer.startsWith("```")) {
+            answer = answer
+              .replace(/```\n?/g, "")
+              .replace(/```$/g, "")
+              .trim();
+          }
+  
+          parsedAnswer = JSON.parse(answer);
+  
+        } catch (e) {
+          console.error(
+            "Failed to parse personalized recommendation JSON:",
+            e,
+          );
+          throw e;
+        }
+      }
+  
+      console.log(parsedAnswer, "parsed-answer");
+  
+      // 4. Final response
+      return {
+        answer: parsedAnswer,
+      };
+  
+    } catch (error) {
+  
+      console.error(
+        "Personalized Recommendation Error:",
+        error,
+      );
+  
+      throw error;
+    }
+  }
   async getStats() {
     try {
       const totalDocuments = await prisma.$queryRaw(Prisma.sql`
