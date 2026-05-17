@@ -33,6 +33,7 @@
     "typescript": "^6.0.2"
   },
   "dependencies": {
+    "@openrouter/sdk": "^0.12.35",
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@upstash/redis": "^1.37.0",

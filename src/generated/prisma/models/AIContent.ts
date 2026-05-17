@@ -165,7 +165,7 @@ export type AIContentGroupByOutputType = {
   _max: AIContentMaxAggregateOutputType | null
 }
 
-export type GetAIContentGroupByPayload<T extends AIContentGroupByArgs> = Prisma.PrismaPromise<
+type GetAIContentGroupByPayload<T extends AIContentGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AIContentGroupByOutputType, T['by']> &
       {

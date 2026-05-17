@@ -28,6 +28,12 @@ app.use(express.json());
 
 app.use("/api",IndexRouter);
 
+app.get("/", (req: Request, res: Response) => {
+  res.json({ message: "Welcome to your event's new era — discover, organize, and elevate experiences with Lumen!" });
+});
+
+
+
 
 app.use(errorHandler)
 app.use(notFound)

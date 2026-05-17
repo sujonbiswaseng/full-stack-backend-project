@@ -154,7 +154,6 @@ export class RAGService {
   }
 
   async generatePersonalizedRecommendations(
-    userId: string,
     viewerId:string,
     query: string,
     asJson: boolean = false,
@@ -171,7 +170,6 @@ export class RAGService {
       // Generate AI recommendations
       let answer =
         await this.llmService.generatePersonalizedRecommendations(
-          userId,
           viewerId,
           query,
           context,

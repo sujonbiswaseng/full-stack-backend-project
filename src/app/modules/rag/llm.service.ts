@@ -1,16 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { envVars } from "../../config/env";
+import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
+
+import { OpenRouter } from '@openrouter/sdk';
+const openRouter = new OpenRouter({
+  apiKey: envVars.RAG.OPENROUTER_API_KEY,
+});
+
+const keyInfo = await openRouter.apiKeys.getCurrentKeyMetadata();
+const data = keyInfo.data;
+
+if (data?.isFreeTier) {
+  console.log("Free tier user");
+}
+
+if (data?.limitRemaining === 0) {
+  throw new AppError(
+    429,
+    "Daily AI limit exceeded"
+  );
+}
+
+if (data?.expiresAt) {
+  console.log("Key expires at:", data.expiresAt);
+}
 
 export class LLMService {
   private apiKey: string;
   private apiUrl: string = "https://openrouter.ai/api/v1";
   private model: string;
+  
 
   constructor() {
     this.apiKey = envVars.RAG.OPENROUTER_API_KEY;
     this.model =
-      envVars.RAG.OPENROUTER_LLM_MODEL || envVars.RAG.DEESPEEK_OPEN_ROUTER_API_MODEL;
+      envVars.RAG.OPENROUTER_LLM_MODEL ||
+      envVars.RAG.DEESPEEK_OPEN_ROUTER_API_MODEL;
 
     if (!this.apiKey) {
       throw new Error("OpenRouter api key is missing...");
@@ -30,7 +56,9 @@ export class LLMService {
           : prompt;
 
       if (asJson) {
-        fullPrompt += `\n\nReturn ONLY a valid JSON object matching this structure: {"event": [{"title": "event title", "description": "event description", "id": "id"}]}. Do not include any markdown formatting like \`\`\`json.`;
+        fullPrompt += `
+        
+AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"event": [{"title": "event title", "description": "event description", "id": "id"}]}. Do not include any markdown formatting like \`\`\`json.`;
       }
 
       const systemMessage = asJson
@@ -49,13 +77,14 @@ export class LLMService {
             content: fullPrompt,
           },
         ],
-        temperature: 0.1, // Lower temperature for more deterministic JSON
-        max_tokens: 1500,
+        "stream": true,
+      "max_tokens": 64000,
       };
 
       if (
-        asJson &&
-        (this.model.includes("gpt") || this.model.includes("openai")) || (this.model.includes("DeepSeek"))
+        (asJson &&
+          (this.model.includes("gpt") || this.model.includes("openai"))) ||
+        this.model.includes("DeepSeek")
       ) {
         bodyPayload.response_format = { type: "json_object" };
       }
@@ -79,11 +108,32 @@ export class LLMService {
       }
 
       const data = await response.json();
+      console.log(data,'data')
 
       return data.choices[0].message.content;
-    } catch (error) {
-      console.error("Error generating LLM response:", error);
-      throw error;
+    } catch (error:any) {
+      console.log(error,'error')
+
+      const statusCode = error?.status || 500;
+
+      // 429
+      if (statusCode === 429) {
+        throw new AppError(
+          429,
+          "Daily AI request limit exceeded. Try again tomorrow."
+        );
+      }
+
+      // 401
+      if (statusCode === 401) {
+        throw new AppError(
+          401,
+          "Invalid OpenRouter API key."
+        );
+      }
+
+      // DEFAULT
+      throw new AppError(statusCode,error.message);
     }
   }
 
@@ -92,9 +142,7 @@ export class LLMService {
     context: string[] = [],
     asJson: boolean = false,
   ) {
-
-    const events =
-    await prisma.event.findMany({
+    const events = await prisma.event.findMany({
       where: {
         title: {
           contains: prompt,
@@ -143,7 +191,6 @@ export class LLMService {
       }
       `;
 
-      
       const bodyPayload: any = {
         model: this.model,
         messages: [
@@ -157,13 +204,12 @@ export class LLMService {
       };
 
       if (
-        asJson &&
-        (this.model.includes("gpt") || this.model.includes("openai")) || (this.model.includes("DeepSeek"))
+        (asJson &&
+          (this.model.includes("gpt") || this.model.includes("openai"))) ||
+        this.model.includes("DeepSeek")
       ) {
         bodyPayload.response_format = { type: "json_object" };
       }
-
-  
 
       const response = await fetch(`${this.apiUrl}/chat/completions`, {
         method: "POST",
@@ -193,25 +239,23 @@ export class LLMService {
   }
 
   async generatePersonalizedRecommendations(
-    userId: string,
-    viewerId:string,
+    viewerId: string,
     prompt: string,
     context: string[] = [],
     asJson: boolean = false,
   ) {
-
     // User activity history
     const userActivities = await prisma.userActivity.findMany({
       where: {
-        viewerId:viewerId,
+        viewerId: viewerId,
       },
-  
+
       take: 10,
-  
+
       orderBy: {
         createdAt: "desc",
       },
-  
+
       include: {
         event: {
           select: {
@@ -270,10 +314,10 @@ export class LLMService {
         ]
       }
       `;
-  
+
       const bodyPayload: any = {
         model: this.model,
-  
+
         messages: [
           {
             role: "user",
@@ -281,59 +325,49 @@ export class LLMService {
           },
         ],
       };
-  
+
       if (
         asJson &&
-        (
-          this.model.includes("gpt") ||
+        (this.model.includes("gpt") ||
           this.model.includes("openai") ||
           this.model.includes("DeepSeek") ||
-          this.model.includes("deepseek")
-        )
+          this.model.includes("deepseek"))
       ) {
         bodyPayload.response_format = {
           type: "json_object",
         };
       }
-  
-      const response = await fetch(
-        `${this.apiUrl}/chat/completions`,
-        {
-          method: "POST",
-  
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://lumen-management.local",
-            "X-Title": "lumen Management System",
-          },
-  
-          body: JSON.stringify(bodyPayload),
+
+      const response = await fetch(`${this.apiUrl}/chat/completions`, {
+        method: "POST",
+
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://lumen-management.local",
+          "X-Title": "lumen Management System",
         },
-      );
-  
+
+        body: JSON.stringify(bodyPayload),
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
-  
+
         throw new Error(
           `OpenRouter API error: ${response.status} - ${
             errorData.error?.message || "unknown error"
           }`,
         );
       }
-  
+
       const data = await response.json();
-      console.log(data,'data')
-      console.log(data.choices[0].message.content,'content')
+      console.log(data, "data");
+      console.log(data.choices[0].message.content, "content");
       return data.choices[0].message.content;
-  
     } catch (error) {
-  
-      console.error(
-        "Error generating personalized recommendations:",
-        error,
-      );
-  
+      console.error("Error generating personalized recommendations:", error);
+
       throw error;
     }
   }
@@ -341,26 +375,25 @@ export class LLMService {
   async generateTrendingItems(
     prompt: string,
     context: string[] = [],
-    asJson: boolean = false
+    asJson: boolean = false,
   ) {
     try {
-  
       // 1. Get trending data from user activity
       const trendingActivities = await prisma.userActivity.groupBy({
-        by: ["eventid"],  
+        by: ["eventid"],
         _count: {
           eventid: true,
         },
-  
+
         orderBy: {
           _count: {
             eventid: "desc",
           },
         },
       });
-  
+
       const eventIds = trendingActivities.map((t) => t.eventid);
-  
+
       // 2. Fetch event details
       const events = await prisma.event.findMany({
         where: {
@@ -368,7 +401,7 @@ export class LLMService {
             in: eventIds,
           },
         },
-  
+
         select: {
           id: true,
           title: true,
@@ -377,12 +410,12 @@ export class LLMService {
           location: true,
         },
       });
-  
+
       // 3. Maintain ranking order
       const trendingEvents = eventIds.map((id) =>
         events.find((e) => e.id === id),
       );
-  
+
       // 4. AI Prompt (same style as yours)
       const aiPrompt = `
       You are an AI-powered trending engine.
@@ -419,11 +452,11 @@ export class LLMService {
         ]
       }
       `;
-  
+
       // 5. API Payload
       const bodyPayload: any = {
         model: this.model,
-  
+
         messages: [
           {
             role: "user",
@@ -431,62 +464,55 @@ export class LLMService {
           },
         ],
       };
-  
+
       // 6. JSON mode support
       if (
         asJson &&
-        (
-          this.model.includes("gpt") ||
+        (this.model.includes("gpt") ||
           this.model.includes("openai") ||
           this.model.includes("DeepSeek") ||
-          this.model.includes("deepseek")
-        )
+          this.model.includes("deepseek"))
       ) {
         bodyPayload.response_format = {
           type: "json_object",
         };
       }
-  
+
       // 7. Call LLM
       const response = await fetch(`${this.apiUrl}/chat/completions`, {
         method: "POST",
-  
+
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
           "HTTP-Referer": "https://lumen-management.local",
           "X-Title": "lumen Management System",
         },
-  
+
         body: JSON.stringify(bodyPayload),
       });
-  
+
       // 8. Error handling
       if (!response.ok) {
         const errorData = await response.json();
-  
+
         throw new Error(
           `OpenRouter API error: ${response.status} - ${
             errorData.error?.message || "unknown error"
           }`,
         );
       }
-  
+
       // 9. Response
       const data = await response.json();
-  
+
       console.log(data, "data");
       console.log(data.choices[0].message.content, "content");
-  
+
       return data.choices[0].message.content;
-  
     } catch (error) {
-  
-      console.error(
-        "Error generating trending items:",
-        error,
-      );
-  
+      console.error("Error generating trending items:", error);
+
       throw error;
     }
   }
