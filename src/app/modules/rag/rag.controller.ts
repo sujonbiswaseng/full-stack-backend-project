@@ -295,7 +295,7 @@ const trendingItems = catchAsync(async (req: Request, res: Response) => {
         });
       }
     } catch (error: any) {
-      console.error("TrendingItems: Cache read error:", error);
+      throw Error
     }
 
     // Generate trending items using AI analysis of user activity
@@ -303,12 +303,7 @@ const trendingItems = catchAsync(async (req: Request, res: Response) => {
     try {
       result = await ragService.generateTrendingItems(finalPrompt, true);
     } catch (error) {
-      console.error("Error in generateTrendingItems:", error);
-      return sendResponse(res, {
-        success: false,
-        httpStatusCode: status.INTERNAL_SERVER_ERROR,
-        message: "Failed to generate trending items from AI service.",
-      });
+     throw Error
     }
 
     // Validate result structure (expecting: { answer: { trending: [...] } })
@@ -435,7 +430,6 @@ const queryRag = catchAsync(async (req: Request, res: Response) => {
     if (data?.isFreeTier) {
       console.log("Free tier user");
     }
-
     if (data?.limitRemaining === 0 || data.limitRemaining==null) {
       throw new AppError(429, "Daily AI limit exceeded");
     }

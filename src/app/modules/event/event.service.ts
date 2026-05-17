@@ -224,7 +224,7 @@ const getEventsByRole = async (
     orConditions.push(
       { title: { contains: search, mode: "insensitive" } },
       { description: { contains: search, mode: "insensitive" } },
-      { venue: { contains: search, mode: "insensitive" } },
+      { location: { contains: search, mode: "insensitive" } },
     );
     if (orConditions.length > 0) andConditions.push({ OR: orConditions });
   }

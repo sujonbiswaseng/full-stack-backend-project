@@ -1292,11 +1292,11 @@ init_client();
 
 // src/app/shared/sendResponse.ts
 var sendResponse = (res, responseData) => {
-  const { httpStatusCode, success, message, data } = responseData;
+  const { httpStatusCode, success, message, data: data3 } = responseData;
   res.status(httpStatusCode).json({
     success,
     message,
-    data
+    data: data3
   });
 };
 
@@ -1549,7 +1549,7 @@ var UserRegister = async (payload) => {
   if (userExist) {
     throw new AppError_default(409, "user already exist,please try another email");
   }
-  const data = await auth.api.signUpEmail({
+  const data3 = await auth.api.signUpEmail({
     body: {
       name,
       email,
@@ -1558,69 +1558,69 @@ var UserRegister = async (payload) => {
       image
     }
   });
-  console.log(data, "data");
-  if (!data.user) {
+  console.log(data3, "data");
+  if (!data3.user) {
     throw new AppError_default(400, "User register failed");
   }
   const accessToken = tokenUtils.getAccessToken({
-    userId: data.user.id,
-    role: data.user.role,
-    name: data.user.name,
-    email: data.user.email,
-    status: data.user.status,
-    isDeleted: data.user.isDeleted,
-    emailVerified: data.user.emailVerified
+    userId: data3.user.id,
+    role: data3.user.role,
+    name: data3.user.name,
+    email: data3.user.email,
+    status: data3.user.status,
+    isDeleted: data3.user.isDeleted,
+    emailVerified: data3.user.emailVerified
   });
   const refreshToken = tokenUtils.getRefreshToken({
-    userId: data.user.id,
-    role: data.user.role,
-    name: data.user.name,
-    email: data.user.email,
-    status: data.user.status,
-    isDeleted: data.user.isDeleted,
-    emailVerified: data.user.emailVerified
+    userId: data3.user.id,
+    role: data3.user.role,
+    name: data3.user.name,
+    email: data3.user.email,
+    status: data3.user.status,
+    isDeleted: data3.user.isDeleted,
+    emailVerified: data3.user.emailVerified
   });
   return {
-    ...data,
-    token: data.token,
+    ...data3,
+    token: data3.token,
     accessToken,
     refreshToken
   };
 };
 var loginUser = async (payload) => {
   const { email, password } = payload;
-  const data = await auth.api.signInEmail({
+  const data3 = await auth.api.signInEmail({
     body: {
       email,
       password
     }
   });
-  if (data.user.status === UserStatus.BLOCKED) {
+  if (data3.user.status === UserStatus.BLOCKED) {
     throw new AppError_default(status7.FORBIDDEN, "User is blocked");
   }
-  if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
+  if (data3.user.isDeleted || data3.user.status === UserStatus.DELETED) {
     throw new AppError_default(status7.NOT_FOUND, "User is deleted");
   }
   const accessToken = tokenUtils.getAccessToken({
-    userId: data.user.id,
-    role: data.user.role,
-    name: data.user.name,
-    email: data.user.email,
-    status: data.user.status,
-    isDeleted: data.user.isDeleted,
-    emailVerified: data.user.emailVerified
+    userId: data3.user.id,
+    role: data3.user.role,
+    name: data3.user.name,
+    email: data3.user.email,
+    status: data3.user.status,
+    isDeleted: data3.user.isDeleted,
+    emailVerified: data3.user.emailVerified
   });
   const refreshToken = tokenUtils.getRefreshToken({
-    userId: data.user.id,
-    role: data.user.role,
-    name: data.user.name,
-    email: data.user.email,
-    status: data.user.status,
-    isDeleted: data.user.isDeleted,
-    emailVerified: data.user.emailVerified
+    userId: data3.user.id,
+    role: data3.user.role,
+    name: data3.user.name,
+    email: data3.user.email,
+    status: data3.user.status,
+    isDeleted: data3.user.isDeleted,
+    emailVerified: data3.user.emailVerified
   });
   return {
-    ...data,
+    ...data3,
     accessToken,
     refreshToken
   };
@@ -1894,12 +1894,12 @@ var getMe2 = catchAsync(async (req, res) => {
   if (!req.user?.userId) {
     throw new AppError_default(status8.UNAUTHORIZED, "Unauthorized access. Please login first.");
   }
-  const data = await AuthService.getMe(req.user);
+  const data3 = await AuthService.getMe(req.user);
   sendResponse(res, {
     httpStatusCode: status8.OK,
     success: true,
     message: "User data retrieved successfully",
-    data
+    data: data3
   });
 });
 var changePassword2 = catchAsync(async (req, res) => {
@@ -2367,7 +2367,7 @@ var getAllEvents = async (query, page, limit, skip, sortBy, sortOrder, is_featur
     }
   };
 };
-var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sortOrder, search) => {
+var getEventsByRole = async (data3, userId, role, page, limit, skip, sortBy, sortOrder, search) => {
   const statuses = [
     "DRAFT",
     "UPCOMING",
@@ -2381,32 +2381,32 @@ var getEventsByRole = async (data, userId, role, page, limit, skip, sortBy, sort
     orConditions.push(
       { title: { contains: search, mode: "insensitive" } },
       { description: { contains: search, mode: "insensitive" } },
-      { venue: { contains: search, mode: "insensitive" } }
+      { location: { contains: search, mode: "insensitive" } }
     );
     if (orConditions.length > 0) andConditions.push({ OR: orConditions });
   }
-  if (data.category_name) {
-    andConditions.push({ category_name: data.category_name });
+  if (data3.category_name) {
+    andConditions.push({ category_name: data3.category_name });
   }
-  if (data.date) {
-    const dateRange = parseDateForPrisma(data.date);
+  if (data3.date) {
+    const dateRange = parseDateForPrisma(data3.date);
     andConditions.push({ date: dateRange });
   }
-  if (data.createdAt) {
-    const createdAtRange = parseDateForPrisma(data.createdAt);
+  if (data3.createdAt) {
+    const createdAtRange = parseDateForPrisma(data3.createdAt);
     andConditions.push({ createdAt: createdAtRange });
   }
-  if (data.fee) andConditions.push({ fee: { lte: Number(data.fee) } });
-  if (data.visibility)
-    andConditions.push({ visibility: data.visibility });
-  if (data.priceType) andConditions.push({ priceType: data.priceType });
-  if (data.is_featured !== void 0) {
+  if (data3.fee) andConditions.push({ fee: { lte: Number(data3.fee) } });
+  if (data3.visibility)
+    andConditions.push({ visibility: data3.visibility });
+  if (data3.priceType) andConditions.push({ priceType: data3.priceType });
+  if (data3.is_featured !== void 0) {
     andConditions.push({
-      is_featured: typeof data.is_featured === "string" ? data.is_featured === "true" : data.is_featured
+      is_featured: typeof data3.is_featured === "string" ? data3.is_featured === "true" : data3.is_featured
     });
   }
-  if (data.status) andConditions.push({ status: data.status });
-  if (data.time) andConditions.push({ time: data.time });
+  if (data3.status) andConditions.push({ status: data3.status });
+  if (data3.time) andConditions.push({ time: data3.time });
   if (role === "USER") {
     andConditions.push({ organizerId: userId });
   }
@@ -2937,8 +2937,8 @@ var updateInvitationSchema = z4.object({
 
 // src/app/modules/Invitations/invitations.service.ts
 init_prisma();
-var createInvitationService = async (inviterId, data) => {
-  const { inviteeId, message, eventId } = data;
+var createInvitationService = async (inviterId, data3) => {
+  const { inviteeId, message, eventId } = data3;
   if (!eventId) {
     throw new Error("Event ID is required");
   }
@@ -3125,7 +3125,7 @@ var getSingleInvitationService = async (id, viewerId) => {
   }
   return result;
 };
-var updateInvitationService = async (id, data, userId) => {
+var updateInvitationService = async (id, data3, userId) => {
   const invitation = await prisma.invitation.findUnique({ where: { id } });
   const userexist = await prisma.user.findUnique({ where: { id: userId } });
   if (invitation?.inviterId !== userId && (userexist?.role !== "ADMIN" && userexist?.role !== "MANAGER")) {
@@ -3134,7 +3134,7 @@ var updateInvitationService = async (id, data, userId) => {
   if (!invitation) throw new Error(`Invitation with id ${id} not found`);
   const updateInv = await prisma.invitation.update({
     where: { id },
-    data,
+    data: data3,
     select: {
       notifications: {
         select: {
@@ -3250,7 +3250,7 @@ var stripe = new Stripe(envVars.STRIPE.STRIPE_SECRET_KEY);
 // src/app/modules/Participants/participants.service.ts
 init_enums();
 import status13 from "http-status";
-var createParticipantService = async (userId, eventId, data) => {
+var createParticipantService = async (userId, eventId, data3) => {
   const existEvent = await prisma.event.findFirst({
     where: {
       id: eventId,
@@ -3541,7 +3541,7 @@ var getSingleParticipantService = async (id) => {
     }
   });
 };
-var UpdateParticipantService = async (id, data, userId) => {
+var UpdateParticipantService = async (id, data3, userId) => {
   const existsParticipant = await prisma.participant.findUnique({
     where: { id }
   });
@@ -3556,11 +3556,11 @@ var UpdateParticipantService = async (id, data, userId) => {
   }
   let updateData = {};
   if (user.role === "USER") {
-    updateData.status = data.status;
+    updateData.status = data3.status;
   }
   if (user.role === "ADMIN" || user.role === "MANAGER") {
-    updateData.status = data.status;
-    updateData.paymentStatus = data.paymentStatus;
+    updateData.status = data3.status;
+    updateData.paymentStatus = data3.paymentStatus;
   }
   const result = await prisma.participant.update({
     where: { id },
@@ -3870,7 +3870,7 @@ init_enums();
 
 // src/app/modules/reviews/reviews.service.ts
 init_prisma();
-var CreateReviews = async (userId, eventId, data) => {
+var CreateReviews = async (userId, eventId, data3) => {
   const existingmeal = await prisma.event.findUnique({
     where: {
       id: eventId
@@ -3895,19 +3895,19 @@ var CreateReviews = async (userId, eventId, data) => {
       "You cannot submit a review because you have not joined this event yet."
     );
   }
-  if (data.rating >= 6) {
+  if (data3.rating >= 6) {
     throw new AppError_default(400, "rating must be between 1 and 5");
   }
   const result = await prisma.review.create({
     data: {
       userId,
       eventId,
-      ...data
+      ...data3
     }
   });
   return result;
 };
-var updateReview = async (reviewId, data, userid) => {
+var updateReview = async (reviewId, data3, userid) => {
   const review = await prisma.review.findFirst({
     where: {
       id: reviewId,
@@ -3926,7 +3926,7 @@ var updateReview = async (reviewId, data, userid) => {
       userId: userid
     },
     data: {
-      ...data
+      ...data3
     }
   });
   return {
@@ -3969,21 +3969,21 @@ var getAllreviews = async () => {
   });
   return result;
 };
-var getReviewsByRole = async (role, userId, page = 1, limit = 10, skip = 0, data, sortBy = "createdAt", sortOrder = "desc") => {
+var getReviewsByRole = async (role, userId, page = 1, limit = 10, skip = 0, data3, sortBy = "createdAt", sortOrder = "desc") => {
   const andConditions = [];
-  if (data.parentId !== void 0) {
+  if (data3.parentId !== void 0) {
     andConditions.push({
-      parentId: data.parentId
+      parentId: data3.parentId
     });
   }
-  if (data.status) {
+  if (data3.status) {
     andConditions.push({
-      status: data.status
+      status: data3.status
     });
   }
-  if (typeof data.rating === "number") {
+  if (typeof data3.rating === "number") {
     andConditions.push({
-      rating: Number(data.rating)
+      rating: Number(data3.rating)
     });
   }
   if (role === "USER") {
@@ -4039,8 +4039,8 @@ var getReviewsByRole = async (role, userId, page = 1, limit = 10, skip = 0, data
     }
   };
 };
-var moderateReview = async (id, data) => {
-  const { status: status30 } = data;
+var moderateReview = async (id, data3) => {
+  const { status: status30 } = data3;
   const reviewData = await prisma.review.findUnique({
     where: {
       id
@@ -4053,8 +4053,8 @@ var moderateReview = async (id, data) => {
   if (!reviewData) {
     throw new AppError_default(404, "review data not found by id");
   }
-  if (reviewData.status === data.status) {
-    throw new AppError_default(409, `Your provided status (${data.status}) is already up to date.`);
+  if (reviewData.status === data3.status) {
+    throw new AppError_default(409, `Your provided status (${data3.status}) is already up to date.`);
   }
   const result = await prisma.review.update({
     where: {
@@ -4537,8 +4537,8 @@ import { Router as Router5 } from "express";
 
 // src/app/modules/user/user.service.ts
 init_prisma();
-var UpdateUserProfile = async (data, userid) => {
-  if (!data || Object.keys(data).length === 0) {
+var UpdateUserProfile = async (data3, userid) => {
+  if (!data3 || Object.keys(data3).length === 0) {
     throw new AppError_default(400, "No profile data provided for update.");
   }
   const user = await prisma.user.findUnique({
@@ -4550,12 +4550,12 @@ var UpdateUserProfile = async (data, userid) => {
   }
   const isUserRole = user.role === "USER";
   const updateData = {
-    name: data.name,
-    image: data.image,
-    bgimage: data.bgimage,
-    phone: data.phone,
-    isActive: data.isActive,
-    ...isUserRole ? {} : { email: data.email }
+    name: data3.name,
+    image: data3.image,
+    bgimage: data3.bgimage,
+    phone: data3.phone,
+    isActive: data3.isActive,
+    ...isUserRole ? {} : { email: data3.email }
   };
   const updatedUser = await prisma.user.update({
     where: { id: userid },
@@ -4563,31 +4563,31 @@ var UpdateUserProfile = async (data, userid) => {
   });
   return updatedUser;
 };
-var GetAllUsers = async (data, page, limit, skip, sortBy, sortOrder, isemailVerified) => {
+var GetAllUsers = async (data3, page, limit, skip, sortBy, sortOrder, isemailVerified) => {
   const andCondition = [];
-  if (typeof data.email == "string") {
+  if (typeof data3.email == "string") {
     andCondition.push({
-      email: data?.email
+      email: data3?.email
     });
   }
-  if (typeof data?.phone == "string") {
+  if (typeof data3?.phone == "string") {
     andCondition.push({
-      phone: data?.phone
+      phone: data3?.phone
     });
   }
-  if (typeof data?.name == "string") {
+  if (typeof data3?.name == "string") {
     andCondition.push({
-      name: data?.name
+      name: data3?.name
     });
   }
-  if (typeof data?.role == "string") {
-    andCondition.push({ role: data?.role });
+  if (typeof data3?.role == "string") {
+    andCondition.push({ role: data3?.role });
   }
-  if (typeof data?.status == "string") {
-    andCondition.push({ status: data?.status });
+  if (typeof data3?.status == "string") {
+    andCondition.push({ status: data3?.status });
   }
-  if (typeof data.isactivequery == "boolean") {
-    andCondition.push({ isActive: data.isactivequery });
+  if (typeof data3.isactivequery == "boolean") {
+    andCondition.push({ isActive: data3.isactivequery });
   }
   let result = {};
   const users = await prisma.user.findMany({
@@ -4619,9 +4619,9 @@ var GetAllUsers = async (data, page, limit, skip, sortBy, sortOrder, isemailVeri
     data: result,
     pagination: {
       totalusers,
-      page: data.page,
-      limit: data.limit,
-      totalpage: Math.ceil(totalusers / data.limit) || 1
+      page: data3.page,
+      limit: data3.limit,
+      totalpage: Math.ceil(totalusers / data3.limit) || 1
     }
   };
 };
@@ -4638,25 +4638,25 @@ var OwnProfileDelete = async (userid) => {
   });
   return result;
 };
-var UpdateUser = async (id, data) => {
+var UpdateUser = async (id, data3) => {
   const userData = await prisma.user.findUnique({ where: { id } });
   if (!userData) {
     throw new AppError_default(404, "your user data didn't found");
   }
-  if (userData.role == data.role) {
-    throw new AppError_default(409, `your status(${data.role}) already up to date`);
+  if (userData.role == data3.role) {
+    throw new AppError_default(409, `your status(${data3.role}) already up to date`);
   }
-  if (userData.status === data.status) {
-    throw new AppError_default(409, `your status(${data.status}) already up to date`);
+  if (userData.status === data3.status) {
+    throw new AppError_default(409, `your status(${data3.status}) already up to date`);
   }
   const result = await prisma.user.update({
     where: {
       id
     },
     data: {
-      role: data.role,
-      status: data.status,
-      email: data.email
+      role: data3.role,
+      status: data3.status,
+      email: data3.email
     }
   });
   return result;
@@ -5328,7 +5328,7 @@ var updateBlogSchema = z7.object({
   authorId: z7.string().min(1, { message: "Author ID cannot be empty." }).optional(),
   eventId: z7.string().optional().nullable()
 }).refine(
-  (data) => Object.keys(data).length > 0,
+  (data3) => Object.keys(data3).length > 0,
   { message: "At least one field must be provided to update the blog." }
 );
 
@@ -5874,11 +5874,11 @@ var EmbeddingService = class {
       if (!response.ok) {
         throw new Error(`OpenRouter API Error: ${response.status}`);
       }
-      const data = await response.json();
-      if (!data.data || data.data.length == 0) {
+      const data3 = await response.json();
+      if (!data3.data || data3.data.length == 0) {
         throw new Error("No embedding data returned");
       }
-      return data.data[0].embedding;
+      return data3.data[0].embedding;
     } catch (error) {
       console.log(error);
       throw error;
@@ -6088,6 +6088,24 @@ var IndexingService = class {
 
 // src/app/modules/rag/llm.service.ts
 init_prisma();
+import { OpenRouter } from "@openrouter/sdk";
+var openRouter = new OpenRouter({
+  apiKey: envVars.RAG.OPENROUTER_API_KEY
+});
+var keyInfo = await openRouter.apiKeys.getCurrentKeyMetadata();
+var data = keyInfo.data;
+if (data?.isFreeTier) {
+  console.log("Free tier user");
+}
+if (data?.limitRemaining === 0) {
+  throw new AppError_default(
+    429,
+    "Daily AI limit exceeded"
+  );
+}
+if (data?.expiresAt) {
+  console.log("Key expires at:", data.expiresAt);
+}
 var LLMService = class {
   apiKey;
   apiUrl = "https://openrouter.ai/api/v1";
@@ -6125,9 +6143,8 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
             content: fullPrompt
           }
         ],
-        temperature: 0.1,
-        // Lower temperature for more deterministic JSON
-        max_tokens: 1500
+        "stream": true,
+        "max_tokens": 64e3
       };
       if (asJson && (this.model.includes("gpt") || this.model.includes("openai")) || this.model.includes("DeepSeek")) {
         bodyPayload.response_format = { type: "json_object" };
@@ -6148,11 +6165,25 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
           `OpenRouter API error: ${response.status} - ${errorData.error?.message} || "unknown error"`
         );
       }
-      const data = await response.json();
-      return data.choices[0].message.content;
+      const data3 = await response.json();
+      console.log(data3, "data");
+      return data3.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating LLM response:", error);
-      throw error;
+      console.log(error, "error");
+      const statusCode = error?.status || 500;
+      if (statusCode === 429) {
+        throw new AppError_default(
+          429,
+          "Daily AI request limit exceeded. Try again tomorrow."
+        );
+      }
+      if (statusCode === 401) {
+        throw new AppError_default(
+          401,
+          "Invalid OpenRouter API key."
+        );
+      }
+      throw new AppError_default(statusCode, error.message);
     }
   }
   async generateSegessions(prompt, context = [], asJson = false) {
@@ -6233,11 +6264,21 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
           `OpenRouter API error: ${response.status} - ${errorData.error?.message} || "unknown error"`
         );
       }
-      const data = await response.json();
-      return data.choices[0].message.content;
+      const data3 = await response.json();
+      return data3.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating LLM response:", error);
-      throw error;
+      if (data?.isFreeTier) {
+        console.log("Free tier user");
+      }
+      if (data?.limitRemaining === 0) {
+        throw new AppError_default(
+          429,
+          "Daily AI limit exceeded"
+        );
+      }
+      if (data?.expiresAt) {
+        console.log("Key expires at:", data.expiresAt);
+      }
     }
   }
   async generatePersonalizedRecommendations(viewerId, prompt, context = [], asJson = false) {
@@ -6300,6 +6341,11 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
             "id": "event id",
             "title": "event title",
             "category": "event category",
+            "images": ["url1", "url2"],  // Array of image URLs related to the event
+            "description": "detailed description of the event",
+            "data": { /* any relevant structured event data */ },
+            "location": "event location",
+       
             "reason": "recommended based on user activity"
           }
         ]
@@ -6335,13 +6381,23 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
           `OpenRouter API error: ${response.status} - ${errorData.error?.message || "unknown error"}`
         );
       }
-      const data = await response.json();
-      console.log(data, "data");
-      console.log(data.choices[0].message.content, "content");
-      return data.choices[0].message.content;
+      const data3 = await response.json();
+      console.log(data3, "data");
+      console.log(data3.choices[0].message.content, "content");
+      return data3.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating personalized recommendations:", error);
-      throw error;
+      if (data?.isFreeTier) {
+        console.log("Free tier user");
+      }
+      if (data?.limitRemaining === 0) {
+        throw new AppError_default(
+          429,
+          "Daily AI limit exceeded"
+        );
+      }
+      if (data?.expiresAt) {
+        console.log("Key expires at:", data.expiresAt);
+      }
     }
   }
   async generateTrendingItems(prompt, context = [], asJson = false) {
@@ -6402,9 +6458,13 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
       {
         "trending": [
           {
-            "id": "event id",
+              "id": "event id",
             "title": "event title",
             "category": "event category",
+            "images": ["url1", "url2"],  // Array of image URLs related to the event
+            "description": "detailed description of the event",
+            "data": { /* any relevant structured event data */ },
+            "location": "event location",
             "reason": "why this event is trending"
           }
         ]
@@ -6440,13 +6500,23 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
           `OpenRouter API error: ${response.status} - ${errorData.error?.message || "unknown error"}`
         );
       }
-      const data = await response.json();
-      console.log(data, "data");
-      console.log(data.choices[0].message.content, "content");
-      return data.choices[0].message.content;
+      const data3 = await response.json();
+      console.log(data3, "data");
+      console.log(data3.choices[0].message.content, "content");
+      return data3.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating trending items:", error);
-      throw error;
+      if (data?.isFreeTier) {
+        console.log("Free tier user");
+      }
+      if (data?.limitRemaining === 0) {
+        throw new AppError_default(
+          429,
+          "Daily AI limit exceeded"
+        );
+      }
+      if (data?.expiresAt) {
+        console.log("Key expires at:", data.expiresAt);
+      }
     }
   }
 };
@@ -6665,6 +6735,7 @@ var RAGService = class {
 
 // src/app/modules/rag/rag.controller.ts
 import status25 from "http-status";
+import { OpenRouter as OpenRouter2 } from "@openrouter/sdk";
 
 // src/app/lib/redis.ts
 import { Redis } from "@upstash/redis";
@@ -6744,8 +6815,25 @@ var redisService = new RedisService();
 
 // src/app/modules/rag/rag.controller.ts
 var ragService = new RAGService();
+var openRouter2 = new OpenRouter2({
+  apiKey: envVars.RAG.OPENROUTER_API_KEY
+});
+var keyInfo2 = await openRouter2.apiKeys.getCurrentKeyMetadata();
+var data2 = keyInfo2.data;
+if (data2?.isFreeTier) {
+  console.log("Free tier user");
+}
+if (data2?.limitRemaining === 0) {
+  throw new AppError_default(429, "Daily AI limit exceeded");
+}
+if (data2?.expiresAt) {
+  console.log("Key expires at:", data2.expiresAt);
+}
 var getStats = catchAsync(async (req, res) => {
   const result = await ragService.getStats();
+  const openRouter3 = new OpenRouter2({
+    apiKey: envVars.RAG.OPENROUTER_API_KEY
+  });
   sendResponse(res, {
     success: true,
     httpStatusCode: status25.OK,
@@ -6786,14 +6874,15 @@ var querySuggession = catchAsync(async (req, res) => {
       }
     } catch (error) {
       console.log(error.status, "s");
-      console.warn("Cache read error , proceeding with normal processing ", error);
+      console.warn(
+        "Cache read error , proceeding with normal processing ",
+        error
+      );
+      throw Error;
     }
     let result;
     try {
-      result = await ragService.generateSuggessions(
-        prompt,
-        true
-      );
+      result = await ragService.generateSuggessions(prompt, true);
     } catch (error) {
       console.log("Error in ragService.generateSuggessions:", error);
       throw error;
@@ -6818,7 +6907,7 @@ var querySuggession = catchAsync(async (req, res) => {
       }
       await redisService.set(cacheKey, dataToCache, 600);
     } catch (error) {
-      console.log("cache Write error", error);
+      throw Error;
     }
     sendResponse(res, {
       success: true,
@@ -6827,6 +6916,17 @@ var querySuggession = catchAsync(async (req, res) => {
       data: result?.answer
     });
   } catch (error) {
+    const data3 = keyInfo2.data;
+    console.log(data3, "data");
+    if (data3?.isFreeTier) {
+      console.log("Free tier user");
+    }
+    if (data3?.limitRemaining === 0 || data3.limitRemaining == null) {
+      throw new AppError_default(429, "Daily AI limit exceeded");
+    }
+    if (data3?.expiresAt) {
+      throw new AppError_default(400, `Key expires at: ${data3.expiresAt}`);
+    }
     if (error.response?.status === 429) {
       throw new Error(
         "Daily AI request limit exceeded. Please try again tomorrow or upgrade your API plan."
@@ -6876,20 +6976,11 @@ var personalizedRecommendation = catchAsync(
           true
         );
       } catch (error) {
-        console.error("Error in generatePersonalizedRecommendations:", error);
-        return sendResponse(res, {
-          success: false,
-          httpStatusCode: status25.INTERNAL_SERVER_ERROR,
-          message: "Failed to generate personalized recommendations from AI service."
-        });
+        throw Error;
       }
       console.log(result, "rsult");
       if (!result || !result.answer || !Array.isArray(result.answer.recommendations) || result.answer.recommendations.length === 0) {
-        return sendResponse(res, {
-          success: false,
-          httpStatusCode: status25.BAD_REQUEST,
-          message: "No recommendations found."
-        });
+        throw Error;
       }
       try {
         let dataToCache = result.answer.recommendations;
@@ -6904,6 +6995,17 @@ var personalizedRecommendation = catchAsync(
         data: result.answer
       });
     } catch (error) {
+      const data3 = keyInfo2.data;
+      console.log(data3, "data");
+      if (data3?.isFreeTier) {
+        console.log("Free tier user");
+      }
+      if (data3?.limitRemaining === 0 || data3.limitRemaining == null) {
+        throw new AppError_default(429, "Daily AI limit exceeded");
+      }
+      if (data3?.expiresAt) {
+        throw new AppError_default(400, `Key expires at: ${data3.expiresAt}`);
+      }
       if (error?.message?.includes("429") || error?.response?.status === 429) {
         return sendResponse(res, {
           success: false,
@@ -6920,128 +7022,159 @@ var personalizedRecommendation = catchAsync(
     }
   }
 );
-var trendingItems = catchAsync(
-  async (req, res) => {
+var trendingItems = catchAsync(async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    let finalPrompt = prompt;
+    if (!finalPrompt) {
+      finalPrompt = "give me event trending items";
+    }
+    const cacheKey = `trendingItems:prompt:${finalPrompt}`;
     try {
-      const { prompt } = req.body;
-      let finalPrompt = prompt;
-      if (!finalPrompt) {
-        finalPrompt = "give me event trending items";
-      }
-      const cacheKey = `trendingItems:prompt:${finalPrompt}`;
-      try {
-        const cacheResult = await redisService.get(cacheKey);
-        if (cacheResult) {
-          const parsedData = typeof cacheResult === "string" ? JSON.parse(cacheResult) : cacheResult;
-          return sendResponse(res, {
-            success: true,
-            httpStatusCode: status25.OK,
-            message: "Trending items retrieved from cache",
-            data: parsedData
-          });
-        }
-      } catch (error) {
-        console.error("TrendingItems: Cache read error:", error);
-      }
-      let result;
-      try {
-        result = await ragService.generateTrendingItems(
-          finalPrompt,
-          true
-        );
-      } catch (error) {
-        console.error("Error in generateTrendingItems:", error);
+      const cacheResult = await redisService.get(cacheKey);
+      if (cacheResult) {
+        const parsedData = typeof cacheResult === "string" ? JSON.parse(cacheResult) : cacheResult;
         return sendResponse(res, {
-          success: false,
-          httpStatusCode: status25.INTERNAL_SERVER_ERROR,
-          message: "Failed to generate trending items from AI service."
+          success: true,
+          httpStatusCode: status25.OK,
+          message: "Trending items retrieved from cache",
+          data: parsedData
         });
       }
-      if (!result || !result.answer || !Array.isArray(result.answer.trending) || result.answer.trending.length === 0) {
-        return sendResponse(res, {
-          success: false,
-          httpStatusCode: status25.BAD_REQUEST,
-          message: "No trending items found."
-        });
-      }
-      try {
-        await redisService.set(cacheKey, result.answer.trending, 600);
-      } catch (error) {
-        console.error("TrendingItems: Cache write error:", error);
-      }
-      return sendResponse(res, {
-        success: true,
-        httpStatusCode: status25.OK,
-        message: "Trending items generated successfully",
-        data: result.answer
-      });
     } catch (error) {
-      if (error?.message?.includes("429") || error?.response?.status === 429) {
-        return sendResponse(res, {
-          success: false,
-          httpStatusCode: status25.TOO_MANY_REQUESTS,
-          message: "Daily AI request limit exceeded. Please try again later."
-        });
-      }
+      throw Error;
+    }
+    let result;
+    try {
+      result = await ragService.generateTrendingItems(finalPrompt, true);
+    } catch (error) {
+      throw Error;
+    }
+    if (!result || !result.answer || !Array.isArray(result.answer.trending) || result.answer.trending.length === 0) {
+      throw Error;
+    }
+    try {
+      await redisService.set(cacheKey, result.answer.trending, 600);
+    } catch (error) {
+      throw Error;
+    }
+    return sendResponse(res, {
+      success: true,
+      httpStatusCode: status25.OK,
+      message: "Trending items generated successfully",
+      data: result.answer
+    });
+  } catch (error) {
+    const data3 = keyInfo2.data;
+    console.log(data3, "data");
+    if (data3?.isFreeTier) {
+      console.log("Free tier user");
+    }
+    if (data3?.limitRemaining === 0 || data3.limitRemaining == null) {
+      throw new AppError_default(429, "Daily AI limit exceeded");
+    }
+    if (data3?.expiresAt) {
+      throw new AppError_default(400, `Key expires at: ${data3.expiresAt}`);
+    }
+    if (error?.message?.includes("429") || error?.response?.status === 429) {
       return sendResponse(res, {
         success: false,
-        httpStatusCode: status25.INTERNAL_SERVER_ERROR,
-        message: "Failed to generate trending items"
+        httpStatusCode: status25.TOO_MANY_REQUESTS,
+        message: "Daily AI request limit exceeded. Please try again later."
       });
     }
+    return sendResponse(res, {
+      success: false,
+      httpStatusCode: status25.INTERNAL_SERVER_ERROR,
+      message: "Failed to generate trending items"
+    });
   }
-);
+});
 var queryRag = catchAsync(async (req, res) => {
   const { query, limit, sourceType } = req.body;
-  if (!query) {
-    return sendResponse(res, {
-      success: false,
-      httpStatusCode: status25.BAD_REQUEST,
-      message: "Query is required"
-    });
-  }
-  const cacheKey = `rag:query:${query}:${limit ?? 5}:${sourceType || "all"}`;
   try {
-    const cacheResult = await redisService.get(cacheKey);
-    if (cacheResult) {
-      const parseData = JSON.parse(cacheResult);
+    if (!query) {
       return sendResponse(res, {
-        success: true,
-        httpStatusCode: status25.OK,
-        message: "Answer retrieved from cache",
-        data: parseData
+        success: false,
+        httpStatusCode: status25.BAD_REQUEST,
+        message: "Query is required"
       });
     }
-  } catch (error) {
-    console.warn("Cache read error , proceeding with normal processing ", error);
-  }
-  const result = await ragService.generateAnswer(
-    query,
-    limit ?? 5,
-    sourceType,
-    true
-  );
-  if (!result || !result.answer || !Array.isArray(result.answer) || result.answer.length === 0) {
+    const cacheKey = `rag:query:${query}:${limit ?? 5}:${sourceType || "all"}`;
+    try {
+      const cacheResult = await redisService.get(cacheKey);
+      if (cacheResult) {
+        const parseData = JSON.parse(cacheResult);
+        return sendResponse(res, {
+          success: true,
+          httpStatusCode: status25.OK,
+          message: "Answer retrieved from cache",
+          data: parseData
+        });
+      }
+    } catch (error) {
+      throw Error;
+    }
+    const result = await ragService.generateAnswer(
+      query,
+      limit ?? 5,
+      sourceType,
+      true
+    );
+    if (!result || !result.answer || !Array.isArray(result.answer) || result.answer.length === 0) {
+      throw Error;
+    }
+    try {
+      const dat = await redisService.set(cacheKey, result, 600);
+      console.log(dat, "da");
+    } catch (error) {
+      console.log("cache Write error", error);
+    }
+    return sendResponse(res, {
+      success: true,
+      httpStatusCode: status25.OK,
+      message: "Answer generated successfully",
+      data: result
+    });
+  } catch (err) {
+    const data3 = keyInfo2.data;
+    console.log(data3, "data");
+    if (data3?.isFreeTier) {
+      console.log("Free tier user");
+    }
+    if (data3?.limitRemaining === 0 || data3.limitRemaining == null) {
+      throw new AppError_default(429, "Daily AI limit exceeded");
+    }
+    if (data3?.expiresAt) {
+      throw new AppError_default(400, `Key expires at: ${data3.expiresAt}`);
+    }
+    console.warn(
+      "Cache read error , proceeding with normal processing ",
+      err
+    );
+    const httpStatus = err?.status || err?.statusCode || status25.INTERNAL_SERVER_ERROR;
+    let message = "An unexpected error occurred while processing the request.";
+    if (httpStatus === 429 || err?.message && err.message.includes("429") || err?.message && err.message.includes("rate limit")) {
+      message = "Rate limit exceeded on the LLM provider (OpenRouter). Please try again later or add credits if required.";
+    } else if (err?.message) {
+      message = err.message;
+    }
+    console.error("RAG Controller Error:", err);
     return sendResponse(res, {
       success: false,
-      httpStatusCode: status25.BAD_REQUEST,
-      message: "No event found."
+      httpStatusCode: httpStatus,
+      message
     });
   }
-  try {
-    const dat = await redisService.set(cacheKey, result, 600);
-    console.log(dat, "da");
-  } catch (error) {
-    console.log("cache Write error", error);
-  }
-  sendResponse(res, {
-    success: true,
-    httpStatusCode: status25.OK,
-    message: "Answer generated successfully",
-    data: result
-  });
 });
-var RagController = { getStats, Ingestevents, queryRag, querySuggession, personalizedRecommendation, trendingItems };
+var RagController = {
+  getStats,
+  Ingestevents,
+  queryRag,
+  querySuggession,
+  personalizedRecommendation,
+  trendingItems
+};
 
 // src/app/modules/rag/rag.route.ts
 var router12 = Router8();
@@ -7291,8 +7424,8 @@ import { Router as Router10 } from "express";
 // src/app/modules/category/category.service.ts
 init_prisma();
 import status28 from "http-status";
-var CreateCategory = async (data, email) => {
-  if (!data.image) {
+var CreateCategory = async (data3, email) => {
+  if (!data3.image) {
     throw new AppError_default(404, "Image is required");
   }
   const adminUser = await prisma.user.findUnique({
@@ -7304,7 +7437,7 @@ var CreateCategory = async (data, email) => {
   const adminId = adminUser.id;
   const categorydata = await prisma.category.findUnique({
     where: {
-      name: data.name
+      name: data3.name
     }
   });
   if (categorydata) {
@@ -7315,35 +7448,35 @@ var CreateCategory = async (data, email) => {
   });
   const result = await prisma.category.create({
     data: {
-      ...data,
+      ...data3,
       adminId
     }
   });
   return result;
 };
-var getCategory = async (data, page, limit, skip) => {
+var getCategory = async (data3, page, limit, skip) => {
   const andConditions = [];
-  if (data?.name) {
+  if (data3?.name) {
     andConditions.push({
-      name: data.name
+      name: data3.name
     });
   }
-  if (data?.createdAt) {
-    const dateRange = parseDateForPrisma(data.createdAt);
+  if (data3?.createdAt) {
+    const dateRange = parseDateForPrisma(data3.createdAt);
     andConditions.push({ createdAt: dateRange.gte });
   }
-  if (data?.adminId) {
+  if (data3?.adminId) {
     andConditions.push({
       adminId: {
-        contains: data.adminId,
+        contains: data3.adminId,
         mode: "insensitive"
       }
     });
   }
-  if (data?.id) {
+  if (data3?.id) {
     andConditions.push({
       id: {
-        contains: data.id,
+        contains: data3.id,
         mode: "insensitive"
       }
     });
@@ -7517,9 +7650,9 @@ var SingleCategory = async (id, viewerId, query, page, limit, skip, search) => {
     }
   };
 };
-var UpdateCategory = async (id, data) => {
-  const { name } = data;
-  if (!data.image) {
+var UpdateCategory = async (id, data3) => {
+  const { name } = data3;
+  if (!data3.image) {
     throw new AppError_default(404, "Image is required");
   }
   const existcategory = await prisma.category.findUniqueOrThrow({
@@ -7533,7 +7666,7 @@ var UpdateCategory = async (id, data) => {
       id
     },
     data: {
-      ...data
+      ...data3
     }
   });
   return result;

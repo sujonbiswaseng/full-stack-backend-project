@@ -233,8 +233,20 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
 
       return data.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating LLM response:", error);
-      throw error;
+      if (data?.isFreeTier) {
+        console.log("Free tier user");
+      }
+      
+      if (data?.limitRemaining === 0) {
+        throw new AppError(
+          429,
+          "Daily AI limit exceeded"
+        );
+      }
+      
+      if (data?.expiresAt) {
+        console.log("Key expires at:", data.expiresAt);
+      }
     }
   }
 
@@ -309,6 +321,11 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
             "id": "event id",
             "title": "event title",
             "category": "event category",
+            "images": ["url1", "url2"],  // Array of image URLs related to the event
+            "description": "detailed description of the event",
+            "data": { /* any relevant structured event data */ },
+            "location": "event location",
+       
             "reason": "recommended based on user activity"
           }
         ]
@@ -366,9 +383,20 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
       console.log(data.choices[0].message.content, "content");
       return data.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating personalized recommendations:", error);
-
-      throw error;
+      if (data?.isFreeTier) {
+        console.log("Free tier user");
+      }
+      
+      if (data?.limitRemaining === 0) {
+        throw new AppError(
+          429,
+          "Daily AI limit exceeded"
+        );
+      }
+      
+      if (data?.expiresAt) {
+        console.log("Key expires at:", data.expiresAt);
+      }
     }
   }
 
@@ -444,9 +472,13 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
       {
         "trending": [
           {
-            "id": "event id",
+              "id": "event id",
             "title": "event title",
             "category": "event category",
+            "images": ["url1", "url2"],  // Array of image URLs related to the event
+            "description": "detailed description of the event",
+            "data": { /* any relevant structured event data */ },
+            "location": "event location",
             "reason": "why this event is trending"
           }
         ]
@@ -511,9 +543,20 @@ AI Chat Assistant: Return ONLY a valid JSON object matching this structure: {"ev
 
       return data.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating trending items:", error);
-
-      throw error;
+      if (data?.isFreeTier) {
+        console.log("Free tier user");
+      }
+      
+      if (data?.limitRemaining === 0) {
+        throw new AppError(
+          429,
+          "Daily AI limit exceeded"
+        );
+      }
+      
+      if (data?.expiresAt) {
+        console.log("Key expires at:", data.expiresAt);
+      }
     }
   }
 }
