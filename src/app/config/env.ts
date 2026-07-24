@@ -13,6 +13,8 @@ interface EnvConfig {
   ACCESS_TOKEN_EXPIRES_IN?: string;
   BETTER_AUTH_SECRET?: string;
   BETTER_AUTH_URL?: string;
+  GEMINI_API_KEY?: string;
+  OPENAI_API_KEY?: string;
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
   EMAIL_SENDER: {
@@ -37,11 +39,9 @@ interface EnvConfig {
     OPENROUTER_API_KEY: string;
     OPENROUTER_EMBEDDING_MODEL: string;
     OPENROUTER_LLM_MODEL: string;
-    DEESPEEK_OPEN_ROUTER_API_MODEL: string;
   };
   UPSTASH_REDIS_REST_URL: string;
   UPSTASH_REDIS_REST_TOKEN: string;
-  GEMINI_API_KEY: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -66,10 +66,8 @@ const loadEnvVariables = (): EnvConfig => {
     "OPENROUTER_API_KEY",
     "OPENROUTER_EMBEDDING_MODEL",
     "OPENROUTER_LLM_MODEL",
-    "DEESPEEK_OPEN_ROUTER_API_MODEL",
     "UPSTASH_REDIS_REST_URL",
     "UPSTASH_REDIS_REST_TOKEN",
-    "GEMINI_API_KEY"
   ];
   requireEnvVariable.forEach((variable) => {
     if (!process.env[variable]) {
@@ -88,6 +86,8 @@ const loadEnvVariables = (): EnvConfig => {
     ACCESS_TOKEN_EXPIRES_IN: process.env.ACCESS_TOKEN_EXPIRES_IN as string,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET as string,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL as string,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY as string,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY as string,
     EMAIL_SENDER: {
       SMTP_USER: process.env.EMAIL_SENDER_SMTP_USER as string,
       SMTP_PASS: process.env.EMAIL_SENDER_SMTP_PASS as string,
@@ -113,11 +113,9 @@ const loadEnvVariables = (): EnvConfig => {
       OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY as string,
       OPENROUTER_EMBEDDING_MODEL: process.env.OPENROUTER_EMBEDDING_MODEL as string,
       OPENROUTER_LLM_MODEL: process.env.OPENROUTER_LLM_MODEL as string,
-      DEESPEEK_OPEN_ROUTER_API_MODEL: process.env.DEESPEEK_OPEN_ROUTER_API_MODEL as string,
     },
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL as string,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN as string,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY as string
   };
 };
 

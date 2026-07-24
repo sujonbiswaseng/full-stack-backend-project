@@ -10,7 +10,7 @@ import AppError from "../../errorHelper/AppError";
 import { envVars } from "../../config/env";
 const ragService = new RAGService();
 const openRouter = new OpenRouter({
-  apiKey: envVars.RAG.OPENROUTER_API_KEY,
+  apiKey: envVars.RAG.OPENROUTER_API_KEY || "",
 });
 
 const keyInfo = await openRouter.apiKeys.getCurrentKeyMetadata();

@@ -1,6 +1,8 @@
 import openai from "../../config/gemini.config";
 import { prisma } from "../../lib/prisma";
 import { LLMService } from "../rag/llm.service";
+import AppError from "../../errorHelper/AppError";
+import status from "http-status";
 
 const llm = new LLMService();
 
@@ -54,6 +56,13 @@ const searchSuggestions = async (prompt: string) => {
     ]
   }
   `
+  if (!openai) {
+    throw new AppError(
+      status.INTERNAL_SERVER_ERROR,
+      "AI suggestions are unavailable because no Gemini/OpenAI key is configured. Add GEMINI_API_KEY or OPENAI_API_KEY to your .env file."
+    );
+  }
+
   const response = await openai.chat.completions.create({
     model: "gemini-3-flash-preview",
     messages: [

@@ -89,7 +89,7 @@ Deployment
 - (backend) : git clone https://github.com/sujonbiswaseng/full-stack-backend-project.git
 
 ### Backend Setup
-- cd full-stack-backend-project.git
+- cd full-stack-backend-project
 - pnpm install
 - Create .env file:
 ```typescript
@@ -139,7 +139,7 @@ Run the cmd:
 
 ### Frontend Setup
 
-- cd lumen-frontend-project.git
+- cd lumen-frontend-project
 - pnpm install
 - Create .env file:
 
